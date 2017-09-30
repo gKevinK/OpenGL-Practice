@@ -1,5 +1,8 @@
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
 #include <stb_image.h>
 #include <iostream>
 #include <fstream>
@@ -44,6 +47,7 @@ int main(int argc, char ** argv)
 	glLinkProgram(shaderProgram);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	glEnable(GL_DEPTH_BUFFER_BIT);
 
 	float vertices[] = {
 		//0.5f,  0.5f, 0.0f,  // top right
@@ -78,7 +82,7 @@ int main(int argc, char ** argv)
 
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load("texture.jpg", &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load("afraid.jpg", &width, &height, &nrChannels, 0);
 	glGenTextures(1, &Tex);
 	glBindTexture(GL_TEXTURE_2D, Tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -103,7 +107,7 @@ int main(int argc, char ** argv)
 		processInput(window);
 
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shaderProgram);
 
 		//float timeValue = glfwGetTime();
@@ -111,6 +115,20 @@ int main(int argc, char ** argv)
 		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		//glUseProgram(shaderProgram);
 		//glUniform4f(vertexColorLocation, 0.2f, greenValue, 0.2f, 1.0f);
+
+		glm::mat4 model(1);
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glm::mat4 view(1);
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		view = glm::rotate(view, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+		unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		glm::mat4 pers = glm::perspective(glm::radians(60.0f), 1.0f, 0.1f, 100.0f);
+		//glm::mat4 pers(1);
+		unsigned int projLoc = glGetUniformLocation(shaderProgram, "proj");
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pers));
 
 		glBindTexture(GL_TEXTURE_2D, Tex);
 		glBindVertexArray(VAO);

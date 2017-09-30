@@ -147,6 +147,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="afraid.jpg" />
     <Image Include="texture.jpg" />
     <Image Include="wall.jpg" />
   </ItemGroup>
