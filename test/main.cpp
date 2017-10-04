@@ -10,8 +10,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
-unsigned int loadVertexShader(const char *path);
-unsigned int loadFragmentShader(const char *path);
+unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
@@ -43,15 +42,7 @@ int main(int argc, char ** argv)
 	const GLubyte* glrenderer = glGetString(GL_RENDERER);
 	std::cout << glvendor << ": " << glrenderer << std::endl;
 
-	unsigned int vertexShader = loadVertexShader("vert.glsl");
-	unsigned int fragmentShader = loadFragmentShader("frag.glsl");
-	unsigned int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glEnable(GL_DEPTH_BUFFER_BIT);
+	unsigned int shaderProgram = LoadShaderProgram("vert.glsl", "frag.glsl");
 
 	float vertices[] = {
 		//0.5f,  0.5f, 0.0f,  // top right
@@ -134,6 +125,7 @@ int main(int argc, char ** argv)
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -150,17 +142,17 @@ int main(int argc, char ** argv)
 		//glUniform4f(vertexColorLocation, 0.2f, greenValue, 0.2f, 1.0f);
 
 		glm::mat4 model(1);
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
 		unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		//glm::vec3 camPos(0.0f, 0.0f, 3.0f);
-		//glm::vec3 camTar(0.0f, 0.0f, 0.0f);
-		//glm::vec3 camDir = glm::normalize(camPos - camTar);
-		//glm::vec3 up(0.0f, 1.0f, 0.0f);
-		//glm::vec3 camRight = glm::normalize(glm::cross(up, camDir));
-		//glm::vec3 camUp = glm::normalize(glm::cross(camDir, camRight));
-		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::vec3 camPos(0.0f, 0.0f, 3.0f);
+		glm::vec3 camTar(0.0f, 0.0f, 0.0f);
+		glm::vec3 camDir = glm::normalize(camPos - camTar);
+		glm::vec3 up(0.0f, 1.0f, 0.0f);
+		glm::vec3 camRight = glm::normalize(glm::cross(up, camDir));
+		glm::vec3 camUp = glm::normalize(glm::cross(camDir, camRight));
+		glm::mat4 view = glm::lookAt(camPos, camDir, camUp);
 		unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
@@ -200,30 +192,40 @@ unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath)
 {
 	std::ifstream vertexFile;
 	std::ifstream fragmentFile;
+	std::string vertexCode;
+	std::string fragmentCode;
 	try {
 		vertexFile.open(vertexPath);
 		fragmentFile.open(fragmentPath);
 		std::stringstream vStream;
 		std::stringstream fStream;
 		vStream << vertexFile.rdbuf();
-		fStream << fragmentFile
+		fStream << fragmentFile.rdbuf();
 		vertexFile.close();
-		std::string code = stream.str();
+		fragmentFile.close();
+		vertexCode = vStream.str();
+		fragmentCode = fStream.str();
 	}
 	catch (std::ifstream::failure e) {
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
 	}
-	const char *pCode = code.c_str();
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &pCode, NULL);
-	glCompileShader(vertexShader);
 	int success;
+	const char *pvCode = vertexCode.c_str();
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &pvCode, NULL);
+	glCompileShader(vertexShader);
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
+	if (!success) {
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << std::endl;
-	};
-
+	}
+	const char *pfCode = fragmentCode.c_str();
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &pfCode, NULL);
+	glCompileShader(fragmentShader);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << std::endl;
+	}
 	unsigned int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
@@ -231,25 +233,4 @@ unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath)
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	return shaderProgram;
-}
-
-unsigned int loadFragmentShader(const char *path)
-{
-	std::ifstream file;
-	file.open(path);
-	std::stringstream stream;
-	stream << file.rdbuf();
-	file.close();
-	std::string code = stream.str();
-	const char *pCode = code.c_str();
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &pCode, NULL);
-	glCompileShader(fragmentShader);
-	int success;
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << std::endl;
-	};
-	return fragmentShader;
 }
