@@ -21,7 +21,7 @@ float fov = 60.0f;
 int main(int argc, char ** argv)
 {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 8);
@@ -41,6 +41,7 @@ int main(int argc, char ** argv)
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+	glEnable(GL_DEPTH_TEST);
 
 	const GLubyte* glvendor = glGetString(GL_VENDOR);
 	const GLubyte* glrenderer = glGetString(GL_RENDERER);
@@ -111,7 +112,7 @@ int main(int argc, char ** argv)
 		glm::vec3(1.5f,  0.2f, -1.5f),
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-
+	
 	unsigned int VBO, VAO, EBO, Tex;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -141,7 +142,6 @@ int main(int argc, char ** argv)
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -222,7 +222,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	if (fov >= 1.0f && fov <= 60.0f)
-		fov -= yoffset;
+		fov -= (float)yoffset;
 	if (fov <= 1.0f)
 		fov = 1.0f;
 	if (fov >= 60.0f)
