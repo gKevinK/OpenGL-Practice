@@ -12,7 +12,9 @@ enum Camera_Movement {
 	FORWARD,
 	BACKWARD,
 	LEFT,
-	RIGHT
+	RIGHT,
+	YAW_LEFT,
+	YAW_RIGHT,
 };
 
 // Default camera values
@@ -70,14 +72,31 @@ public:
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
 		float velocity = MovementSpeed * deltaTime;
-		if (direction == FORWARD)
+		switch (direction)
+		{
+		case FORWARD:
 			Position += Front * velocity;
-		if (direction == BACKWARD)
+			break;
+		case BACKWARD:
 			Position -= Front * velocity;
-		if (direction == LEFT)
+			break;
+		case LEFT:
 			Position -= Right * velocity;
-		if (direction == RIGHT)
+			break;
+		case RIGHT:
 			Position += Right * velocity;
+			break;
+		case YAW_LEFT:
+			Yaw -= 10 * velocity;
+			updateCameraVectors();
+			break;
+		case YAW_RIGHT:
+			Yaw += 10 * velocity;
+			updateCameraVectors();
+			break;
+		default:
+			break;
+		}
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

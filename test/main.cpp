@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "fps_camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -16,7 +17,12 @@ unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath)
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
-float fov = 60.0f;
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
+float deltaTime = 0.0f;	// time between current frame and last frame
+float lastFrame = 0.0f;
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main(int argc, char ** argv)
 {
@@ -35,6 +41,8 @@ int main(int argc, char ** argv)
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -145,6 +153,9 @@ int main(int argc, char ** argv)
 
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 		processInput(window);
 
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -162,17 +173,10 @@ int main(int argc, char ** argv)
 		//unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
 		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		glm::vec3 camPos(0.0f, 0.0f, 3.0f);
-		glm::vec3 camTar(0.0f, 0.0f, 0.0f);
-		glm::vec3 camDir = glm::normalize(camPos - camTar);
-		glm::vec3 up(0.0f, 1.0f, 0.0f);
-		glm::vec3 camRight = glm::normalize(glm::cross(up, camDir));
-		glm::vec3 camUp = glm::normalize(glm::cross(camDir, camRight));
-		glm::mat4 view = glm::lookAt(camPos, camTar, camUp);
 		unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
 
-		glm::mat4 pers = glm::perspective(glm::radians(fov), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
 		//glm::mat4 pers(1);
 		unsigned int projLoc = glGetUniformLocation(shaderProgram, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pers));
@@ -212,21 +216,37 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		camera.ProcessKeyboard(YAW_LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		camera.ProcessKeyboard(YAW_RIGHT, deltaTime);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-
+	if (firstMouse) {
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	lastX = xpos;
+	lastY = ypos;
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	if (fov >= 1.0f && fov <= 60.0f)
-		fov -= (float)yoffset;
-	if (fov <= 1.0f)
-		fov = 1.0f;
-	if (fov >= 60.0f)
-		fov = 60.0f;
+	camera.ProcessMouseScroll(yoffset);
 }
 
 unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath)

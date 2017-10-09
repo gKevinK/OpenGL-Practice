@@ -152,7 +152,7 @@
     <Image Include="wall.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
+    <ClInclude Include="fps_camera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -45,7 +45,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h">
+    <ClInclude Include="fps_camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
