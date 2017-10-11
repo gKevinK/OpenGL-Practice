@@ -1,14 +1,33 @@
 #version 430 core
 out vec4 FragColor;
 
-in vec2 textureCoord;
+in vec3 Normal;
+in vec3 FragPos;
+in vec2 TextureCoord;
 
-//uniform vec4 ourColor;
 uniform sampler2D texture1;
+
+struct PointLight {
+    vec3 position;
+    float constant;
+    float linear;
+    float quadratic;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct DirLight {
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
 
 void main()
 {
-   // FragColor = vec4(1.0f, 0.5f, 1.0f, 1.0f);
-   FragColor = texture(texture1, textureCoord);
-   // FragColor = ourColor;
+	vec3 norm = normalize(Normal);
+
+    FragColor = texture(texture1, TextureCoord);
+	// FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
