@@ -26,5 +26,5 @@ struct DirLight {
 
 void main()
 {
-   FragColor = texture(texture1, TextureCoord);
+    FragColor = texture(texture1, TextureCoord);
 }

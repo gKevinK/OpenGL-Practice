@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
 	const GLubyte* glrenderer = glGetString(GL_RENDERER);
 	std::cout << glvendor << ": " << glrenderer << std::endl;
 
-	unsigned int shaderProgram = LoadShaderProgram("vert.glsl", "frag.glsl");
+	unsigned int shaderProgram = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 
 	float vertices[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
@@ -144,7 +144,7 @@ int main(int argc, char ** argv)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(2 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -228,8 +228,10 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(YAW_RIGHT, deltaTime);
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouse_callback(GLFWwindow* window, double xposd, double yposd)
 {
+	float xpos = (float)xposd;
+	float ypos = (float)yposd;
 	if (firstMouse) {
 		lastX = xpos;
 		lastY = ypos;
@@ -244,7 +246,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	camera.ProcessMouseScroll((float)yoffset);
 }
 
 unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath)

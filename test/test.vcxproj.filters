@@ -26,10 +26,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="frag.glsl">
+    <Text Include="main.vert.glsl">
       <Filter>资源文件</Filter>
     </Text>
-    <Text Include="vert.glsl">
+    <Text Include="main.frag.glsl">
       <Filter>资源文件</Filter>
     </Text>
   </ItemGroup>

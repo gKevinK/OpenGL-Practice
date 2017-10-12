@@ -139,10 +139,10 @@
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="frag.glsl">
+    <Text Include="main.frag.glsl">
       <FileType>Document</FileType>
     </Text>
-    <Text Include="vert.glsl">
+    <Text Include="main.vert.glsl">
       <FileType>Document</FileType>
     </Text>
   </ItemGroup>
