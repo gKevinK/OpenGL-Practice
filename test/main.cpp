@@ -8,15 +8,16 @@
 #include <fstream>
 #include <sstream>
 #include "fps_camera.h"
+#include "shader.h"
+#include "point_light.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath);
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+unsigned int SCR_WIDTH = 800;
+unsigned int SCR_HEIGHT = 800;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -32,7 +33,7 @@ int main(int argc, char ** argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Learn OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -41,9 +42,9 @@ int main(int argc, char ** argv)
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -116,6 +117,12 @@ int main(int argc, char ** argv)
 		glm::vec3(1.5f,  0.2f, -1.5f),
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
 	
 	unsigned int VBO, VAO, EBO, Tex;
 	glGenVertexArrays(1, &VAO);
@@ -151,47 +158,38 @@ int main(int argc, char ** argv)
 
 	while (!glfwWindowShouldClose(window))
 	{
-		float currentFrame = glfwGetTime();
+		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
-
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shaderProgram);
+		setVec3(shaderProgram, "viewPos", camera.Position);
+		setFloat(shaderProgram, "material.diffuse", 1.0f);
+		setFloat(shaderProgram, "material.specular", 1.0f);
+		setFloat(shaderProgram, "material.shininess", 32.0f);
+		setVec3(shaderProgram, "dirLight.direction", -0.2f, -1.0f, -0.3f);
+		setVec3(shaderProgram, "dirLight.ambient", 0.1f, 0.1f, 0.1f);
+		setVec3(shaderProgram, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		setVec3(shaderProgram, "dirLight.specular", 0.5f, 0.5f, 0.5f);
+		for (int i = 0; i < 4; i++) {
+			PointLight plight = PointLight(pointLightPositions[i]);
+			plight.SetUniform(shaderProgram, std::string("pointLights[") + std::to_string(i) + "]");
+		}
 
-		//float timeValue = glfwGetTime();
-		//float greenValue = (sin(timeValue * 2) * 0.4f) + 0.6f;
-		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		//glUseProgram(shaderProgram);
-		//glUniform4f(vertexColorLocation, 0.2f, greenValue, 0.2f, 1.0f);
-
-		//glm::mat4 model(1);
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-		//unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
-
+		setMatrix4fv(shaderProgram, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
-		//glm::mat4 pers(1);
-		unsigned int projLoc = glGetUniformLocation(shaderProgram, "proj");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pers));
-
+		setMatrix4fv(shaderProgram, "proj", pers);
 		glBindTexture(GL_TEXTURE_2D, Tex);
 		glBindVertexArray(VAO);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-		//glBindVertexArray(0);
 		for (unsigned int i = 0; i < 10; i++)
 		{
-			glm::mat4 model;
+			glm::mat4 model(1);
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			setMatrix4fv(shaderProgram, "model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
@@ -207,6 +205,8 @@ int main(int argc, char ** argv)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	SCR_WIDTH = width;
+	SCR_HEIGHT = height;
 	glViewport(0, 0, width, height);
 }
 
@@ -247,51 +247,4 @@ void mouse_callback(GLFWwindow* window, double xposd, double yposd)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll((float)yoffset);
-}
-
-unsigned int LoadShaderProgram(const char *vertexPath, const char *fragmentPath)
-{
-	std::ifstream vertexFile;
-	std::ifstream fragmentFile;
-	std::string vertexCode;
-	std::string fragmentCode;
-	try {
-		vertexFile.open(vertexPath);
-		fragmentFile.open(fragmentPath);
-		std::stringstream vStream;
-		std::stringstream fStream;
-		vStream << vertexFile.rdbuf();
-		fStream << fragmentFile.rdbuf();
-		vertexFile.close();
-		fragmentFile.close();
-		vertexCode = vStream.str();
-		fragmentCode = fStream.str();
-	}
-	catch (std::ifstream::failure e) {
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-	}
-	int success;
-	const char *pvCode = vertexCode.c_str();
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &pvCode, NULL);
-	glCompileShader(vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << std::endl;
-	}
-	const char *pfCode = fragmentCode.c_str();
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &pfCode, NULL);
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << std::endl;
-	}
-	unsigned int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	return shaderProgram;
 }

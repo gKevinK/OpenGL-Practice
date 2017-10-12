@@ -48,5 +48,11 @@
     <ClInclude Include="fps_camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="point_light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
