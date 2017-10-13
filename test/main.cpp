@@ -153,6 +153,7 @@ int main(int argc, char ** argv)
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glActiveTexture(GL_TEXTURE0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -162,21 +163,23 @@ int main(int argc, char ** argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shaderProgram);
 		setVec3(shaderProgram, "viewPos", camera.Position);
-		setFloat(shaderProgram, "material.diffuse", 1.0f);
+		setVec3(shaderProgram, "ambient", 0.2f, 0.2f, 0.2f);
+		setFloat(shaderProgram, "material.diffuse", 0.8f);
 		setFloat(shaderProgram, "material.specular", 1.0f);
 		setFloat(shaderProgram, "material.shininess", 32.0f);
 		setVec3(shaderProgram, "dirLight.direction", -0.2f, -1.0f, -0.3f);
 		setVec3(shaderProgram, "dirLight.ambient", 0.1f, 0.1f, 0.1f);
-		setVec3(shaderProgram, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-		setVec3(shaderProgram, "dirLight.specular", 0.5f, 0.5f, 0.5f);
+		//setVec3(shaderProgram, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		//setVec3(shaderProgram, "dirLight.specular", 0.5f, 0.5f, 0.5f);
 		for (int i = 0; i < 4; i++) {
 			PointLight plight = PointLight(pointLightPositions[i]);
 			plight.SetUniform(shaderProgram, std::string("pointLights[") + std::to_string(i) + "]");
 		}
+		setFloat(shaderProgram, "pointLightNum", 2);
 
 		setMatrix4fv(shaderProgram, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
