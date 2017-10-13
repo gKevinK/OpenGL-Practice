@@ -15,6 +15,8 @@ enum Camera_Movement {
 	RIGHT,
 	YAW_LEFT,
 	YAW_RIGHT,
+	UP,
+	DOWN,
 };
 
 // Default camera values
@@ -93,6 +95,12 @@ public:
 		case YAW_RIGHT:
 			Yaw += 10 * velocity;
 			updateCameraVectors();
+			break;
+		case UP:
+			Position += Up * velocity;
+			break;
+		case DOWN:
+			Position -= Up * velocity;
 			break;
 		default:
 			break;
