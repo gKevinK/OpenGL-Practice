@@ -9,7 +9,7 @@
 #include <sstream>
 #include "fps_camera.h"
 #include "shader.h"
-#include "point_light.h"
+#include "lights.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -167,7 +167,7 @@ int main(int argc, char ** argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shaderProgram);
 		setVec3(shaderProgram, "viewPos", camera.Position);
-		setVec3(shaderProgram, "ambient", 0.2f, 0.2f, 0.2f);
+		setVec3(shaderProgram, "ambient", 0.1f, 0.1f, 0.1f);
 		setFloat(shaderProgram, "material.diffuse", 0.8f);
 		setFloat(shaderProgram, "material.specular", 1.0f);
 		setFloat(shaderProgram, "material.shininess", 32.0f);
@@ -180,6 +180,13 @@ int main(int argc, char ** argv)
 			plight.SetUniform(shaderProgram, std::string("pointLights[") + std::to_string(i) + "]");
 		}
 		setFloat(shaderProgram, "pointLightNum", 2);
+		setVec3(shaderProgram, "spotLight.position", camera.Position);
+		setVec3(shaderProgram, "spotLight.direction", camera.Front);
+		setFloat(shaderProgram, "spotLight.constant", 1.0f);
+		setFloat(shaderProgram, "spotLight.linear", 0.09);
+		setFloat(shaderProgram, "spotLight.quadratic", 0.032);
+		setFloat(shaderProgram, "spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		setFloat(shaderProgram, "spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 		setMatrix4fv(shaderProgram, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);

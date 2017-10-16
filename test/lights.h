@@ -1,4 +1,4 @@
-#ifndef POINT_LIGHT
+#ifndef LIGHTS
 
 #include <glad\glad.h>
 #include <glm\glm.hpp>
@@ -36,5 +36,4 @@ private:
 };
 
 
-
-#endif // !POINT_LIGHT
+#endif // !LIGHTS

@@ -51,7 +51,7 @@
     <ClInclude Include="shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="point_light.h">
+    <ClInclude Include="lights.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
