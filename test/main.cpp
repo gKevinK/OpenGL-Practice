@@ -172,9 +172,7 @@ int main(int argc, char ** argv)
 		setFloat(shaderProgram, "material.specular", 1.0f);
 		setFloat(shaderProgram, "material.shininess", 32.0f);
 		setVec3(shaderProgram, "dirLight.direction", -0.2f, -1.0f, -0.3f);
-		setVec3(shaderProgram, "dirLight.ambient", 0.1f, 0.1f, 0.1f);
-		//setVec3(shaderProgram, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-		//setVec3(shaderProgram, "dirLight.specular", 0.5f, 0.5f, 0.5f);
+		setVec3(shaderProgram, "dirLight.color", 1.0f, 1.0f, 1.0f);
 		for (int i = 0; i < 4; i++) {
 			PointLight plight = PointLight(pointLightPositions[i]);
 			plight.SetUniform(shaderProgram, std::string("pointLights[") + std::to_string(i) + "]");
@@ -182,6 +180,7 @@ int main(int argc, char ** argv)
 		setFloat(shaderProgram, "pointLightNum", 2);
 		setVec3(shaderProgram, "spotLight.position", camera.Position);
 		setVec3(shaderProgram, "spotLight.direction", camera.Front);
+		setVec3(shaderProgram, "spotLight.color", 1.0f, 1.0f, 1.0f);
 		setFloat(shaderProgram, "spotLight.constant", 1.0f);
 		setFloat(shaderProgram, "spotLight.linear", 0.09);
 		setFloat(shaderProgram, "spotLight.quadratic", 0.032);
