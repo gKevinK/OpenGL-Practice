@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
+#include <assimp\Importer.hpp>
 #include <stb_image.h>
 #include <iostream>
 #include <fstream>
@@ -172,13 +173,14 @@ int main(int argc, char ** argv)
 		setVec3(shaderProgram, "spotLight.direction", camera.Front);
 		setVec3(shaderProgram, "spotLight.color", 1.0f, 1.0f, 1.0f);
 		setFloat(shaderProgram, "spotLight.constant", 1.0f);
-		setFloat(shaderProgram, "spotLight.linear", 0.09);
-		setFloat(shaderProgram, "spotLight.quadratic", 0.032);
+		setFloat(shaderProgram, "spotLight.linear", 0.09f);
+		setFloat(shaderProgram, "spotLight.quadratic", 0.032f);
 		setFloat(shaderProgram, "spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 		setFloat(shaderProgram, "spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 		setMatrix4fv(shaderProgram, "view", camera.GetViewMatrix());
-		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom),
+			(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
 		setMatrix4fv(shaderProgram, "proj", pers);
 		glBindTexture(GL_TEXTURE_2D, Tex);
 		glBindVertexArray(VAO);
