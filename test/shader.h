@@ -4,17 +4,17 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-void inline setMatrix2fv(unsigned int program, const std::string & name, const glm::mat2 & mat)
+void inline setMat2(unsigned int program, const std::string & name, const glm::mat2 & mat)
 {
 	glUniformMatrix2fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void inline setMatrix3fv(unsigned int program, const std::string & name, const glm::mat3 & mat)
+void inline setMat3(unsigned int program, const std::string & name, const glm::mat3 & mat)
 {
 	glUniformMatrix3fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void inline setMatrix4fv(unsigned int program, const std::string & name, const glm::mat4 & mat)
+void inline setMat4(unsigned int program, const std::string & name, const glm::mat4 & mat)
 {
 	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }

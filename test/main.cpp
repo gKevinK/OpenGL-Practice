@@ -8,9 +8,11 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include "fps_camera.h"
 #include "shader.h"
 #include "lights.h"
+#include "model.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -58,8 +60,37 @@ int main(int argc, char ** argv)
 	const GLubyte* glrenderer = glGetString(GL_RENDERER);
 	std::cout << glvendor << ": " << glrenderer << std::endl;
 
-	unsigned int shaderProgram = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
+	// unsigned int shaderProgram = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
+	unsigned int shader = LoadShaderProgram("model.vert.glsl", "model.frag.glsl");
 
+	Model ourModel = Model("nanosuit\\nanosuit.obj");
+	while (!glfwWindowShouldClose(window))
+	{
+		float currentFrame = (float)glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+		processInput(window);
+
+		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(shader);
+
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		setMat4(shader, "projection", projection);
+		setMat4(shader, "view", view);
+
+		glm::mat4 model;
+		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		setMat4(shader, "model", model);
+		ourModel.Draw(shader);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	/* Boxes *
 	float vertices[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 		0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
@@ -200,6 +231,8 @@ int main(int argc, char ** argv)
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+
+	* Boxes */
 	glfwTerminate();
 	return 0;
 }

@@ -11,6 +11,8 @@
 #include <iostream>
 #include <vector>
 
+unsigned int TextureFromFile(const std::string &name, const std::string &directory, bool gamma = false);
+
 class Model
 {
 public:
@@ -19,9 +21,13 @@ public:
 	std::string Directory;
 	bool GammaCorrection;
 
-	Model(const char *path) { loadModel(path); };
+	Model(const char *path, bool gamma = false) : GammaCorrection(gamma)
+	{
+		loadModel(path);
+	};
 
-	void Draw(unsigned int shader) {
+	void Draw(unsigned int shader)
+	{
 		for (unsigned int i = 0; i < Meshes.size(); i++)
 			Meshes[i].Draw(shader);
 	}
@@ -115,7 +121,7 @@ private:
 	}
 };
 
-unsigned int TextureFromFile(const std::string &name, const std::string &directory, bool gamma = false)
+unsigned int TextureFromFile(const std::string &name, const std::string &directory, bool gamma)
 {
 	std::string path = directory + '\\' + name;
 	unsigned int textureId;

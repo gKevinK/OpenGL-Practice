@@ -89,7 +89,7 @@
       <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)dlls\*.dll $(TargetDir)</Command>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,7 +104,7 @@
       <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)dlls\*.dll $(TargetDir)</Command>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,7 +123,7 @@
       <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)dlls\*.dll $(TargetDir)</Command>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +142,7 @@
       <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)dlls\*.dll $(TargetDir)</Command>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -169,6 +169,10 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="mesh.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="model.frag.glsl" />
+    <None Include="model.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
