@@ -21,7 +21,7 @@ public:
 	std::string Directory;
 	bool GammaCorrection;
 
-	Model(const char *path, bool gamma = false) : GammaCorrection(gamma)
+	Model(const std::string &path, bool gamma = false) : GammaCorrection(gamma)
 	{
 		loadModel(path);
 	};

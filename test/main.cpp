@@ -13,6 +13,7 @@
 #include "shader.h"
 #include "lights.h"
 #include "model.h"
+#include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -63,7 +64,7 @@ int main(int argc, char ** argv)
 	// unsigned int shaderProgram = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	unsigned int shader = LoadShaderProgram("model.vert.glsl", "model.frag.glsl");
 
-	Model ourModel = Model("nanosuit\\nanosuit.obj");
+	Model ourModel = Model(/*GetDirectory() + */"nanosuit\\nanosuit.obj");
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = (float)glfwGetTime();
