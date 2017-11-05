@@ -47,6 +47,18 @@ int main(int argc, char ** argv)
 	}
 	glEnable(GL_DEPTH_TEST);
 
+	float triangle[] = {
+		0.0f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		-0.5, 0.2f, 0.0f,  0.0f, 0.0f, 1.0f,
+	};
+	float rectangle[] = {
+		0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+	   -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f,
+	   -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+	    0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
+	};
+
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = (float)glfwGetTime();
