@@ -19,7 +19,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 Camera camera(glm::vec3(0.0f, 0.0f, 12.0f));
-float scale = 2.0;
+float scale = 4.0;
 bool flat = false;
 
 int main(int argc, char ** argv)
@@ -47,37 +47,30 @@ int main(int argc, char ** argv)
 	}
 	glEnable(GL_DEPTH_TEST);
 
-	float triangle[] = {
+	float vertices[] = {
 		0.0f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		0.5f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
 		-0.5, 0.2f, 0.0f,  0.0f, 0.0f, 1.0f,
-	};
-	float rectangle[] = {
+
 		0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
 	   -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f,
 	   -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
 	    0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
 	};
 	int rect_indice[] = {
-		0, 1, 3, 2, 3, 1,
+		3, 4, 6, 5, 6, 4,
 	};
 
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
-	unsigned int VBO1, VAO1, VBO2, VAO2, EBO2;
+	unsigned int VBO1, VAO1, EBO2;
 	glGenVertexArrays(1, &VAO1);
 	glGenBuffers(1, &VBO1);
+	glGenBuffers(1, &EBO2);
 	glBindVertexArray(VAO1);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
-	glGenVertexArrays(1, &VAO2);
-	glGenBuffers(1, &VBO2);
-	glGenBuffers(1, &EBO2);
-	glBindVertexArray(VAO2);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle), rectangle, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rect_indice), rect_indice, GL_STATIC_DRAW);
-
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)NULL);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
@@ -89,29 +82,37 @@ int main(int argc, char ** argv)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
-		angle += 1; // deltaTime;
+		angle += 0.5f * deltaTime;
+		if (angle > 360.0f)
+			angle -= 360.0f;
 
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shader);
 
 		setBool(shader, "Flat", flat);
-		setMat4(shader, "view", glm::scale(glm::mat4(1), glm::vec3(glm::pow(2, -scale))));
+		setMat4(shader, "view", glm::scale(glm::mat4(1), glm::vec3(glm::pow(2.0f, -scale) * SCR_HEIGHT / SCR_WIDTH, glm::pow(2.0f, -scale), 1.0f)));
 
-		glm::mat4 model_t = glm::translate(glm::mat4(1), glm::vec3(5.0f, 5.0f, 0.0f));
+		glm::mat4 t1 = glm::translate(glm::mat4(1), glm::vec3(5.0f, 5.0f, 0.0f));
+		glm::mat4 r = glm::rotate(glm::mat4(1), angle, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 t2 = glm::translate(glm::mat4(1), glm::vec3(-5.0f, -5.0f, 0.0f));
+		glm::mat4 sc = glm::scale(glm::mat4(1), glm::vec3(3.0f, 3.0f, 1.0f));
+		glm::mat4 model_t = t1 * r * t2 * sc;
 		setMat4(shader, "model", model_t);
 		glBindVertexArray(VAO1);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		setMat4(shader, "model", glm::translate(glm::mat4(1), glm::vec3(-2.0f, -2.0f, 0.0f)));
-		glBindVertexArray(VAO2);
+		sc = glm::scale(glm::mat4(1), glm::vec3(3.0f, 2.0f, 1.0f));
+		setMat4(shader, "model", glm::translate(sc, glm::vec3(-3.0f, -3.0f, 0.0f)));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	glDeleteVertexArrays(1, &VAO1);
+	glDeleteBuffers(1, &VBO1);
+	glDeleteBuffers(1, &EBO2);
 	glfwTerminate();
 	return 0;
 }
