@@ -4,7 +4,7 @@ layout(location = 1) in vec3 aColor;
 
 uniform mat4 model;
 uniform mat4 view;
-uniform mat4 proj;
+// uniform mat4 proj;
 
 out vec3 FragPos;
 out flat vec3 ColorF;
@@ -12,7 +12,7 @@ out vec3 Color;
 
 void main()
 {
-	gl_Position = proj * view * model * vec4(aPos, 1.0);
+	gl_Position = view * model * vec4(aPos, 1.0);
 	Color = aColor;
 	ColorF = aColor;
 }

@@ -34,11 +34,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="main.vert.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="main.frag.glsl">
-      <Filter>资源文件</Filter>
-    </None>
+    <Text Include="main.frag.glsl" />
+    <Text Include="main.vert.glsl" />
   </ItemGroup>
 </Project>

@@ -9,7 +9,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 unsigned int SCR_WIDTH = 800;
@@ -19,7 +18,8 @@ float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 12.0f));
+float scale = 2.0;
 bool flat = false;
 
 int main(int argc, char ** argv)
@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	//glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
@@ -63,31 +63,51 @@ int main(int argc, char ** argv)
 	};
 
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	unsigned int VBO1, VAO1, VBO2, VAO2, EBO2;
+	glGenVertexArrays(1, &VAO1);
+	glGenBuffers(1, &VBO1);
+	glBindVertexArray(VAO1);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+	glGenVertexArrays(1, &VAO2);
+	glGenBuffers(1, &VBO2);
+	glGenBuffers(1, &EBO2);
+	glBindVertexArray(VAO2);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle), rectangle, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rect_indice), rect_indice, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)NULL);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)NULL);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
+	float angle = 0.0f;
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
+		angle += 1; // deltaTime;
 
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shader);
 
 		setBool(shader, "Flat", flat);
+		setMat4(shader, "view", glm::scale(glm::mat4(1), glm::vec3(glm::pow(2, -scale))));
+
+		glm::mat4 model_t = glm::translate(glm::mat4(1), glm::vec3(5.0f, 5.0f, 0.0f));
+		setMat4(shader, "model", model_t);
+		glBindVertexArray(VAO1);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		setMat4(shader, "model", glm::translate(glm::mat4(1), glm::vec3(-2.0f, -2.0f, 0.0f)));
+		glBindVertexArray(VAO2);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -103,45 +123,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+bool q_pressed = false;
 void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	//if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	//	camera.ProcessKeyboard(LEFT, deltaTime);
-	//if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	//	camera.ProcessKeyboard(RIGHT, deltaTime);
-	//if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-	//	camera.ProcessKeyboard(YAW_LEFT, deltaTime);
-	//if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-	//	camera.ProcessKeyboard(YAW_RIGHT, deltaTime);
-	//if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-	//	camera.ProcessKeyboard(UP, deltaTime);
-	//if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-	//	camera.ProcessKeyboard(DOWN, deltaTime);
-}
-
-void mouse_callback(GLFWwindow* window, double xposd, double yposd)
-{
-	float xpos = (float)xposd;
-	float ypos = (float)yposd;
-	if (firstMouse) {
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
+	if (!q_pressed && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+		flat = !flat;
 	}
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos;
-	lastX = xpos;
-	lastY = ypos;
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	q_pressed = (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll((float)yoffset);
+	scale += (float)yoffset / 20;
 }
