@@ -166,7 +166,6 @@
   <ItemGroup>
     <ClInclude Include="fps_camera.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="main.frag.glsl">

@@ -5,7 +5,6 @@
 #include <iostream>
 #include "fps_camera.h"
 #include "shader.h"
-#include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -75,6 +74,9 @@ int main(int argc, char ** argv)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	std::cout << "Press 'Q' to switch flat mode. Use mouse wheel to scale." << std::endl;
+	std::cout << "Press 'Esc' to exit." << std::endl;
 
 	float angle = 0.0f;
 	while (!glfwWindowShouldClose(window)) {
