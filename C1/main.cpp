@@ -96,7 +96,7 @@ int main(int argc, char ** argv)
 		setMat4(shader, "view", glm::scale(glm::mat4(1), glm::vec3(glm::pow(2.0f, -scale) * SCR_HEIGHT / SCR_WIDTH, glm::pow(2.0f, -scale), 1.0f)));
 
 		glm::mat4 t1 = glm::translate(glm::mat4(1), glm::vec3(5.0f, 5.0f, 0.0f));
-		glm::mat4 r = glm::rotate(glm::mat4(1), angle, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 r = glm::rotate(glm::mat4(1), -angle, glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 t2 = glm::translate(glm::mat4(1), glm::vec3(-5.0f, -5.0f, 0.0f));
 		glm::mat4 sc = glm::scale(glm::mat4(1), glm::vec3(3.0f, 3.0f, 1.0f));
 		glm::mat4 model_t = t1 * r * t2 * sc;
@@ -104,8 +104,10 @@ int main(int argc, char ** argv)
 		glBindVertexArray(VAO1);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		sc = glm::scale(glm::mat4(1), glm::vec3(3.0f, 2.0f, 1.0f));
-		setMat4(shader, "model", glm::translate(sc, glm::vec3(-3.0f, -3.0f, 0.0f)));
+		t1 = glm::translate(glm::mat4(1), glm::vec3(-3.0f, -3.0f, 0.0f));
+		r = glm::rotate(t1, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+		sc = glm::scale(r, glm::vec3(2.0f, 2.0f, 1.0f));
+		setMat4(shader, "model", sc);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
