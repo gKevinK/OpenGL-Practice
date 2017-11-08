@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <iostream>
+#include <vector>
 #include "fps_camera.h"
 #include "shader.h"
 
@@ -35,9 +36,9 @@ int main(int argc, char ** argv)
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
@@ -76,6 +77,8 @@ int main(int argc, char ** argv)
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shader);
+
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
