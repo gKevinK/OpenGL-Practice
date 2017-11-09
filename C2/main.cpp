@@ -6,6 +6,7 @@
 #include <vector>
 #include "fps_camera.h"
 #include "shader.h"
+#include "light.h"
 #include "vertex.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -20,7 +21,7 @@ float lastY = ScrHeight / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-Camera camera(glm::vec3(0.0f, 0.0f, 12.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
 
 int main(int argc, char ** argv)
 {
@@ -30,7 +31,7 @@ int main(int argc, char ** argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	GLFWwindow* window = glfwCreateWindow(ScrWidth, ScrHeight, "C1", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(ScrWidth, ScrHeight, "C3", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -66,11 +67,15 @@ int main(int argc, char ** argv)
 		vertex[3], vertex[0], vertex[4],
 	};
 	for (int i = 6; i < 18; i += 3) {
-		glm::vec3 norm = glm::cross(vertices[i + 2].Position - vertices[i].Position, vertices[i + 1].Position - vertices[i].Position);
+		glm::vec3 norm = glm::normalize(glm::cross(vertices[i + 1].Position - vertices[i].Position, vertices[i + 2].Position - vertices[i].Position));
 		vertices[i + 2].Normal = norm;
 		vertices[i + 1].Normal = norm;
 		vertices[i].Normal = norm;
 	}
+	DirLight dirLight(glm::vec3(1.0f, 5.0f, 2.0f));
+	std::vector<PointLight> pointLights = {
+		PointLight(glm::vec3(5.0f, 5.0f, 3.0f)),
+	};
 
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	unsigned int VBO, VAO;
@@ -79,10 +84,12 @@ int main(int argc, char ** argv)
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)NULL);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)NULL);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	//std::cout << "Something..." << std::endl;
 
@@ -96,10 +103,19 @@ int main(int argc, char ** argv)
 
 		glUseProgram(shader);
 		setVec3(shader, "viewPos", camera.Position);
-		setVec3(shader, "ambient", 0.81f, 0.1f, 0.1f);
+		setVec3(shader, "ambient", 0.2f, 0.2f, 0.2f);
 		setFloat(shader, "material.diffuse", 0.8f);
 		setFloat(shader, "material.specular", 1.0f);
 		setFloat(shader, "material.shininess", 32.0f);
+		dirLight.SetUniform(shader, "dirLight");
+		setInt(shader, "pointLightNum", pointLights.size());
+		for (int i = 0; i < pointLights.size(); i++) {
+			pointLights[i].SetUniform(shader, std::string("pointLights[") + std::to_string(i) + "]");
+		}
+		SpotLight spotLight = SpotLight(camera.Position, camera.Front);
+		spotLight.SetUniform(shader, "spotLight");
+
+		setMat4(shader, "model", glm::translate(glm::mat4(1), glm::vec3(1.0f, 2.0f, 3.0f)));
 		setMat4(shader, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom),
 			(float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);

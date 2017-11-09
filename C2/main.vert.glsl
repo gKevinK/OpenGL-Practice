@@ -13,9 +13,9 @@ out vec3 Color;
 
 void main()
 {
-	gl_Position = view * model * vec4(aPos, 1.0);
+	gl_Position = proj * view * model * vec4(aPos, 1.0);
 
-	FragPos = aPos;
+	FragPos = vec3(model * vec4(aPos, 1.0));
 	Normal = aNormal;
 	Color = aColor;
 }

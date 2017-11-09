@@ -46,7 +46,7 @@ uniform Material material;
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-vec3 BlinnPhong(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess);
+float BlinnPhong(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess);
 
 void main()
 {
@@ -58,15 +58,15 @@ void main()
 		result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
 	}
 	result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
-	FragColor = vec4(result, 1.0);
+	FragColor = vec4(result * Color, 1.0);
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
-	vec3 lightDir = normalize(light.position - fragPos);
+	vec3 lightDir = normalize(light.direction);
 	float diff = max(dot(normal, lightDir), 0.0);
 	float spec = BlinnPhong(normal, lightDir, viewDir, material.shininess);
-	return light.color * (diff * light.diffuse + spec * specular);
+	return light.color * (diff * material.diffuse + spec * material.specular);
 }
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
@@ -74,10 +74,10 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 	vec3 lightDir = normalize(light.position - fragPos);
 	float diff = max(dot(normal, lightDir), 0.0);
 	float spec = BlinnPhong(normal, lightDir, viewDir, material.shininess);
-	float distance = distance(light.position - fragPos);
+	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance +
 		light.quadratic * (distance * distance));
-	return light.color * (diff * light.diffuse + spec * specular) * attenuation;
+	return light.color * (diff * material.diffuse + spec * material.specular) * attenuation;
 }
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
@@ -85,13 +85,13 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 	vec3 lightDir = normalize(light.position - fragPos);
 	float diff = max(dot(normal, lightDir), 0.0);
 	float spec = BlinnPhong(normal, lightDir, viewDir, material.shininess);
-	float distance = distance(light.position - fragPos);
+	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance +
 		light.quadratic * (distance * distance));
 	float theta = dot(lightDir, normalize(-light.direction));
 	float epsilon = light.cutOff - light.outerCutOff;
 	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-	return light.color * (diff * light.diffuse + spec * specular) * attenuation * intensity;
+	return light.color * (diff * material.diffuse + spec * material.specular) * attenuation * intensity;
 }
 
 float BlinnPhong(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess)
