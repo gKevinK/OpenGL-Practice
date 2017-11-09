@@ -9,6 +9,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+void mouse_callback(GLFWwindow* window, double xposd, double yposd);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 unsigned int ScrWidth = 800;
