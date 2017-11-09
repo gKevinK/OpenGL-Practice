@@ -32,6 +32,9 @@
     <ClInclude Include="light.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="vertex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.vert.glsl">

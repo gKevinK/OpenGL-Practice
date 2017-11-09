@@ -6,6 +6,7 @@
 #include <vector>
 #include "fps_camera.h"
 #include "shader.h"
+#include "vertex.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -46,9 +47,30 @@ int main(int argc, char ** argv)
 	}
 	glEnable(GL_DEPTH_TEST);
 
-	float vertices[] = {
-		0.0f,
+	Vertex vertex[] = {
+		Vertex(1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
+		Vertex(1.0f, 0.0f,-1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f),
+		Vertex(-1.0f,0.0f,-1.0f,  0.0f, -1.0f, 0.0f,  0.0f, 1.0f, 0.0f),
+		Vertex(-1.0f,0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f),
+		Vertex(0.0f, glm::sqrt(2.0f), 0.0f, 0, 0, 0,  1.0f, 1.0f, 1.0f),
 	};
+	Vertex vertices[] = {
+		vertex[0], vertex[2], vertex[1], vertex[2], vertex[0], vertex[3],
+
+		vertex[0], vertex[1], vertex[4],
+
+		vertex[1], vertex[2], vertex[4],
+
+		vertex[2], vertex[3], vertex[4],
+
+		vertex[3], vertex[0], vertex[4],
+	};
+	for (int i = 6; i < 18; i += 3) {
+		glm::vec3 norm = glm::cross(vertices[i + 2].Position - vertices[i].Position, vertices[i + 1].Position - vertices[i].Position);
+		vertices[i + 2].Normal = norm;
+		vertices[i + 1].Normal = norm;
+		vertices[i].Normal = norm;
+	}
 
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	unsigned int VBO, VAO;
@@ -62,31 +84,34 @@ int main(int argc, char ** argv)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	//std::cout << "Press 'Q' to switch flat mode. Use mouse wheel to scale." << std::endl;
-	//std::cout << "Press 'Esc' to exit." << std::endl;
+	//std::cout << "Something..." << std::endl;
 
-	float angle = 0.0f;
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
-		angle += 0.5f * deltaTime;
-		if (angle > 360.0f)
-			angle -= 360.0f;
-
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glUseProgram(shader);
+		setVec3(shader, "viewPos", camera.Position);
+		setVec3(shader, "ambient", 0.81f, 0.1f, 0.1f);
+		setFloat(shader, "material.diffuse", 0.8f);
+		setFloat(shader, "material.specular", 1.0f);
+		setFloat(shader, "material.shininess", 32.0f);
+		setMat4(shader, "view", camera.GetViewMatrix());
+		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom),
+			(float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
+		setMat4(shader, "proj", pers);
 
-
+		glDrawArrays(GL_TRIANGLES, 0, 18);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	//glDeleteVertexArrays(1, &VAO1);
-	//glDeleteBuffers(1, &VBO1);
-	//glDeleteBuffers(1, &EBO2);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 	glfwTerminate();
 	return 0;
 }

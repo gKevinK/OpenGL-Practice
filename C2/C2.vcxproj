@@ -134,6 +134,7 @@
     <ClInclude Include="fps_camera.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main.frag.glsl" />
