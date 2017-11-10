@@ -43,5 +43,16 @@
     <None Include="main.frag.glsl">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="text.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="text.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\resource\arial.ttf">
+      <Filter>资源文件</Filter>
+    </Font>
   </ItemGroup>
 </Project>

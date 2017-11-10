@@ -2,6 +2,8 @@
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <iostream>
 #include <vector>
 #include "fps_camera.h"
@@ -47,6 +49,13 @@ int main(int argc, char ** argv)
 		return -1;
 	}
 	glEnable(GL_DEPTH_TEST);
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft))
+		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+	FT_Face face;
+	if (FT_New_Face(ft, "arial.ttf", 0, &face))
+		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+	FT_Set_Pixel_Sizes(face, 0, 24);
 
 	Vertex vertex[] = {
 		Vertex(1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f),

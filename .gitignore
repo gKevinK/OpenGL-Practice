@@ -263,3 +263,4 @@ __pycache__/
 # Includes
 include/glm/*
 include/assimp/*
+include/freetype/*
