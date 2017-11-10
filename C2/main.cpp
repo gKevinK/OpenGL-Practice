@@ -123,7 +123,7 @@ int main(int argc, char ** argv)
 		}
 		SpotLight spotLight = SpotLight(camera.Position, camera.Front);
 		spotLight.SetUniform(shader, "spotLight");
-
+		
 		setMat4(shader, "model", glm::translate(glm::mat4(1), glm::vec3(1.0f, 2.0f, 3.0f)));
 		setMat4(shader, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom),
