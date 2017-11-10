@@ -35,6 +35,9 @@
     <ClInclude Include="vertex.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="freetype.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.vert.glsl">
@@ -43,16 +46,11 @@
     <None Include="main.frag.glsl">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="text.vert.glsl">
-      <Filter>资源文件</Filter>
-    </None>
     <None Include="text.frag.glsl">
       <Filter>资源文件</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="..\resource\arial.ttf">
+    <None Include="text.vert.glsl">
       <Filter>资源文件</Filter>
-    </Font>
+    </None>
   </ItemGroup>
 </Project>

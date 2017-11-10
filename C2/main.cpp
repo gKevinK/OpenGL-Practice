@@ -2,14 +2,13 @@
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 #include <iostream>
 #include <vector>
 #include "fps_camera.h"
 #include "shader.h"
 #include "light.h"
 #include "vertex.h"
+#include "freetype.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -49,14 +48,8 @@ int main(int argc, char ** argv)
 		return -1;
 	}
 	glEnable(GL_DEPTH_TEST);
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft))
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-	FT_Face face;
-	if (FT_New_Face(ft, "arial.ttf", 0, &face))
-		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-	FT_Set_Pixel_Sizes(face, 0, 24);
-
+	std::map<GLchar, Character> characters = genFTCharacters("C:\\Windows\\Fonts\\arial.ttf", 24);
+	
 	Vertex vertex[] = {
 		Vertex(1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
 		Vertex(1.0f, 0.0f,-1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f),
@@ -85,7 +78,7 @@ int main(int argc, char ** argv)
 	std::vector<PointLight> pointLights = {
 		PointLight(glm::vec3(5.0f, 5.0f, 3.0f)),
 	};
-
+	
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
