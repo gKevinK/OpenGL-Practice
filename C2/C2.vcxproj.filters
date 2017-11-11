@@ -35,7 +35,7 @@
     <ClInclude Include="vertex.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="freetype.h">
+    <ClInclude Include="text.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

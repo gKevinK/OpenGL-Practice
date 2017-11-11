@@ -8,14 +8,14 @@
 #include "shader.h"
 #include "light.h"
 #include "vertex.h"
-#include "freetype.h"
+#include "text.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xposd, double yposd);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-unsigned int ScrWidth = 800;
+unsigned int ScrWidth = 1000;
 unsigned int ScrHeight = 800;
 float lastX = ScrWidth / 2.0f;
 float lastY = ScrHeight / 2.0f;
@@ -48,7 +48,8 @@ int main(int argc, char ** argv)
 		return -1;
 	}
 	glEnable(GL_DEPTH_TEST);
-	std::map<GLchar, Character> characters = genFTCharacters("C:\\Windows\\Fonts\\arial.ttf", 24);
+	TextRenderer textr;
+	textr.Init("C:\\Windows\\Fonts\\arial.ttf", 24);
 	
 	Vertex vertex[] = {
 		Vertex(1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
@@ -69,7 +70,8 @@ int main(int argc, char ** argv)
 		vertex[3], vertex[0], vertex[4],
 	};
 	for (int i = 6; i < 18; i += 3) {
-		glm::vec3 norm = glm::normalize(glm::cross(vertices[i + 1].Position - vertices[i].Position, vertices[i + 2].Position - vertices[i].Position));
+		glm::vec3 norm = glm::normalize(glm::cross(vertices[i + 1].Position - vertices[i].Position,
+												   vertices[i + 2].Position - vertices[i].Position));
 		vertices[i + 2].Normal = norm;
 		vertices[i + 1].Normal = norm;
 		vertices[i].Normal = norm;
@@ -80,6 +82,7 @@ int main(int argc, char ** argv)
 	};
 	
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
+	unsigned int textShader = LoadShaderProgram("text.vert.glsl", "text.frag.glsl");
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -104,13 +107,14 @@ int main(int argc, char ** argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(shader);
+		glBindVertexArray(VAO);
 		setVec3(shader, "viewPos", camera.Position);
 		setVec3(shader, "ambient", 0.2f, 0.2f, 0.2f);
 		setFloat(shader, "material.diffuse", 0.8f);
 		setFloat(shader, "material.specular", 1.0f);
 		setFloat(shader, "material.shininess", 32.0f);
 		dirLight.SetUniform(shader, "dirLight");
-		setInt(shader, "pointLightNum", pointLights.size());
+		setInt(shader, "pointLightNum", (int)pointLights.size());
 		for (int i = 0; i < pointLights.size(); i++) {
 			pointLights[i].SetUniform(shader, std::string("pointLights[") + std::to_string(i) + "]");
 		}
@@ -119,11 +123,22 @@ int main(int argc, char ** argv)
 		
 		setMat4(shader, "model", glm::translate(glm::mat4(1), glm::vec3(1.0f, 2.0f, 3.0f)));
 		setMat4(shader, "view", camera.GetViewMatrix());
-		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom),
-			(float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
+		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
 		setMat4(shader, "proj", pers);
 
 		glDrawArrays(GL_TRIANGLES, 0, 18);
+
+		glUseProgram(textShader);
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		setMat4(textShader, "model", glm::mat4(1));
+		setMat4(textShader, "view", glm::mat4(1));
+		setMat4(textShader, "proj", glm::ortho(0.0f, (float)ScrWidth, 0.0f, (float)ScrHeight));
+		textr.RenderText(textShader, "This is sample text", 20.0f, 20.0f, 0.8f, glm::vec3(0.5, 0.8f, 0.2f));
+		//textr.RenderText(textShader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -176,7 +191,8 @@ void mouse_callback(GLFWwindow* window, double xposd, double yposd)
 	float yoffset = lastY - ypos;
 	lastX = xpos;
 	lastY = ypos;
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	camera.ProcessMouseMovement(-xoffset, -yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
