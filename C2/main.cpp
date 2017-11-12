@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include "fps_camera.h"
 #include "shader.h"
@@ -14,6 +15,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xposd, double yposd);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+std::string to_string(float input, int precision);
 
 unsigned int ScrWidth = 1000;
 unsigned int ScrHeight = 800;
@@ -23,6 +25,14 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
+
+int selection = 1;
+float ambient = 0.2f;
+float diffuse = 0.8f;
+float specular = 0.4f;
+float dir_light_color = 0.5f;
+float point_light_color = 0.5f;
+float spot_light_color = 0.5f;
 
 int main(int argc, char ** argv)
 {
@@ -50,7 +60,7 @@ int main(int argc, char ** argv)
 	glEnable(GL_DEPTH_TEST);
 	TextRenderer textr;
 	textr.Init("C:\\Windows\\Fonts\\arial.ttf", 24);
-	
+
 	Vertex vertex[] = {
 		Vertex(1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f),
 		Vertex(1.0f, 0.0f,-1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f),
@@ -59,14 +69,12 @@ int main(int argc, char ** argv)
 		Vertex(0.0f, glm::sqrt(2.0f), 0.0f, 0, 0, 0,  1.0f, 1.0f, 1.0f),
 	};
 	Vertex vertices[] = {
-		vertex[0], vertex[2], vertex[1], vertex[2], vertex[0], vertex[3],
+		vertex[0], vertex[2], vertex[1],
+		vertex[2], vertex[0], vertex[3],
 
 		vertex[0], vertex[1], vertex[4],
-
 		vertex[1], vertex[2], vertex[4],
-
 		vertex[2], vertex[3], vertex[4],
-
 		vertex[3], vertex[0], vertex[4],
 	};
 	for (int i = 6; i < 18; i += 3) {
@@ -76,10 +84,11 @@ int main(int argc, char ** argv)
 		vertices[i + 1].Normal = norm;
 		vertices[i].Normal = norm;
 	}
-	DirLight dirLight(glm::vec3(1.0f, 5.0f, 2.0f));
+	DirLight dirLight(glm::vec3(1.0f, 5.0f, 2.0f), glm::vec3(dir_light_color));
 	std::vector<PointLight> pointLights = {
-		PointLight(glm::vec3(5.0f, 5.0f, 3.0f)),
+		PointLight(glm::vec3(5.0f, 5.0f, 3.0f), glm::vec3(point_light_color)),
 	};
+	SpotLight spotLight = SpotLight(camera.Position, camera.Front, glm::vec3(spot_light_color));
 	
 	unsigned int shader = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	unsigned int textShader = LoadShaderProgram("text.vert.glsl", "text.frag.glsl");
@@ -96,7 +105,7 @@ int main(int argc, char ** argv)
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	//std::cout << "Something..." << std::endl;
+	std::cout << "Press ''" << std::endl;
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = (float)glfwGetTime();
@@ -109,25 +118,28 @@ int main(int argc, char ** argv)
 		glUseProgram(shader);
 		glBindVertexArray(VAO);
 		setVec3(shader, "viewPos", camera.Position);
-		setVec3(shader, "ambient", 0.2f, 0.2f, 0.2f);
-		setFloat(shader, "material.diffuse", 0.8f);
-		setFloat(shader, "material.specular", 1.0f);
+		setVec3(shader, "ambient", glm::vec3(ambient));
+		setFloat(shader, "material.diffuse", diffuse);
+		setFloat(shader, "material.specular", specular);
 		setFloat(shader, "material.shininess", 32.0f);
+		dirLight.Color = glm::vec3(dir_light_color);
 		dirLight.SetUniform(shader, "dirLight");
 		setInt(shader, "pointLightNum", (int)pointLights.size());
 		for (int i = 0; i < pointLights.size(); i++) {
+			pointLights[i].Color = glm::vec3(point_light_color);
 			pointLights[i].SetUniform(shader, std::string("pointLights[") + std::to_string(i) + "]");
 		}
-		SpotLight spotLight = SpotLight(camera.Position, camera.Front);
+		spotLight.Color = glm::vec3(spot_light_color);
 		spotLight.SetUniform(shader, "spotLight");
 		
 		setMat4(shader, "model", glm::translate(glm::mat4(1), glm::vec3(1.0f, 2.0f, 3.0f)));
 		setMat4(shader, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
 		setMat4(shader, "proj", pers);
-
 		glDrawArrays(GL_TRIANGLES, 0, 18);
 
+		glm::vec3 text_green(0.5f, 0.9f, 0.4f);
+		glm::vec3 text_white(1.0f, 1.0f, 1.0f);
 		glUseProgram(textShader);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
@@ -135,14 +147,19 @@ int main(int argc, char ** argv)
 		setMat4(textShader, "model", glm::mat4(1));
 		setMat4(textShader, "view", glm::mat4(1));
 		setMat4(textShader, "proj", glm::ortho(0.0f, (float)ScrWidth, 0.0f, (float)ScrHeight));
-		textr.RenderText(textShader, "This is sample text", 20.0f, 20.0f, 0.8f, glm::vec3(0.5, 0.8f, 0.2f));
-		//textr.RenderText(textShader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
+		textr.RenderText(textShader, "Ambient", 20.0f, 60.0f, 0.8f, text_green);
+		textr.RenderText(textShader, to_string(ambient, 3), 120.0f, 60.0f, 0.8f, selection == 1 ? text_white : text_green);
+		textr.RenderText(textShader, "Diffuse", 20.0f, 40.0f, 0.8f, text_green);
+		textr.RenderText(textShader, to_string(1, 3), 120.0f, 40.0f, 0.8f, selection == 2 ? text_white : text_green);
+		textr.RenderText(textShader, "Specular", 20.0f, 20.0f, 0.8f, text_green);
+		textr.RenderText(textShader, to_string(0.5f, 3), 120.0f, 20.0f, 0.8f, selection == 3 ? text_white : text_green);
 		glDisable(GL_BLEND);
 		glDisable(GL_CULL_FACE);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	textr.~TextRenderer();
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glfwTerminate();
@@ -176,6 +193,8 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		camera.ProcessKeyboard(DOWN, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		selection
 }
 
 void mouse_callback(GLFWwindow* window, double xposd, double yposd)
@@ -192,10 +211,17 @@ void mouse_callback(GLFWwindow* window, double xposd, double yposd)
 	lastX = xpos;
 	lastY = ypos;
 	//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-	camera.ProcessMouseMovement(-xoffset, -yoffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll((float)yoffset);
+}
+
+std::string to_string(float input, int precision)
+{
+	std::ostringstream stream;
+	stream << std::fixed << std::setprecision(precision) << input;
+	return stream.str();
 }

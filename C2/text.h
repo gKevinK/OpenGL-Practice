@@ -19,6 +19,7 @@ class TextRenderer
 {
 public:
 	TextRenderer() {};
+	~TextRenderer();
 
 	void Init(const std::string & font, int size = 48);
 	void RenderText(unsigned int program, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
@@ -94,10 +95,9 @@ void TextRenderer::RenderText(unsigned int program, std::string text, GLfloat x,
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(VAO);
 
-	std::string::const_iterator c;
-	for (c = text.begin(); c != text.end(); c++)
+	for (int c = 0; c < text.size(); c++)
 	{
-		Character ch = characters[*c];
+		Character ch = characters[text[c]];
 
 		GLfloat xpos = x + ch.Bearing.x * scale;
 		GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -121,6 +121,12 @@ void TextRenderer::RenderText(unsigned int program, std::string text, GLfloat x,
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+TextRenderer::~TextRenderer()
+{
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
 #endif // !TEXT_H
