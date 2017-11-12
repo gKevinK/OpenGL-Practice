@@ -51,8 +51,8 @@ public:
 	float Constant = 1.0f;
 	float Linear = 0.09f;
 	float Quadratic = 0.032f;
-	float CutOff = glm::cos(glm::radians(10.0f));
-	float OuterCutOff = glm::cos(glm::radians(12.5f));
+	float CutOff = glm::cos(glm::radians(12.5f));
+	float OuterCutOff = glm::cos(glm::radians(15.0f));
 
 	SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 color = glm::vec3(0.5f, 0.5f, 0.5f))
 		: Position(position), Direction(direction), Color(color) {}
