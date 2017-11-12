@@ -30,7 +30,7 @@ const int selection_count = 7;
 int selection = 1;
 float ambient = 0.2f;
 float diffuse = 0.8f;
-float specular = 0.4f;
+float specular = 1.0f;
 float shininess = 6.0f;
 float dir_color = 0.5f;
 float point_color = 1.0f;
@@ -112,7 +112,6 @@ int main(int argc, char ** argv)
 		<< "    R: Up       F: Down     Q: Yaw left E: Yaw right" << std::endl
 		<< std::endl
 		<< "Press arrow keys to change the configuration." << std::endl;
-	
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = (float)glfwGetTime();

@@ -13,12 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="资源文件\texture">
+      <UniqueIdentifier>{b71dbbde-ec35-4ff3-8f75-a43c98510e45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.vert.glsl">
       <Filter>资源文件</Filter>
     </None>
     <None Include="main.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="text.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="text.vert.glsl">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
@@ -29,12 +38,21 @@
     <ClCompile Include="..\source\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fps_camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="text.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
