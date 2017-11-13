@@ -73,8 +73,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
 	vec3 lightDir = normalize(light.position - fragPos);
 	float diff = max(dot(normal, lightDir), 0.0);
-	float spec = BlinnPhong(normal, lightDir, viewDir, mat
-        erial.shininess);
+	float spec = BlinnPhong(normal, lightDir, viewDir, material.shininess);
 	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance +
 		light.quadratic * (distance * distance));
