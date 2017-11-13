@@ -23,34 +23,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fps_camera.h">
+    <ClInclude Include="..\shared\shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vertex.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="text.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="main.vert.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="main.frag.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="text.frag.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="text.vert.glsl">
-      <Filter>资源文件</Filter>
-    </None>
   </ItemGroup>
 </Project>
