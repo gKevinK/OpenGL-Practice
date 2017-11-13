@@ -23,7 +23,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\shader.h">
+    <None Include="main.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="main.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

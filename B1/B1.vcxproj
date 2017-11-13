@@ -147,7 +147,13 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\shader.h" />
+    <None Include="main.frag.glsl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="main.vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
