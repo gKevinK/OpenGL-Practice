@@ -5,6 +5,7 @@
 #include <stb_image.h>
 #include <iostream>
 #include <list>
+#include <algorithm>
 #include "shader.h"
 
 class Star
@@ -14,15 +15,23 @@ public:
     glm::vec3 Color;
     float GenTime;
     float CurrentTime;
+    int Mode;
 
     Star() {}
 
-    Star(glm::vec3 direction, glm::vec3 color, float genTime)
-        : Dir(direction), Color(color), GenTime(genTime) {}
+    Star(glm::vec3 direction, glm::vec3 color, float genTime, int mode)
+        : Dir(direction), Color(color), GenTime(genTime), Mode(mode) {}
 
-    glm::vec3 Position(int mode = 1)
+    glm::vec3 Position()
     {
-        return Dir * (CurrentTime - GenTime);
+        if (Mode == 0)
+            return Dir * (CurrentTime - GenTime);
+        else if (Mode == 1)
+            return Dir * glm::exp(CurrentTime - GenTime) / 5.0f;
+        else if (Mode == 2)
+            return Dir * glm::sqrt(CurrentTime - GenTime) * 4.0f;
+        //else if (Mode == 3)
+        //    return Dir * glm::log(CurrentTime - GenTime + 1.0f) * 2.5f;
     }
 
     glm::vec3 GetColor()
@@ -48,7 +57,8 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-int mode;
+int mode = 0;
+int sign = 1;
 
 int main(int argc, char ** argv)
 {
@@ -81,7 +91,7 @@ int main(int argc, char ** argv)
         0.5f, -0.5f, 1.0f, 0.0f,
     };
     std::list<Star> stars;
-    stars.push_back(Star(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0));
+    stars.push_back(Star(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0, mode));
 
     unsigned int shader = loadShaderProgram("main.vert.glsl", "main.frag.glsl");
     unsigned VAO, VBO, Texture;
@@ -98,10 +108,14 @@ int main(int argc, char ** argv)
     glActiveTexture(GL_TEXTURE0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    std::cout << "Press 'Q' to switch the spiral." << std::endl
+        << "Press 'W' to reverse." << std::endl << std::endl;
+    std::cout << "Archimedean spiral" << std::endl;
+
     glm::vec3 lastDir = glm::vec3(1.0f, 0.0f, 0.0f);
     float lastTime = 0;
     float genDelta = 2.0f / 16;
-    float angleDelta = glm::radians(360.0f / 16);
+    float angleDelta = -glm::radians(360.0f / 16);
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
@@ -112,8 +126,14 @@ int main(int argc, char ** argv)
         while (currentFrame - lastTime > genDelta) {
             lastTime += genDelta;
             lastDir = glm::mat3(glm::rotate(glm::mat4(1),
-                angleDelta, glm::vec3(0.0f, 0.0f, 1.0f))) * lastDir;
-            stars.push_back(Star(lastDir, glm::vec3(1.0f, 1.0f, 1.0f), lastTime));
+                sign * angleDelta, glm::vec3(0.0f, 0.0f, 1.0f))) * lastDir;
+            float i = lastTime / genDelta / 16 - std::floorf(lastTime / genDelta / 16);
+            float r = std::min(1.0f, std::max(0.0f, std::max(6 * i - 4, 2 - 6 * i))) * 0.8f + 0.2f;
+            float g = std::min(1.0f, std::max(0.0f, std::min(6 * i - 0, 4 - 6 * i))) * 0.8f + 0.2f;
+            float b = std::min(1.0f, std::max(0.0f, std::min(6 * i - 2, 6 - 6 * i))) * 0.8f + 0.2f;
+            stars.push_back(Star(lastDir, glm::vec3(r, g, b), lastTime, mode));
+            if (mode == 2)
+                stars.push_back(Star(-lastDir, glm::vec3(r, g, b), lastTime, mode));
         }
         while (!stars.empty() && currentFrame - stars.front().GenTime > 8.0) {
             stars.pop_front();
@@ -138,9 +158,8 @@ int main(int argc, char ** argv)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    //textr.~TextRenderer();
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
     glfwTerminate();
     return 0;
 }
@@ -152,10 +171,38 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+bool q_pressed = false;
+bool w_pressed = false;
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (!q_pressed && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        mode = (mode + 1) % 3;
+        std::cout << std::endl;
+        switch (mode)
+        {
+        case 0:
+            std::cout << "Archimedean spiral" << std::endl;
+            break;
+        case 1:
+            std::cout << "Logarithmic spiral" << std::endl;
+            break;
+        case 2:
+            std::cout << "Fermat's spiral" << std::endl;
+            break;
+        case 3:
+            std::cout << "Some spiral" << std::endl;
+            break;
+        default:
+            break;
+        }
+    }
+    q_pressed = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
+    if (!w_pressed && glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        sign = -sign;
+    }
+    w_pressed = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
 }
 
 unsigned int loadTexture(const std::string & path)
