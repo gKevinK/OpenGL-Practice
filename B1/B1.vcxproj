@@ -69,7 +69,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -83,6 +94,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -99,6 +111,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -119,6 +132,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -139,11 +153,13 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\glad.c" />
+    <ClCompile Include="..\shared\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

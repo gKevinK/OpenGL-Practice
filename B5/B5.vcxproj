@@ -95,6 +95,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -111,6 +112,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -131,6 +133,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -151,6 +154,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
 xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

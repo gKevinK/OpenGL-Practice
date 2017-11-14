@@ -81,6 +81,11 @@
       <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;freetype271.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
+xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,6 +98,11 @@
       <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;freetype271.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
+xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -109,6 +119,11 @@
       <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;freetype271.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
+xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -125,6 +140,11 @@
       <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;freetype271.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
+xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="main.frag.glsl" />
