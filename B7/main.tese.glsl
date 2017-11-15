@@ -5,6 +5,7 @@ layout(quads, equal_spacing, cw) in;
 //out vec3 teNormal;
 
 uniform mat4 model;
+uniform mat4 view;
 uniform mat4 proj;
 
 void main()
@@ -31,5 +32,5 @@ void main()
     vec4 a = mix(p00, p30, u);
     vec4 b = mix(p03, p33, u);
     vec4 c = mix(a, b, v);
-    gl_Position = proj * model * c;
+    gl_Position = proj * view * model * c;
 }

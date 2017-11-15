@@ -7,6 +7,7 @@
 #include <list>
 #include <algorithm>
 #include "shader.h"
+#include "view_camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -19,6 +20,7 @@ float lastY = ScrHeight / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 int main(int argc, char ** argv)
 {
@@ -95,8 +97,11 @@ int main(int argc, char ** argv)
         glBindVertexArray(VAO);
         setFloat(shader, "outerLevel", 8.0f);
         setFloat(shader, "innerLevel", 8.0f);
-        setMat4(shader, "model", glm::mat4(1.0f));
-        setMat4(shader, "proj", glm::ortho(-5.0f / ScrHeight * ScrWidth, 5.0f / ScrHeight * ScrWidth, -5.0f, 5.0f));
+        setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
+        setMat4(shader, "view", camera.GetViewMatrix());
+        setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
+        //setMat4(shader, "view", glm::mat4(1.0f));
+        //setMat4(shader, "proj", glm::ortho(-5.0f / ScrHeight * ScrWidth, 5.0f / ScrHeight * ScrWidth, -5.0f, 5.0f));
         
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glPatchParameteri(GL_PATCH_VERTICES, 16);
@@ -122,6 +127,18 @@ void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessInput(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessInput(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessInput(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessInput(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+        camera.ProcessInput(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+        camera.ProcessInput(DOWN, deltaTime);
 }
 
 unsigned int loadTexture(const std::string & path)
