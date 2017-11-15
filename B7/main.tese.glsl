@@ -2,7 +2,7 @@
 
 layout(quads, equal_spacing, cw) in;
 
-//out vec3 teNormal;
+out vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -32,5 +32,6 @@ void main()
     vec4 a = mix(p00, p30, u);
     vec4 b = mix(p03, p33, u);
     vec4 c = mix(a, b, v);
+	TexCoord = vec2(u, v);
     gl_Position = proj * view * model * c;
 }

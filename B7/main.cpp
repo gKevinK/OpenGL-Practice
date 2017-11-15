@@ -12,6 +12,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 unsigned int loadTexture(const std::string & path);
+void loadBezierData(unsigned int vertices[], const std::string & path);
 
 unsigned int ScrWidth = 1000;
 unsigned int ScrHeight = 800;
@@ -64,8 +65,8 @@ int main(int argc, char ** argv)
         3.0f, 3.0f, 0.0f,
     };
 
+
     unsigned int shader = loadShaderProgram("main.vert.glsl", "main.tesc.glsl", "main.tese.glsl", "main.frag.glsl");
-    //unsigned int shader = loadShaderProgram("main.vert.glsl", "main.frag.glsl");
     unsigned VAO, VBO, Texture;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -76,9 +77,9 @@ int main(int argc, char ** argv)
     glEnableVertexAttribArray(0);
     //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     //glEnableVertexAttribArray(1);
-    //Texture = loadTexture("resource\\???");
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    Texture = loadTexture("resource\\texture.png");
+    glActiveTexture(GL_TEXTURE0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //std::cout << "Press 'Q' to switch the spiral." << std::endl
     //    << "Press 'W' to reverse." << std::endl << std::endl;
@@ -100,10 +101,9 @@ int main(int argc, char ** argv)
         setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
-        //setMat4(shader, "view", glm::mat4(1.0f));
-        //setMat4(shader, "proj", glm::ortho(-5.0f / ScrHeight * ScrWidth, 5.0f / ScrHeight * ScrWidth, -5.0f, 5.0f));
+        setInt(shader, "tex", 0);
         
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        
         glPatchParameteri(GL_PATCH_VERTICES, 16);
         glDrawArrays(GL_PATCHES, 0, 16);
 
@@ -169,4 +169,9 @@ unsigned int loadTexture(const std::string & path)
         stbi_image_free(data);
     }
     return textureID;
+}
+
+void loadBezierData(unsigned int vertices[], const std::string & path)
+{
+
 }
