@@ -22,6 +22,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+bool needReload = false;
 
 int main(int argc, char ** argv)
 {
@@ -96,6 +97,13 @@ int main(int argc, char ** argv)
 
         glUseProgram(shader);
         glBindVertexArray(VAO);
+        if (needReload) {
+            loadBezierData(vertices, "resource\\bezier.txt");
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            needReload = false;
+        }
         setFloat(shader, "outerLevel", 8.0f);
         setFloat(shader, "innerLevel", 8.0f);
         setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
@@ -122,6 +130,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+bool space_pressed = false;
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -138,6 +147,9 @@ void processInput(GLFWwindow *window)
         camera.ProcessInput(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         camera.ProcessInput(DOWN, deltaTime);
+    if (!space_pressed && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        needReload = true;
+    space_pressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
 }
 
 unsigned int loadTexture(const std::string & path)
