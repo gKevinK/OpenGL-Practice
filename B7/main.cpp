@@ -12,7 +12,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 unsigned int loadTexture(const std::string & path);
-void loadBezierData(unsigned int vertices[], const std::string & path);
+void loadBezierData(float vertices[], const std::string & path);
 
 unsigned int ScrWidth = 1000;
 unsigned int ScrHeight = 800;
@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
         2.0f, 3.0f, 0.0f,
         3.0f, 3.0f, 0.0f,
     };
-
+    loadBezierData(vertices, "resource\\bezier.txt");
 
     unsigned int shader = loadShaderProgram("main.vert.glsl", "main.tesc.glsl", "main.tese.glsl", "main.frag.glsl");
     unsigned VAO, VBO, Texture;
@@ -102,7 +102,6 @@ int main(int argc, char ** argv)
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
         setInt(shader, "tex", 0);
-        
         
         glPatchParameteri(GL_PATCH_VERTICES, 16);
         glDrawArrays(GL_PATCHES, 0, 16);
@@ -171,7 +170,23 @@ unsigned int loadTexture(const std::string & path)
     return textureID;
 }
 
-void loadBezierData(unsigned int vertices[], const std::string & path)
+void loadBezierData(float vertices[], const std::string & path)
 {
-
+    std::ifstream fileStream;
+    std::string code;
+    fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        fileStream.open(path);
+        for (int i = 0; i < 16; i++) {
+            float x, y, z;
+            fileStream >> x >> y >> z;
+            vertices[i * 3] = x;
+            vertices[i * 3 + 1] = y;
+            vertices[i * 3 + 2] = z;
+        }
+        fileStream.close();
+    } catch (std::ifstream::failure e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+        std::cout << path << std::endl;
+    }
 }

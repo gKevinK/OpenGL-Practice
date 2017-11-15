@@ -97,50 +97,32 @@ unsigned loadShader(GLenum SHADER, const char * path, const std::string & type)
     return shader;
 }
 
-unsigned int loadShaderProgram(const char *vertexPath, const char *fragmentPath, const char *geometryPath = nullptr)
+unsigned int loadShaderProgram(const char *vert_path, const char *frag_path, const char *geom_path = nullptr)
 {
-    std::string vertexCode = loadFile(vertexPath);
-    std::string fragmentCode = loadFile(fragmentPath);
-    const char *pvertCode = vertexCode.c_str();
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &pvertCode, NULL);
-    glCompileShader(vertexShader);
-    checkCompileErrors(vertexShader, "VERTEX");
-    const char *pfragCode = fragmentCode.c_str();
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &pfragCode, NULL);
-    glCompileShader(fragmentShader);
-    checkCompileErrors(fragmentShader, "FRAGMENT");
-    unsigned int geomShader;
-    if (geometryPath != nullptr) {
-        std::string geometryCode = loadFile(geometryPath);
-        const char *pgeomCode = geometryCode.c_str();
-        geomShader = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(geomShader, 1, &pgeomCode, NULL);
-        glCompileShader(geomShader);
-        checkCompileErrors(geomShader, "GEOMETRY");
-    }
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    if (geometryPath != nullptr) {
-        glAttachShader(shaderProgram, geomShader);
-    }
-    glLinkProgram(shaderProgram);
-    checkCompileErrors(shaderProgram, "PROGRAM");
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    if (geometryPath != nullptr) {
-        glDeleteShader(geomShader);
-    }
-    return shaderProgram;
+    unsigned int vert = loadShader(GL_VERTEX_SHADER, vert_path, "VERTEX");
+    unsigned int geom = 0;
+    if (geom_path != nullptr)
+        geom = loadShader(GL_GEOMETRY_SHADER, geom_path, "GEOMETRY");
+    unsigned int frag = loadShader(GL_FRAGMENT_SHADER, frag_path, "FRAGMENT");
+    unsigned int program = glCreateProgram();
+    glAttachShader(program, vert);
+    if (geom_path != nullptr)
+        glAttachShader(program, geom);
+    glAttachShader(program, frag);
+    glLinkProgram(program);
+    checkCompileErrors(program, "PROGRAM");
+    glDeleteShader(vert);
+    if (geom_path != nullptr)
+        glDeleteShader(geom);
+    glDeleteShader(frag);
+    return program;
 }
 
 unsigned int loadShaderProgram(const char *vert_path, const char *tes_c_path, const char * tes_e_path, const char *frag_path)
 {
     unsigned int vert = loadShader(GL_VERTEX_SHADER, vert_path, "VERTEX");
-    unsigned int tesc = loadShader(GL_TESS_CONTROL_SHADER, tes_c_path, "TESSELLATION CONTROL");
-    unsigned int tese = loadShader(GL_TESS_EVALUATION_SHADER, tes_e_path, "TESSELLATIOIN EVALUATOIN");
+    unsigned int tesc = loadShader(GL_TESS_CONTROL_SHADER, tes_c_path, "TESS CONTROL");
+    unsigned int tese = loadShader(GL_TESS_EVALUATION_SHADER, tes_e_path, "TESS EVALUATION");
     unsigned int frag = loadShader(GL_FRAGMENT_SHADER, frag_path, "FRAGMENT");
     unsigned int program = glCreateProgram();
     glAttachShader(program, vert);
