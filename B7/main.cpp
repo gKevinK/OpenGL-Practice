@@ -23,6 +23,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 bool needReload = false;
+float level = 4.0f;
 
 int main(int argc, char ** argv)
 {
@@ -104,8 +105,8 @@ int main(int argc, char ** argv)
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             needReload = false;
         }
-        setFloat(shader, "outerLevel", 8.0f);
-        setFloat(shader, "innerLevel", 8.0f);
+        setFloat(shader, "outerLevel", level);
+        setFloat(shader, "innerLevel", level);
         setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
@@ -131,6 +132,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 bool space_pressed = false;
+bool z_pressed = false;
+bool x_pressed = false;
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -150,6 +153,12 @@ void processInput(GLFWwindow *window)
     if (!space_pressed && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         needReload = true;
     space_pressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
+    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1.0f)
+        level -= 1.0f;
+    z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
+    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        level += 1.0f;
+    x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
 }
 
 unsigned int loadTexture(const std::string & path)
