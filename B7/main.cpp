@@ -26,8 +26,7 @@ float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 bool needReload = false;
 bool lineMode = false;
-int level = 4;
-float holdTime = 0.0f;
+float level = 4.0f;
 
 int main(int argc, char ** argv)
 {
@@ -97,7 +96,7 @@ int main(int argc, char ** argv)
         << "Press 'Space' to reload the Bezier surface data from file" << std::endl
         << "Press 'Z' and 'X' to decrease or increase tessellation level" << std::endl
         << "Press 'C' to switch line mode" << std::endl << std::endl;
-    std::cout << "Level: " << level;
+    std::cout << "Level: " << glm::round(level * 10) / 10.0f;
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
@@ -117,8 +116,8 @@ int main(int argc, char ** argv)
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             needReload = false;
         }
-        setFloat(shader, "outerLevel", (float)level);
-        setFloat(shader, "innerLevel", (float)level);
+        setFloat(shader, "outerLevel", level);
+        setFloat(shader, "innerLevel", level);
         setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
@@ -185,27 +184,21 @@ void processInput(GLFWwindow *window)
         lineMode = !lineMode;
     c_pressed = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
     if (/*!z_pressed && */glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1) {
-        holdTime += deltaTime * 5;
-        if (holdTime > 1) {
-            holdTime = 0;
-            if (level <= 2)
-                level -= 1;
-            else
-                level -= 2;
-            std::cout << "\rLevel: " << level;
-        }
+        if (level <= 20.0f)
+            level -= deltaTime * 5.0f;
+        else
+            level -= deltaTime * 10.0f;
+        level = level <= 1.0f ? 1.0f : level;
+        std::cout << "\rLevel: " << glm::floor(level * 10) / 10.0f << "    ";
     }
     //z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
     if (/*!x_pressed && */glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && level < 40) {
-        holdTime += deltaTime * 5;
-        if (holdTime > 1) {
-            holdTime = 0;
-            if (level < 20)
-                level += 1;
-            else
-                level += 2;
-            std::cout << "\rLevel: " << level;
-        }
+        if (level < 20.0f)
+            level += deltaTime * 5.0f;
+        else
+            level += deltaTime * 10.0f;
+        level = level >= 40.0f ? 40.0f : level;
+        std::cout << "\rLevel: " << glm::floor(level * 10) / 10.0f << "    ";
     }
     //x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
 }
