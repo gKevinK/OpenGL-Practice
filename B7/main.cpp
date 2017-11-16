@@ -23,6 +23,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 bool needReload = false;
+bool lineMode = false;
 float level = 4.0f;
 
 int main(int argc, char ** argv)
@@ -93,7 +94,7 @@ int main(int argc, char ** argv)
         lastFrame = currentFrame;
         processInput(window);
 
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shader);
@@ -112,6 +113,10 @@ int main(int argc, char ** argv)
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
         setInt(shader, "tex", 0);
         
+        if (lineMode)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glPatchParameteri(GL_PATCH_VERTICES, 16);
         glDrawArrays(GL_PATCHES, 0, 16);
 
@@ -132,6 +137,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 bool space_pressed = false;
+bool c_pressed = false;
 bool z_pressed = false;
 bool x_pressed = false;
 void processInput(GLFWwindow *window)
@@ -153,11 +159,24 @@ void processInput(GLFWwindow *window)
     if (!space_pressed && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         needReload = true;
     space_pressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
-    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1.0f)
-        level -= 1.0f;
+    if (!c_pressed && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        lineMode = !lineMode;
+    c_pressed = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
+    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1.0f) {
+        if (level <= 20.0f)
+            level -= 1.0f;
+        else
+            level -= 2.0f;
+        std::cout << "Level: " << (int)level << std::endl;
+    }
     z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
-    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-        level += 1.0f;
+    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && level < 40.0f) {
+        if (level < 20.0f)
+            level += 1.0f;
+        else
+            level += 2.0f;
+        std::cout << "Level: " << (int)level << std::endl;
+    }
     x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
 }
 
