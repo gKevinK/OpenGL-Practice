@@ -27,6 +27,7 @@ Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f))
 bool needReload = false;
 bool lineMode = false;
 int level = 4;
+float holdTime = 0.0f;
 
 int main(int argc, char ** argv)
 {
@@ -36,7 +37,7 @@ int main(int argc, char ** argv)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    GLFWwindow* window = glfwCreateWindow(ScrWidth, ScrHeight, "C-2", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(ScrWidth, ScrHeight, "B-7", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -95,8 +96,8 @@ int main(int argc, char ** argv)
     std::cout
         << "Press 'Space' to reload the Bezier surface data from file" << std::endl
         << "Press 'Z' and 'X' to decrease or increase tessellation level" << std::endl
-        << "Press 'C' to switch line mode" << std::endl;
-    std::cout << "Level: " << level << std::endl;
+        << "Press 'C' to switch line mode" << std::endl << std::endl;
+    std::cout << "Level: " << level;
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
@@ -127,7 +128,7 @@ int main(int argc, char ** argv)
         setVec3(shader, "ambient", glm::vec3(0.2f));
         setFloat(shader, "material.diffuse", 0.8f);
         setFloat(shader, "material.specular", 1.0f);
-        setFloat(shader, "material.shininess", std::pow(2, 64));
+        setFloat(shader, "material.shininess", 64.0f);
         dirLight.SetUniform(shader, "dirLight");
         setInt(shader, "pointLightNum", (int)pointLights.size());
         for (int i = 0; i < pointLights.size(); i++) {
@@ -159,8 +160,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 bool space_pressed = false;
 bool c_pressed = false;
-bool z_pressed = false;
-bool x_pressed = false;
+//bool z_pressed = false;
+//bool x_pressed = false;
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -183,22 +184,30 @@ void processInput(GLFWwindow *window)
     if (!c_pressed && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         lineMode = !lineMode;
     c_pressed = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
-    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1) {
-        if (level <= 2)
-            level -= 1;
-        else
-            level -= 2;
-        std::cout << "Level: " << (int)level << std::endl;
+    if (/*!z_pressed && */glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1) {
+        holdTime += deltaTime * 5;
+        if (holdTime > 1) {
+            holdTime = 0;
+            if (level <= 2)
+                level -= 1;
+            else
+                level -= 2;
+            std::cout << "\rLevel: " << level;
+        }
     }
-    z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
-    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && level < 40) {
-        if (level < 20)
-            level += 1;
-        else
-            level += 2;
-        std::cout << "Level: " << (int)level << std::endl;
+    //z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
+    if (/*!x_pressed && */glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && level < 40) {
+        holdTime += deltaTime * 5;
+        if (holdTime > 1) {
+            holdTime = 0;
+            if (level < 20)
+                level += 1;
+            else
+                level += 2;
+            std::cout << "\rLevel: " << level;
+        }
     }
-    x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
+    //x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
 }
 
 unsigned int loadTexture(const std::string & path)
