@@ -2,6 +2,7 @@
 
 layout(quads, equal_spacing, cw) in;
 
+out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoord;
 
@@ -39,7 +40,7 @@ void main()
     float y = dot(bbu * maty, bbv);
     float z = dot(bbu * matz, bbv);
     gl_Position = proj * view * model * vec4(x, y, z, 1.0);
-
+    FragPos = vec3(x, y, z);
 	TexCoord = vec2(u, v);
     
     vec4 dbu = D * bu;

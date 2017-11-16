@@ -4,10 +4,12 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <stb_image.h>
 #include <iostream>
+#include <vector>
 #include <list>
 #include <algorithm>
 #include "shader.h"
 #include "view_camera.h"
+#include "light.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -24,7 +26,7 @@ float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 bool needReload = false;
 bool lineMode = false;
-float level = 4.0f;
+int level = 4;
 
 int main(int argc, char ** argv)
 {
@@ -69,6 +71,12 @@ int main(int argc, char ** argv)
     };
     loadBezierData(vertices, "resource\\bezier.txt");
 
+    DirLight dirLight(glm::vec3(1.0f, 5.0f, 2.0f));
+    std::vector<PointLight> pointLights = {
+        PointLight(glm::vec3(3.0f, 3.0f, 3.0f)),
+    };
+    //SpotLight spotLight = SpotLight(camera.Position, glm::vec3(0.0f, 0.0f, 0.0f));
+
     unsigned int shader = loadShaderProgram("main.vert.glsl", "main.tesc.glsl", "main.tese.glsl", "main.frag.glsl");
     unsigned VAO, VBO, Texture;
     glGenVertexArrays(1, &VAO);
@@ -78,15 +86,17 @@ int main(int argc, char ** argv)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)NULL);
     glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(1);
     Texture = loadTexture("resource\\texture.png");
     glActiveTexture(GL_TEXTURE0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    //std::cout << "Press 'Q' to switch the spiral." << std::endl
-    //    << "Press 'W' to reverse." << std::endl << std::endl;
-    //std::cout << "Archimedean spiral" << std::endl;
+    std::cout
+        << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl << std::endl;
+    std::cout
+        << "Press 'Space' to reload the Bezier surface data from file" << std::endl
+        << "Press 'Z' and 'X' to decrease or increase tessellation level" << std::endl
+        << "Press 'C' to switch line mode" << std::endl;
+    std::cout << "Level: " << level << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
@@ -94,7 +104,7 @@ int main(int argc, char ** argv)
         lastFrame = currentFrame;
         processInput(window);
 
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shader);
@@ -106,12 +116,23 @@ int main(int argc, char ** argv)
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             needReload = false;
         }
-        setFloat(shader, "outerLevel", level);
-        setFloat(shader, "innerLevel", level);
+        setFloat(shader, "outerLevel", (float)level);
+        setFloat(shader, "innerLevel", (float)level);
         setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
         setInt(shader, "tex", 0);
+
+        setVec3(shader, "viewPos", camera.Position);
+        setVec3(shader, "ambient", glm::vec3(0.2f));
+        setFloat(shader, "material.diffuse", 0.8f);
+        setFloat(shader, "material.specular", 1.0f);
+        setFloat(shader, "material.shininess", std::pow(2, 64));
+        dirLight.SetUniform(shader, "dirLight");
+        setInt(shader, "pointLightNum", (int)pointLights.size());
+        for (int i = 0; i < pointLights.size(); i++) {
+            pointLights[i].SetUniform(shader, std::string("pointLights[") + std::to_string(i) + "]");
+        }
         
         if (lineMode)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -162,19 +183,19 @@ void processInput(GLFWwindow *window)
     if (!c_pressed && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         lineMode = !lineMode;
     c_pressed = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
-    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1.0f) {
-        if (level <= 20.0f)
-            level -= 1.0f;
+    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS && level > 1) {
+        if (level <= 2)
+            level -= 1;
         else
-            level -= 2.0f;
+            level -= 2;
         std::cout << "Level: " << (int)level << std::endl;
     }
     z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
-    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && level < 40.0f) {
-        if (level < 20.0f)
-            level += 1.0f;
+    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && level < 40) {
+        if (level < 20)
+            level += 1;
         else
-            level += 2.0f;
+            level += 2;
         std::cout << "Level: " << (int)level << std::endl;
     }
     x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;

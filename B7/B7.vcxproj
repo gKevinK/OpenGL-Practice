@@ -170,6 +170,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     <None Include="main.vert.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="light.h" />
     <ClInclude Include="view_camera.h" />
     <ClInclude Include="shader.h" />
   </ItemGroup>
