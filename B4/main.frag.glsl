@@ -34,13 +34,14 @@ struct DirLight {
 //	float outerCutOff;
 //};
 
+uniform bool useLight;
 uniform int pointLightNum;
 uniform vec3 viewPos;
 uniform vec3 ambient;
 uniform vec3 color;
 uniform DirLight dirLight;
 uniform PointLight pointLights[8];
-uniform SpotLight spotLight;
+//uniform SpotLight spotLight;
 uniform Material material;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -50,16 +51,19 @@ float BlinnPhong(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess);
 
 void main()
 {
-	vec3 norm = normalize(Normal);
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec3 result = ambient * material.diffuse;
-	result += CalcDirLight(dirLight, norm, viewDir);
-	for (int i = 0; i < pointLightNum; i++) {
-		result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
-	}
-	//result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
-    result = vec3(1.0, 1.0, 1.0);
-	FragColor = vec4(result * color, 1.0);
+    if (useLight) {
+        vec3 norm = normalize(Normal);
+        vec3 viewDir = normalize(viewPos - FragPos);
+        vec3 result = ambient * material.diffuse;
+        result += CalcDirLight(dirLight, norm, viewDir);
+        for (int i = 0; i < pointLightNum; i++) {
+            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+        }
+        //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+        FragColor = vec4(result * color, 1.0);
+    } else {
+        FragColor = vec4(color, 1.0);
+    }
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

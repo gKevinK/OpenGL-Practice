@@ -25,7 +25,7 @@ float lastY = ScrHeight / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 int drawMode = 0;
 bool light = true;
 glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -53,10 +53,13 @@ int main(int argc, char ** argv)
     }
     glEnable(GL_DEPTH_TEST);
 
-    float vertices[] = {
+    std::vector<float> vertices = {
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
         1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
         0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+    };
+    std::vector<unsigned int> indices = {
+        0, 1, 2,
     };
 
     DirLight dirLight(glm::vec3(0.0f, 5.0f, 0.0f));
@@ -66,22 +69,14 @@ int main(int argc, char ** argv)
     //SpotLight spotLight = SpotLight(camera.Position, glm::vec3(0.0f, 0.0f, 0.0f));
 
     unsigned int shader = loadShaderProgram("main.vert.glsl", "main.frag.glsl");
-    unsigned VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)NULL);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glUseProgram(shader);
+    Mesh mesh;
+    mesh.LoadFile("resource\\eight.uniform.obj");
+    mesh.SetMesh();
+    mesh.SetData(false);
 
-    //std::cout
-    //    << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl << std::endl;
+    std::cout
+        << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl << std::endl;
     //std::cout
     //    << "Press 'Space' to reload the Bezier surface data from file" << std::endl
     //    << "Press 'Z' and 'X' to decrease or increase tessellation level" << std::endl
@@ -97,12 +92,12 @@ int main(int argc, char ** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shader);
-        glBindVertexArray(VAO);
+        glBindVertexArray(mesh.VAO);
         setMat4(shader, "model", glm::mat4(1.0f));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
 
-        setBool(shader, "light", light);
+        setVec3(shader, "color", color);
         setVec3(shader, "viewPos", camera.Position);
         setVec3(shader, "ambient", glm::vec3(0.2f));
         setFloat(shader, "material.diffuse", 0.8f);
@@ -118,24 +113,36 @@ int main(int argc, char ** argv)
         {
         case 0:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            setBool(shader, "useLight", false);
+            mesh.Draw(GL_TRIANGLES);
             break;
         case 1:
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            setBool(shader, "useLight", false);
+            glPointSize(2.0f);
+            mesh.Draw(GL_POINTS);
             break;
         case 2:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            setBool(shader, "useLight", light);
+            mesh.Draw(GL_TRIANGLES);
             break;
         case 3:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            setBool(shader, "useLight", false);
+            mesh.Draw(GL_TRIANGLES);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            setBool(shader, "useLight", light);
+            mesh.Draw(GL_TRIANGLES);
             break;
         default:
             break;
         }
-        // glDrawElements
+        
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
     glfwTerminate();
     return 0;
 }
@@ -147,6 +154,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+bool z_pressed = false;
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -163,6 +171,9 @@ void processInput(GLFWwindow *window)
         camera.ProcessInput(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         camera.ProcessInput(DOWN, deltaTime);
+    if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        drawMode = (drawMode + 1) % 4;
+    z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
 }
 
 void mouse_callback(GLFWwindow* window, double xposd, double yposd)
