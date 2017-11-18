@@ -24,7 +24,7 @@ public:
     glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     float Distance;
     float MovementSpeed = 2.5f;
-    float MouseSensitivity = 0.1f;
+    float MouseSensitivity = 0.01f;
     bool KeepUp = true;
 
     Camera(glm::vec3 position, glm::vec3 lookAt, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f))
@@ -57,17 +57,17 @@ public:
             Position += Right * velocity;
             break;
         case UP:
-            if (KeepUp && glm::dot(Up, WorldUp) < 0.02f) break;
+            if (KeepUp && (Position - LookAt).y > 0 && glm::dot(Up, WorldUp) < 0.05f) break;
             Position += Up * velocity;
             break;
         case DOWN:
-            if (KeepUp && glm::dot(Up, WorldUp) < 0.02f) break;
+            if (KeepUp && (Position - LookAt).y < 0 && glm::dot(Up, WorldUp) < 0.05f) break;
             Position -= Up * velocity;
             break;
         default:
             break;
         }
-        Position = glm::normalize(Position) * Distance;
+        Position = glm::normalize(Position - LookAt) * Distance + LookAt;
         if (KeepUp)
             Right = glm::normalize(glm::cross(LookAt - Position, WorldUp));
         else
@@ -80,11 +80,11 @@ public:
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
         
-        if (!KeepUp || glm::dot(Up, WorldUp) >= 0.05f)
-            Position += Up * yoffset;
-        Position += Right * xoffset;
+        if (!KeepUp || (Position - LookAt).y * yoffset > 0 || glm::dot(Up, WorldUp) >= 0.05f)
+            Position -= Up * yoffset;
+        Position -= Right * xoffset;
 
-        Position = glm::normalize(Position) * Distance;
+        Position = glm::normalize(Position - LookAt) * Distance + LookAt;
         if (KeepUp)
             Right = glm::normalize(glm::cross(LookAt - Position, WorldUp));
         else
@@ -98,7 +98,7 @@ public:
         if (Distance <= 1.0f)
             Distance = 1.0f;
         if (Distance >= 20.0f)
-            Distance = 45.0f;
+            Distance = 20.0f;
     }
 };
 

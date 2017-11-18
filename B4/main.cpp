@@ -52,6 +52,8 @@ int main(int argc, char ** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
@@ -69,7 +71,7 @@ int main(int argc, char ** argv)
         0, 1, 2,
     };
 
-    DirLight dirLight(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f));
+    DirLight dirLight(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f));
     std::vector<PointLight> pointLights = {
         PointLight(glm::vec3(3.0f, 3.0f, 3.0f)),
     };
