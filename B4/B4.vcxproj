@@ -166,6 +166,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
   <ItemGroup>
     <ClCompile Include="..\shared\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main.vert.glsl" />
