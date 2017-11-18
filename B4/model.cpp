@@ -36,7 +36,7 @@ void Mesh::SetData(bool interp)
             Vertex * v1 = f->edge->vertex;
             Vertex * v2 = f->edge->next->vertex;
             Vertex * v3 = f->edge->next->next->vertex;
-            glm::vec3 norm = glm::cross(v3->position - v2->position, v2->position - v1->position);
+            glm::vec3 norm = glm::cross(v2->position - v1->position, v3->position - v2->position);
             v1->normal += norm;
             v2->normal += norm;
             v3->normal += norm;
@@ -98,24 +98,23 @@ void Mesh::LoadFile(const std::string & path)
 {
     vertexes.push_back(new Vertex());
     std::ifstream fileStream;
-    std::string file;
+    std::string line;
     try {
         fileStream.open(path);
         std::string line;
         while (std::getline(fileStream, line)) {
-            if (line.empty()) continue;
-            if (line[0] == '#') continue;
+            if (line.empty()) break;
             std::stringstream stream(line);
             char t;
             stream >> t;
-            if (t == 'v') {
+            if (t == '#') {}
+            else if (t == 'v') {
                 float x, y, z;
                 stream >> x >> y >> z;
                 Vertex * vert = new Vertex();
                 vert->position = glm::vec3(x, y, z);
                 vertexes.push_back(vert);
-            }
-            else if (t == 'f') {
+            } else if (t == 'f') {
                 unsigned int a, b, c;
                 stream >> a >> b >> c;
                 Face * face = new Face();
@@ -136,10 +135,12 @@ void Mesh::LoadFile(const std::string & path)
             }
         }
         fileStream.close();
-    } catch (std::ifstream::failure e) {
+    } catch (std::exception e) {
         std::cout << "ERROR::MESH::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         std::cout << path << std::endl;
+        return;
     }
+    
 }
 
 void Mesh::Draw(GLenum type)

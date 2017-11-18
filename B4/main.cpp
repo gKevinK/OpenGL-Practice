@@ -4,6 +4,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <stb_image.h>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <list>
 #include <algorithm>
@@ -17,7 +18,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xposd, double yposd);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void loadObject(const std::string & path);
+std::string to_string(float input, int precision);
 
 unsigned int ScrWidth = 1000;
 unsigned int ScrHeight = 800;
@@ -29,6 +30,7 @@ float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 int drawMode = 0;
 bool light = true;
+int selection = 0;
 glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 int main(int argc, char ** argv)
@@ -134,9 +136,11 @@ int main(int argc, char ** argv)
         case 3:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             setBool(shader, "useLight", false);
+            setVec3(shader, "color", glm::vec3(1.0f));
             mesh.Draw(GL_TRIANGLES);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             setBool(shader, "useLight", light);
+            setVec3(shader, "color", color);
             mesh.Draw(GL_TRIANGLES);
             break;
         default:
@@ -144,15 +148,24 @@ int main(int argc, char ** argv)
         }
         
         glm::vec3 text_green(0.5f, 0.9f, 0.4f);
+        glm::vec3 text_white(1.0f, 1.0f, 1.0f);
         glUseProgram(textsh);
-        glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         setMat4(textsh, "proj", glm::ortho(0.0f, (float)ScrWidth, 0.0f, (float)ScrHeight));
-        textr.RenderText(textsh, "Ambient", 20.0f, 140.0f, 0.8f, text_green);
-        textr.RenderText(textsh, to_string(ambient, 3), 120.0f, 140.0f, 0.8f, selection == 1 ? text_white : text_green);
-        textr.RenderText(textsh, "Diffuse", 20.0f, 120.0f, 0.8f, text_green);
-        textr.RenderText(textsh, to_string(diffuse, 3), 120.0f, 120.0f, 0.8f, selection == 2 ? text_white : text_green);
+        std::string modeStr = (std::vector<std::string>{ "Lines", "Points", "Triangles", "Triangles + Lines" })[drawMode];
+        textr.RenderText(textsh, "Mode :  " + modeStr, 20.0f, 90.0f, 0.8f, text_green);
+        textr.RenderText(textsh, "Red :", 20.0f, 60.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(color.r, 3), 100.0f, 60.0f, 0.8f, selection == 0 ? text_white : text_green);
+        textr.RenderText(textsh, "Green :", 20.0f, 40.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(color.g, 3), 100.0f, 40.0f, 0.8f, selection == 1 ? text_white : text_green);
+        textr.RenderText(textsh, "Blue :", 20.0f, 20.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(color.b, 3), 100.0f, 20.0f, 0.8f, selection == 2 ? text_white : text_green);
+        if (drawMode == 2 || drawMode == 3) {
+            textr.RenderText(textsh, std::string("Light : ") + (light ? "On" : "Off"), 200.0f, 20.0f, 0.8f, text_green);
+        }
+        glDisable(GL_BLEND);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -169,6 +182,26 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 bool z_pressed = false;
+bool x_pressed = false;
+bool up_pressed = false;
+bool down_pressed = false;
+void process_config(int selection, float delta)
+{
+    switch (selection)
+    {
+    case 0:
+        color.r = glm::max(0.0f, glm::min(color.r + delta, 1.0f));
+        break;
+    case 1:
+        color.g = glm::max(0.0f, glm::min(color.g + delta, 1.0f));
+        break;
+    case 2:
+        color.b = glm::max(0.0f, glm::min(color.b + delta, 1.0f));
+        break;
+    default:
+        break;
+    }
+}
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -188,6 +221,25 @@ void processInput(GLFWwindow *window)
     if (!z_pressed && glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
         drawMode = (drawMode + 1) % 4;
     z_pressed = glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS;
+    if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        light = !light;
+    x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
+    if (!up_pressed && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        selection -= 1;
+        if (selection < 0)
+            selection += 3;
+    }
+    up_pressed = glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS;
+    if (!down_pressed && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        selection = (selection + 1) % 3;
+    }
+    down_pressed = glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS;
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        process_config(selection, -deltaTime * 0.5);
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        process_config(selection, deltaTime * 0.5);
+    }
 }
 
 void mouse_callback(GLFWwindow* window, double xposd, double yposd)
@@ -212,7 +264,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll((float)yoffset);
 }
 
-void loadObject(const std::string & path)
+std::string to_string(float input, int precision)
 {
-
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(precision) << input;
+    return stream.str();
 }
