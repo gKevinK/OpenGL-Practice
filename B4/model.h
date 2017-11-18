@@ -59,7 +59,7 @@ public:
     Mesh() {};
     ~Mesh();
     void SetMesh();
-    void SetData(bool interp = false);
+    void SetData(int mode = 0);
     void LoadFile(const std::string & path);
     void Draw(GLenum type);
 

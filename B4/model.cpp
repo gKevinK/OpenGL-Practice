@@ -28,10 +28,10 @@ void Mesh::SetMesh()
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 }
 
-void Mesh::SetData(bool interp)
+void Mesh::SetData(int mode)
 {
     vertices.clear();
-    if (interp) {
+    if (mode == 1) {
         for (Face * & f : faces) {
             Vertex * v1 = f->edge->vertex;
             Vertex * v2 = f->edge->next->vertex;

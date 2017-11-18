@@ -30,6 +30,8 @@ float lastFrame = 0.0f;
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 int drawMode = 0;
 bool light = true;
+int normalMode = 1;
+bool normalModeNew = false;
 int selection = 0;
 glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -67,7 +69,7 @@ int main(int argc, char ** argv)
         0, 1, 2,
     };
 
-    DirLight dirLight(glm::vec3(0.0f, 5.0f, 0.0f));
+    DirLight dirLight(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.7f, 0.7f, 0.7f));
     std::vector<PointLight> pointLights = {
         PointLight(glm::vec3(3.0f, 3.0f, 3.0f)),
     };
@@ -79,10 +81,11 @@ int main(int argc, char ** argv)
     Mesh mesh;
     mesh.LoadFile("resource\\eight.uniform.obj");
     mesh.SetMesh();
-    mesh.SetData(true);
+    mesh.SetData(normalMode);
 
     std::cout
-        << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl << std::endl;
+        << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl
+        << "Press arrow keys to change the color" << std::endl << std::endl;
     std::cout
         << "Press 'Z' to switch drawing mode" << std::endl
         << "Press 'X' to toggle light mode" << std::endl
@@ -115,8 +118,11 @@ int main(int argc, char ** argv)
             pointLights[i].SetUniform(shader, std::string("pointLights[") + std::to_string(i) + "]");
         }
 
-        switch (drawMode)
-        {
+        if (normalModeNew) {
+            mesh.SetData(normalMode);
+            normalModeNew = false;
+        }
+        switch (drawMode) {
         case 0:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             setBool(shader, "useLight", false);
@@ -155,15 +161,16 @@ int main(int argc, char ** argv)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         setMat4(textsh, "proj", glm::ortho(0.0f, (float)ScrWidth, 0.0f, (float)ScrHeight));
         std::string modeStr = (std::vector<std::string>{ "Lines", "Points", "Triangles", "Triangles + Lines" })[drawMode];
-        textr.RenderText(textsh, "Mode :  " + modeStr, 20.0f, 90.0f, 0.8f, text_green);
-        textr.RenderText(textsh, "Red :", 20.0f, 60.0f, 0.8f, text_green);
-        textr.RenderText(textsh, to_string(color.r, 3), 100.0f, 60.0f, 0.8f, selection == 0 ? text_white : text_green);
-        textr.RenderText(textsh, "Green :", 20.0f, 40.0f, 0.8f, text_green);
-        textr.RenderText(textsh, to_string(color.g, 3), 100.0f, 40.0f, 0.8f, selection == 1 ? text_white : text_green);
-        textr.RenderText(textsh, "Blue :", 20.0f, 20.0f, 0.8f, text_green);
-        textr.RenderText(textsh, to_string(color.b, 3), 100.0f, 20.0f, 0.8f, selection == 2 ? text_white : text_green);
+        textr.RenderText(textsh, "Mode : " + modeStr, 20.0f, 90.0f, 0.8f, text_green);
+        textr.RenderText(textsh, "Red", 20.0f, 60.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(color.r, 3), 80.0f, 60.0f, 0.8f, selection == 0 ? text_white : text_green);
+        textr.RenderText(textsh, "Green", 20.0f, 40.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(color.g, 3), 80.0f, 40.0f, 0.8f, selection == 1 ? text_white : text_green);
+        textr.RenderText(textsh, "Blue", 20.0f, 20.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(color.b, 3), 80.0f, 20.0f, 0.8f, selection == 2 ? text_white : text_green);
         if (drawMode == 2 || drawMode == 3) {
-            textr.RenderText(textsh, std::string("Light : ") + (light ? "On" : "Off"), 200.0f, 20.0f, 0.8f, text_green);
+            textr.RenderText(textsh, std::string("Light  : ") + (light ? "On" : "Off"), 200.0f, 40.0f, 0.8f, text_green);
+            textr.RenderText(textsh, std::string("Normal : ") + (normalMode == 1 ? "Average" : "Face"), 200.0f, 20.0f, 0.8f, text_green);
         }
         glDisable(GL_BLEND);
 
@@ -183,6 +190,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 bool z_pressed = false;
 bool x_pressed = false;
+bool c_pressed = false;
 bool up_pressed = false;
 bool down_pressed = false;
 void process_config(int selection, float delta)
@@ -224,6 +232,11 @@ void processInput(GLFWwindow *window)
     if (!x_pressed && glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         light = !light;
     x_pressed = glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS;
+    if (!c_pressed && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+        normalMode = (normalMode + 1) % 2;
+        normalModeNew = true;
+    }
+    c_pressed = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
     if (!up_pressed && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         selection -= 1;
         if (selection < 0)
