@@ -46,6 +46,12 @@
     <None Include="main.vert.glsl">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="text.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="text.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="main.frag.glsl">

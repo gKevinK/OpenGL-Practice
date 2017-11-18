@@ -144,5 +144,5 @@ void Mesh::LoadFile(const std::string & path)
 
 void Mesh::Draw(GLenum type)
 {
-    glDrawArrays(type, 0, (vertices.size() - 1) * sizeof(VertexD));
+    glDrawArrays(type, 0, vertices.size() * sizeof(VertexD));
 }

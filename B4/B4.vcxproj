@@ -171,6 +171,8 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.vert.glsl" />
+    <None Include="text.frag.glsl" />
+    <None Include="text.vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="main.frag.glsl" />

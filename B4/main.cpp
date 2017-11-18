@@ -11,6 +11,7 @@
 #include "view_camera.h"
 #include "light.h"
 #include "model.h"
+#include "text.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -52,6 +53,8 @@ int main(int argc, char ** argv)
         return -1;
     }
     glEnable(GL_DEPTH_TEST);
+    TextRenderer textr;
+    textr.Init("C:\\Windows\\Fonts\\arial.ttf", 24);
 
     std::vector<float> vertices = {
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -69,11 +72,12 @@ int main(int argc, char ** argv)
     //SpotLight spotLight = SpotLight(camera.Position, glm::vec3(0.0f, 0.0f, 0.0f));
 
     unsigned int shader = loadShaderProgram("main.vert.glsl", "main.frag.glsl");
+    unsigned int textsh = loadShaderProgram("text.vert.glsl", "text.frag.glsl");
     glUseProgram(shader);
     Mesh mesh;
     mesh.LoadFile("resource\\eight.uniform.obj");
     mesh.SetMesh();
-    mesh.SetData(false);
+    mesh.SetData(true);
 
     std::cout
         << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl << std::endl;
@@ -139,6 +143,16 @@ int main(int argc, char ** argv)
             break;
         }
         
+        glm::vec3 text_green(0.5f, 0.9f, 0.4f);
+        glUseProgram(textsh);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        setMat4(textsh, "proj", glm::ortho(0.0f, (float)ScrWidth, 0.0f, (float)ScrHeight));
+        textr.RenderText(textsh, "Ambient", 20.0f, 140.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(ambient, 3), 120.0f, 140.0f, 0.8f, selection == 1 ? text_white : text_green);
+        textr.RenderText(textsh, "Diffuse", 20.0f, 120.0f, 0.8f, text_green);
+        textr.RenderText(textsh, to_string(diffuse, 3), 120.0f, 120.0f, 0.8f, selection == 2 ? text_white : text_green);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
