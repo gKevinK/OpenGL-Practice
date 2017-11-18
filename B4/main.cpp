@@ -83,10 +83,10 @@ int main(int argc, char ** argv)
 
     std::cout
         << "Press 'W' 'A' 'S' 'D' 'R' 'F' to move the camera" << std::endl << std::endl;
-    //std::cout
-    //    << "Press 'Space' to reload the Bezier surface data from file" << std::endl
-    //    << "Press 'Z' and 'X' to decrease or increase tessellation level" << std::endl
-    //    << "Press 'C' to switch line mode" << std::endl << std::endl;
+    std::cout
+        << "Press 'Z' to switch drawing mode" << std::endl
+        << "Press 'X' to toggle light mode" << std::endl
+        << "Press 'C' to toggle normal mode" << std::endl << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
@@ -235,10 +235,10 @@ void processInput(GLFWwindow *window)
     }
     down_pressed = glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS;
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        process_config(selection, -deltaTime * 0.5);
+        process_config(selection, -deltaTime * 0.5f);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        process_config(selection, deltaTime * 0.5);
+        process_config(selection, deltaTime * 0.5f);
     }
 }
 

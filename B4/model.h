@@ -30,19 +30,19 @@ struct Vertex
 
 struct HalfEdge
 {
-    unsigned int vertexId;
+    //unsigned int vertexId;
     Vertex * vertex;
-    unsigned int faceId;
+    //unsigned int faceId;
     Face * face;
-    unsigned int twinId;
+    //unsigned int twinId;
     HalfEdge * twin;
-    unsigned int nextId;
+    //unsigned int nextId;
     HalfEdge * next;
 };
 
 struct Face
 {
-    unsigned int edgeId;
+    //unsigned int edgeId;
     HalfEdge * edge;
 };
 
@@ -54,7 +54,7 @@ public:
     std::vector<Face *> faces;
     unsigned int VAO, VBO, EBO;
     std::vector<VertexD> vertices;
-    std::vector<unsigned int> indices;
+    //std::vector<unsigned int> indices;
 
     Mesh() {};
     ~Mesh();
