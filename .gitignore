@@ -264,3 +264,4 @@ __pycache__/
 include/glm/*
 include/assimp/*
 include/freetype/*
+!**/resource

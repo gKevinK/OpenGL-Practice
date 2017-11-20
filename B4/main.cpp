@@ -110,7 +110,7 @@ int main(int argc, char ** argv)
 
         setVec3(shader, "color", color);
         setVec3(shader, "viewPos", camera.Position);
-        setVec3(shader, "ambient", glm::vec3(0.2f));
+        setVec3(shader, "ambient", glm::vec3(0.1f));
         setFloat(shader, "material.diffuse", 0.8f);
         setFloat(shader, "material.specular", 1.0f);
         setFloat(shader, "material.shininess", 64.0f);
