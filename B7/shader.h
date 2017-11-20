@@ -52,17 +52,17 @@ void inline setBool(unsigned int program, const std::string & name, bool value)
 void checkCompileErrors(GLuint shader, const std::string & type)
 {
     GLint success;
-    GLchar infoLog[1024];
+    GLchar infoLog[2048];
     if (type != "PROGRAM") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            glGetShaderInfoLog(shader, 2048, NULL, infoLog);
             std::cout << "ERROR::SHADER_COMPILATION_ERROR : " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+            glGetProgramInfoLog(shader, 2048, NULL, infoLog);
             std::cout << "ERROR::PROGRAM_LINKING_ERROR : " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }

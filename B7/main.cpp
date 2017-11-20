@@ -14,7 +14,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 unsigned int loadTexture(const std::string & path);
-void loadBezierData(float vertices[], const std::string & path);
+int loadBezierData(std::vector<float> & vertices, const std::string & path);
 
 unsigned int ScrWidth = 1000;
 unsigned int ScrHeight = 800;
@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
     }
     glEnable(GL_DEPTH_TEST);
 
-    float vertices[] = {
+    std::vector<float> vertices = {
         0.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
         2.0f, 0.0f, 0.0f,
@@ -69,7 +69,8 @@ int main(int argc, char ** argv)
         2.0f, 3.0f, 0.0f,
         3.0f, 3.0f, 0.0f,
     };
-    loadBezierData(vertices, "resource\\bezier.txt");
+    vertices.resize(25 * 3);
+    int num = loadBezierData(vertices, "resource\\bezier.txt");
 
     DirLight dirLight(glm::vec3(1.0f, 5.0f, 2.0f));
     std::vector<PointLight> pointLights = {
@@ -83,7 +84,7 @@ int main(int argc, char ** argv)
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)NULL);
     glEnableVertexAttribArray(0);
     Texture = loadTexture("resource\\texture.png");
@@ -110,14 +111,24 @@ int main(int argc, char ** argv)
         glUseProgram(shader);
         glBindVertexArray(VAO);
         if (needReload) {
-            loadBezierData(vertices, "resource\\bezier.txt");
+            num = loadBezierData(vertices, "resource\\bezier.txt");
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             needReload = false;
         }
         setFloat(shader, "outerLevel", level);
         setFloat(shader, "innerLevel", level);
+        if (num < 20) {
+            setInt(shader, "xCount", 4);
+            setInt(shader, "yCount", 4);
+        } else if (num < 25) {
+            setInt(shader, "xCount", 5);
+            setInt(shader, "yCount", 4);
+        } else {
+            setInt(shader, "xCount", 5);
+            setInt(shader, "yCount", 5);
+        }
         setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
@@ -138,8 +149,8 @@ int main(int argc, char ** argv)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glPatchParameteri(GL_PATCH_VERTICES, 16);
-        glDrawArrays(GL_PATCHES, 0, 16);
+        glPatchParameteri(GL_PATCH_VERTICES, 25);
+        glDrawArrays(GL_PATCHES, 0, 25);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -233,23 +244,27 @@ unsigned int loadTexture(const std::string & path)
     return textureID;
 }
 
-void loadBezierData(float vertices[], const std::string & path)
+int loadBezierData(std::vector<float> & vertices, const std::string & path)
 {
     std::ifstream fileStream;
     std::string code;
-    fileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try {
-        fileStream.open(path);
-        for (int i = 0; i < 16; i++) {
-            float x, y, z;
-            fileStream >> x >> y >> z;
-            vertices[i * 3] = x;
-            vertices[i * 3 + 1] = y;
-            vertices[i * 3 + 2] = z;
-        }
-        fileStream.close();
-    } catch (std::ifstream::failure e) {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    fileStream.open(path);
+    if (!fileStream) {
+        std::cout << "ERROR::DATAFILE::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         std::cout << path << std::endl;
+        return 0;
     }
+    int i = 0;
+    std::string line;
+    while (std::getline(fileStream, line) && i < 25) {
+        std::stringstream stream(line);
+        float x, y, z;
+        stream >> x >> y >> z;
+        vertices[i * 3] = x;
+        vertices[i * 3 + 1] = y;
+        vertices[i * 3 + 2] = z;
+        i++;
+    }
+    fileStream.close();
+    return i;
 }

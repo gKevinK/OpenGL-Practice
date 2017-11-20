@@ -1,6 +1,6 @@
 #version 430 core
 
-layout(vertices = 16) out;
+layout(vertices = 25) out;
 
 uniform float outerLevel, innerLevel;
 
@@ -14,6 +14,5 @@ void main()
         gl_TessLevelInner[0] = innerLevel;
         gl_TessLevelInner[1] = innerLevel;
     }
-
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 }
