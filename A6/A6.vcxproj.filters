@@ -25,7 +25,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="main.comp.glsl">
+    <None Include="terrain.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="terrain.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="terrain.tesc.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="terrain.tese.glsl">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
