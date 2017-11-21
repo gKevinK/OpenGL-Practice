@@ -12,15 +12,6 @@ uniform mat4 proj;
 uniform int xCount;
 uniform int yCount;
 
-/*const mat4 B = mat4(-1.0, 3.0,-3.0, 1.0,
-                     3.0,-6.0, 3.0, 0.0,
-                    -3.0, 3.0, 0.0, 0.0,
-                     1.0, 0.0, 0.0, 0.0);
-const mat4 D = transpose(mat4(0.0, -3.0,  6.0, -3.0,
-                              0.0,  9.0,-12.0,  3.0,
-                              0.0, -9.0,  6.0,  0.0,
-                              0.0,  3.0,  0.0,  0.0));*/
-
 void main()
 {
 	// Copy control points' position
@@ -30,8 +21,7 @@ void main()
 	int k = 0;
     for (int i = 0; i < yCount; i++) {
         for (int j = 0; j < xCount; j++) {
-            poss[i * 5 + j] = gl_in[k].gl_Position.xyz;
-			k++;
+            poss[i * 5 + j] = gl_in[k++].gl_Position.xyz;
         }
     }
 
@@ -48,9 +38,9 @@ void main()
     if (y_count == 4) {
         for (int j = 0; j < x_count; j++) {
             poss[4 * 5 + j] = poss[3 * 5 + j];
-            poss[3 * 5 + j] = poss[2 * 5 + j] * 1 / 4 + poss[3 * 5 + j] * 3 / 4;
+            poss[3 * 5 + j] = poss[2 * 5 + j] * 3 / 4 + poss[3 * 5 + j] * 1 / 4;
             poss[2 * 5 + j] = poss[1 * 5 + j] * 2 / 4 + poss[2 * 5 + j] * 2 / 4;
-            poss[1 * 5 + j] = poss[0 * 5 + j] * 3 / 4 + poss[1 * 5 + j] * 1 / 4;
+            poss[1 * 5 + j] = poss[0 * 5 + j] * 1 / 4 + poss[1 * 5 + j] * 3 / 4;
         }
         y_count = 5;
     }

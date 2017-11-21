@@ -60,7 +60,8 @@ void main()
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
     }
     //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
-    FragColor = vec4(result * vec3(texture(tex, TexCoord)), 1.0);
+	vec3 color = pow(texture(tex, TexCoord).rgb, vec3(gamma));
+    FragColor = vec4(result * color, 1.0);
     FragColor.rgb = pow(FragColor.rgb, 1 / vec3(gamma));
 }
 

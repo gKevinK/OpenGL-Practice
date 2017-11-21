@@ -11,9 +11,9 @@ class PointLight
 public:
     glm::vec3 Position;
     glm::vec3 Color;
-    float Constant = 1.0f;
-    float Linear = 0.09f;
-    float Quadratic = 0.032f;
+    float Constant = 0.1f;
+    float Linear = 1.0f;
+    float Quadratic = 0.1f;
 
     PointLight(glm::vec3 position, glm::vec3 color = glm::vec3(0.5f, 0.5f, 0.5f))
         : Position(position), Color(color) {}

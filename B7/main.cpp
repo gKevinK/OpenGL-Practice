@@ -74,7 +74,7 @@ int main(int argc, char ** argv)
 
     DirLight dirLight(glm::vec3(1.0f, 5.0f, 2.0f));
     std::vector<PointLight> pointLights = {
-        PointLight(glm::vec3(3.0f, 3.0f, 3.0f)),
+        PointLight(glm::vec3(4.0f, 4.0f, 4.0f)),
     };
     //SpotLight spotLight = SpotLight(camera.Position, glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -135,8 +135,8 @@ int main(int argc, char ** argv)
         setInt(shader, "tex", 0);
 
         setVec3(shader, "viewPos", camera.Position);
-        setVec3(shader, "ambient", glm::vec3(0.2f));
-        setFloat(shader, "material.diffuse", 0.8f);
+        setVec3(shader, "ambient", glm::vec3(0.1f));
+        setFloat(shader, "material.diffuse", 0.6f);
         setFloat(shader, "material.specular", 1.0f);
         setFloat(shader, "material.shininess", 64.0f);
         dirLight.SetUniform(shader, "dirLight");
@@ -145,6 +145,7 @@ int main(int argc, char ** argv)
             pointLights[i].SetUniform(shader, std::string("pointLights[") + std::to_string(i) + "]");
         }
         
+        //glEnable(GL_FRAMEBUFFER_SRGB);
         if (lineMode)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
