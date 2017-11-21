@@ -129,7 +129,7 @@ int main(int argc, char ** argv)
             setInt(shader, "xCount", 5);
             setInt(shader, "yCount", 5);
         }
-        setMat4(shader, "model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, -1.5f, 0.0f)));
+        setMat4(shader, "model", glm::mat4(1.0f));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", glm::perspective(glm::radians(45.0f), (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f));
         setInt(shader, "tex", 0);
@@ -152,7 +152,7 @@ int main(int argc, char ** argv)
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glPatchParameteri(GL_PATCH_VERTICES, 25);
         glDrawArrays(GL_PATCHES, 0, 25);
-
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -261,7 +261,7 @@ int loadBezierData(std::vector<float> & vertices, const std::string & path)
         std::stringstream stream(line);
         float x, y, z;
         stream >> x >> y >> z;
-        vertices[i * 3] = x;
+        vertices[i * 3 + 0] = x;
         vertices[i * 3 + 1] = y;
         vertices[i * 3 + 2] = z;
         i++;
