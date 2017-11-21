@@ -138,12 +138,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\shared\glad.c" />
+    <ClCompile Include="..\shared\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fps_camera.h" />
     <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="skybox.frag.glsl" />
+    <None Include="skybox.vert.glsl" />
     <None Include="terrain.frag.glsl" />
     <None Include="terrain.tesc.glsl" />
     <None Include="terrain.tese.glsl" />

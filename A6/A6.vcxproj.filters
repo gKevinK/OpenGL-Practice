@@ -18,9 +18,18 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\shared\glad.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\stb_image.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fps_camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,6 +44,12 @@
       <Filter>资源文件</Filter>
     </None>
     <None Include="terrain.tese.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="skybox.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="skybox.vert.glsl">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
