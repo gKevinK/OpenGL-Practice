@@ -7,6 +7,7 @@
 #include "fps_camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xposd, double yposd);
 void processInput(GLFWwindow *window);
 unsigned int loadTexture(const std::string & path);
 unsigned int loadCubeMap(const std::vector<std::string> & paths);
@@ -37,6 +38,7 @@ int main(int argc, char ** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -49,17 +51,17 @@ int main(int argc, char ** argv)
     unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
     unsigned int terrainVAO, terrainVBO, terrainHeight, terrainTex, terrainDetail;
     std::vector<float> terrainVertices;
-    for (int i = 0; i < 40; i++) {
-        for (int j = 0; j < 40; j++) {
+    for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 20; j++) {
             float fi = (float)i;
             float fj = (float)j;
             float vertices[] = {
-                fi, 0.0f, j, fi, fj,
-                fi, 0.0f, j + 1, fi, fj + 1,
-                fi + 1, 0.0f, j, fi + 1, fj,
-                fi + 1, 0.0f, j + 1, fi + 1, fj + 1 };
-            for (int k = 0; k < 20; k++) {
-                terrainVertices.push_back(vertices[k] / 40.0f);
+                fi, fj, fi, fj,
+                fi, fj + 1, fi, fj + 1,
+                fi + 1, fj, fi + 1, fj,
+                fi + 1, fj + 1, fi + 1, fj + 1 };
+            for (int k = 0; k < 16; k++) {
+                terrainVertices.push_back(vertices[k] / 20.0f);
             }
         }
     }
@@ -69,9 +71,9 @@ int main(int argc, char ** argv)
     glBindBuffer(GL_ARRAY_BUFFER, terrainVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrainVertices.size(), &terrainVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
     glBindVertexArray(0);
     terrainTex = loadTexture("resource/terrain-texture3.bmp");
     terrainHeight = loadTexture("resource/heightmap.bmp");
@@ -182,10 +184,12 @@ int main(int argc, char ** argv)
 
         glUseProgram(terrainShader);
         glBindVertexArray(terrainVAO);
-        setMat4(terrainShader, "model", glm::mat4(1.0f));
+        setVec3(terrainShader, "viewPos", camera.Position);
+        setMat4(terrainShader, "model", glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f)));
+        //setMat4(terrainShader, "model", glm::mat4(1.0f));
         setMat4(terrainShader, "view", camera.GetViewMatrix());
         setMat4(terrainShader, "proj", proj);
-        setFloat(terrainShader, "base", -2.0f);
+        setFloat(terrainShader, "base", -0.2f);
         setFloat(terrainShader, "scale", 0.2f);
         glActiveTexture(GL_TEXTURE1);
         setInt(terrainShader, "heightMap", 1);
@@ -235,6 +239,23 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         camera.ProcessKeyboard(DOWN, deltaTime);
+}
+
+void mouse_callback(GLFWwindow* window, double xposd, double yposd)
+{
+    float xpos = (float)xposd;
+    float ypos = (float)yposd;
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+    if (glfwGetKey(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 unsigned int loadTexture(const std::string & path)
