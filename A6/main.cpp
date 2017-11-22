@@ -45,7 +45,7 @@ int main(int argc, char ** argv)
         return -1;
     }
     glEnable(GL_DEPTH_TEST);
-
+    
 
 
     unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
@@ -76,6 +76,7 @@ int main(int argc, char ** argv)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
     glBindVertexArray(0);
     terrainTex = loadTexture("resource/terrain-texture3.bmp");
+    //terrainTex = loadTexture("resource\\SkyBox\\SkyBox0.bmp");
     terrainHeight = loadTexture("resource/heightmap.bmp");
     terrainDetail = loadTexture("resource/detail.bmp");
 
@@ -189,7 +190,7 @@ int main(int argc, char ** argv)
         //setMat4(terrainShader, "model", glm::mat4(1.0f));
         setMat4(terrainShader, "view", camera.GetViewMatrix());
         setMat4(terrainShader, "proj", proj);
-        setFloat(terrainShader, "base", -0.2f);
+        setFloat(terrainShader, "base", -0.1f);
         setFloat(terrainShader, "scale", 0.2f);
         glActiveTexture(GL_TEXTURE1);
         setInt(terrainShader, "heightMap", 1);
@@ -197,6 +198,9 @@ int main(int argc, char ** argv)
         glActiveTexture(GL_TEXTURE2);
         setInt(terrainShader, "textureMap", 2);
         glBindTexture(GL_TEXTURE_2D, terrainTex);
+        glActiveTexture(GL_TEXTURE3);
+        setInt(terrainShader, "detailMap", 3);
+        glBindTexture(GL_TEXTURE_2D, terrainDetail);
         glPatchParameteri(GL_PATCH_VERTICES, 4);
         glDrawArrays(GL_PATCHES, 0, terrainVertices.size() / 4);
 
@@ -238,7 +242,8 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
         camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-        camera.ProcessKeyboard(DOWN, deltaTime);
+        if (camera.Position.y > 0.1)
+            camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 void mouse_callback(GLFWwindow* window, double xposd, double yposd)

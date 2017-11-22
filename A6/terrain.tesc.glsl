@@ -15,11 +15,13 @@ void main()
         float l = 0, d = 1;
         for (int i = 0; i < 4; i++)
             l += length((model * gl_in[gl_InvocationID].gl_Position).xz - viewPos.xz);
-        if (l < 0.5 * 4)
+        if (l < 0.3 * 4)
+            d = 32;
+        else if (l < 0.5 * 4)
             d = 20;
         else if (l < 1 * 4)
             d = 12;
-        else if (l < 4 * 4)
+        else if (l < 3 * 4)
             d = 6;
         else
             d = 3;

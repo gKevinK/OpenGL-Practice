@@ -14,7 +14,7 @@ uniform mat4 proj;
 uniform float base;
 uniform float scale;
 uniform sampler2D heightMap;
-uniform sampler2D textureMap;
+//uniform sampler2D textureMap;
 
 void main()
 {
@@ -25,8 +25,9 @@ void main()
     float u = gl_TessCoord.x;
     float v = gl_TessCoord.y;
 
-    vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     TexCoord = mix(mix(TexCoord_te[0], TexCoord_te[1], u), mix(TexCoord_te[2], TexCoord_te[3], u), v);
+
+    vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     pos.y = base + texture(heightMap, TexCoord).x * scale;
     gl_Position = proj * view * model * vec4(pos, 1.0);
 }
