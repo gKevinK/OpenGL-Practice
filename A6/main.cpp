@@ -46,7 +46,42 @@ int main(int argc, char ** argv)
 
 
 
-    //unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
+    unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
+    unsigned int terrainVAO, terrainVBO, terrainHeight, terrainTex, terrainDetail;
+    std::vector<float> terrainVertices;
+    for (int i = 0; i < 40; i++) {
+        for (int j = 0; j < 40; j++) {
+            terrainVertices.push_back(i);
+            terrainVertices.push_back(j);
+            terrainVertices.push_back(i / 40.0f);
+            terrainVertices.push_back(j / 40.0f);
+            terrainVertices.push_back(i);
+            terrainVertices.push_back(j + 1);
+            terrainVertices.push_back(i / 40.0f);
+            terrainVertices.push_back((j + 1)/ 40.0f);
+            terrainVertices.push_back(i + 1);
+            terrainVertices.push_back(j + 1);
+            terrainVertices.push_back((i + 1)/ 40.0f);
+            terrainVertices.push_back((j + 1)/ 40.0f);
+            terrainVertices.push_back(i + 1);
+            terrainVertices.push_back(j);
+            terrainVertices.push_back((i + 1)/ 40.0f);
+            terrainVertices.push_back(j / 40.0f);
+        }
+    }
+    glGenVertexArrays(1, &terrainVAO);
+    glGenBuffers(1, &terrainVBO);
+    glBindVertexArray(terrainVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, terrainVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(terrainVertices), &terrainVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+    glBindVertexArray(0);
+    terrainTex = loadTexture("resource/terrain-texture3.bmp");
+    terrainHeight = loadTexture("resource/heightmap.bmp");
+    terrainDetail = loadTexture("resource/detail.bmp");
 
 
     unsigned int skyboxShader = loadShaderProgram("skybox.vert.glsl", "skybox.frag.glsl");
