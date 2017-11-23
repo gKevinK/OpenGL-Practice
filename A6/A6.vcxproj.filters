@@ -29,13 +29,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="fps_camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="shaders.glsl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -18,5 +18,11 @@ struct Triangle
     glm::vec3 Position0;
 };
 
+struct Ray
+{
+    glm::vec3 Origin;
+    glm::vec3 Dir;
+};
+
 #endif // !DATA_H
 

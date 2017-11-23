@@ -27,5 +27,5 @@ target_name = "shaders.glsl.hpp" if len(sys.argv) < 3 else sys.argv[2]
 target = open(os.path.join(proj_dir, target_name), "w")
 target.write('\n\n'.join(content));
 target.close()
-print('*** GLSL -> .hpp : ', target_name, ' ***')
+print('[ GLSL -> hpp ] ', target_name)
 exit(0)

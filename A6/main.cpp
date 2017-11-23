@@ -157,7 +157,46 @@ int main(int argc, char ** argv)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glBindVertexArray(0);
 
-    
+    // Skybox Build
+    //unsigned int skyboxCube;
+    //{
+    //    glViewport(0, 0, 256, 256);
+    //    unsigned int frameBuffer;
+    //    glGenFramebuffers(1, &frameBuffer);
+    //    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+    //    unsigned int texColorBuffer, texDepthBuffer;
+    //    glGenTextures(1, &texColorBuffer);
+    //    glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //    glBindTexture(GL_TEXTURE_2D, 0);
+    //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
+
+    //    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+    //    // Render the skybox
+
+    //    glGenTextures(1, &skyboxCube);
+    //    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxCube);
+    //    for (int i = 0; i < 6; i++)
+    //    {
+    //        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+    //            0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    //    }
+    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    //    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    //    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    //    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //    glViewport(0, 0, ScrWidth, ScrHeight);
+    //}
+
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
         deltaTime = currentFrame - lastFrame;
