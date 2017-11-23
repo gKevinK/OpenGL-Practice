@@ -47,7 +47,16 @@ int main(int argc, char ** argv)
     }
     glEnable(GL_DEPTH_TEST);
 
+#ifdef _DEBUG
+    unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
+    unsigned int waterShader = loadShaderProgram("water.vert.glsl", "water.tesc.glsl", "water.tese.glsl", "water.frag.glsl");
+    unsigned int skyboxShader = loadShaderProgram("skybox.vert.glsl", "skybox.frag.glsl");
+#else
     unsigned int terrainShader = loadShaderProgramS(terrain_vert_glsl, terrain_tesc_glsl, terrain_tese_glsl, terrain_frag_glsl);
+    unsigned int waterShader = loadShaderProgramS(water_vert_glsl, water_tesc_glsl, water_tese_glsl, water_frag_glsl);
+    unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
+#endif // _DEBUG
+
     unsigned int terrainVAO, terrainVBO, terrainHeight, terrainTex, terrainDetail;
     std::vector<float> terrainVertices;
     for (int i = 0; i < 20; i++) {
@@ -79,10 +88,9 @@ int main(int argc, char ** argv)
     terrainHeight = loadTexture("resource/heightmap.bmp");
     terrainDetail = loadTexture("resource/detail.bmp");
 
-    //unsigned int waterShader = loadShaderProgramS(water_vert_glsl, water_tesc_glsl, water_tese_glsl, water_frag_glsl);
-    //unsigned int waterVAO, waterVBO;
+    unsigned int waterVAO, waterVBO;
 
-    unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
+    //unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
     unsigned int skyboxVAO, skyboxVBO, skyboxCube;
     float skyboxVertices[] = {         
         -1.0f,  1.0f, -1.0f,

@@ -14,7 +14,7 @@ void main()
     if (gl_InvocationID == 0) {
         float l = 0, d = 1;
         for (int i = 0; i < 4; i++)
-            l += length((model * gl_in[gl_InvocationID].gl_Position) - viewPos);
+            l += length((model * gl_in[gl_InvocationID].gl_Position).xyz - viewPos);
         if (l < 3 * 4)
             d = 40;
         else if (l < 6 * 4)

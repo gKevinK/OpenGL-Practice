@@ -93,8 +93,8 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
-xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
+      <Command>xcopy $(SolutionDir)resource\*.dll $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\*.dll $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
@@ -112,8 +112,8 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
-xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
+      <Command>xcopy $(SolutionDir)resource\*.dll $(TargetDir) /S /E /C /Y
+xcopy $(ProjectDir)resource\*.dll $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>

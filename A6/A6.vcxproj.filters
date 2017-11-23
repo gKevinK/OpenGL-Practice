@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\shaders">
+      <UniqueIdentifier>{6fb35fa6-d3a1-4089-bf0b-0f4db276269f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,35 +40,35 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="terrain.vert.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="terrain.frag.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="terrain.tesc.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="terrain.tese.glsl">
-      <Filter>资源文件</Filter>
-    </None>
     <None Include="skybox.frag.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
     </None>
     <None Include="skybox.vert.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
     </None>
-    <None Include="water.vert.glsl">
-      <Filter>资源文件</Filter>
+    <None Include="terrain.frag.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="terrain.tesc.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="terrain.tese.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="terrain.vert.glsl">
+      <Filter>源文件\shaders</Filter>
     </None>
     <None Include="water.frag.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
     </None>
     <None Include="water.tesc.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
     </None>
     <None Include="water.tese.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="water.vert.glsl">
+      <Filter>源文件\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

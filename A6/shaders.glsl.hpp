@@ -1,6 +1,6 @@
 #include <string>
 
-const std::string skybox_frag_glsl = R"===(#version 430 core
+const std::string skybox_frag_glsl = R"=====(#version 430 core
 in vec3 TexCoord;
 out vec4 Color;
 
@@ -9,9 +9,9 @@ uniform samplerCube skybox;
 void main()
 {
     Color = texture(skybox, TexCoord);
-})===";
+})=====";
 
-const std::string skybox_vert_glsl = R"===(#version 430 core
+const std::string skybox_vert_glsl = R"=====(#version 430 core
 layout(location = 0) in vec3 aPos;
 out vec3 TexCoord;
 
@@ -22,9 +22,9 @@ void main()
 {
     gl_Position = proj * view * vec4(aPos, 1.0);
     TexCoord = aPos;
-})===";
+})=====";
 
-const std::string terrain_frag_glsl = R"===(#version 430 core
+const std::string terrain_frag_glsl = R"=====(#version 430 core
 
 out vec4 FragColor;
 
@@ -39,9 +39,9 @@ void main()
 {
     vec3 detail = texture(detailMap, TexCoord * 10).rgb * 0.5 - vec3(0.25);
     FragColor = vec4(texture(textureMap, TexCoord).rgb + detail, 1.0);
-})===";
+})=====";
 
-const std::string terrain_tesc_glsl = R"===(#version 430 core
+const std::string terrain_tesc_glsl = R"=====(#version 430 core
 
 layout(vertices = 4) out;
 
@@ -77,9 +77,9 @@ void main()
     }
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
     TexCoord_te[gl_InvocationID] = TexCoord_tc[gl_InvocationID];
-})===";
+})=====";
 
-const std::string terrain_tese_glsl = R"===(#version 430 core
+const std::string terrain_tese_glsl = R"=====(#version 430 core
 
 layout(quads, equal_spacing, cw) in;
 
@@ -111,9 +111,9 @@ void main()
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     pos.y = base + texture(heightMap, TexCoord).x * scale;
     gl_Position = proj * view * model * vec4(pos, 1.0);
-})===";
+})=====";
 
-const std::string terrain_vert_glsl = R"===(#version 430 core
+const std::string terrain_vert_glsl = R"=====(#version 430 core
 layout(location = 0) in vec2 aPos;
 layout(location = 1) in vec2 aTexCoord;
 
@@ -124,9 +124,9 @@ void main()
     gl_Position = vec4(aPos.x, 0.0, -aPos.y, 1.0);
     TexCoord_tc = aTexCoord;
 }
-)===";
+)=====";
 
-const std::string water_frag_glsl = R"===(#version 430 core
+const std::string water_frag_glsl = R"=====(#version 430 core
 
 out vec4 FragColor;
 
@@ -138,9 +138,9 @@ uniform vec3 viewPos;
 void main()
 {
     FragColor = vec4(Normal, 1.0);
-})===";
+})=====";
 
-const std::string water_tesc_glsl = R"===(#version 430 core
+const std::string water_tesc_glsl = R"=====(#version 430 core
 
 layout(vertices = 4) out;
 
@@ -156,7 +156,7 @@ void main()
     if (gl_InvocationID == 0) {
         float l = 0, d = 1;
         for (int i = 0; i < 4; i++)
-            l += length((model * gl_in[gl_InvocationID].gl_Position) - viewPos);
+            l += length((model * gl_in[gl_InvocationID].gl_Position).xyz - viewPos);
         if (l < 3 * 4)
             d = 40;
         else if (l < 6 * 4)
@@ -176,9 +176,9 @@ void main()
     }
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
     //TexCoord_te[gl_InvocationID] = TexCoord_tc[gl_InvocationID];
-})===";
+})=====";
 
-const std::string water_tese_glsl = R"===(#version 430 core
+const std::string water_tese_glsl = R"=====(#version 430 core
 
 layout(quads, equal_spacing, cw) in;
 
@@ -206,13 +206,13 @@ void main()
     gl_Position = proj * view * model * vec4(pos, 1.0);
     FragPos = vec3(model * vec4(pos, 1.0));
     Normal = vec3(0.0, 1.0, 0.0);
-})===";
+})=====";
 
-const std::string water_vert_glsl = R"===(#version 430 core
+const std::string water_vert_glsl = R"=====(#version 430 core
 layout(location = 0) in vec2 aPos;
 
 void main()
 {
     gl_Position = vec4(aPos.x, 0.0, -aPos.y, 1.0);
 }
-)===";
+)=====";
