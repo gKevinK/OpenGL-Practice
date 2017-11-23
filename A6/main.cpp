@@ -4,6 +4,7 @@
 #include <stb_image.h>
 #include <iostream>
 #include "shader.h"
+#include "shaders.glsl.hpp"
 #include "fps_camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -45,10 +46,8 @@ int main(int argc, char ** argv)
         return -1;
     }
     glEnable(GL_DEPTH_TEST);
-    
 
-
-    unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
+    unsigned int terrainShader = loadShaderProgramS(terrain_vert_glsl, terrain_tesc_glsl, terrain_tese_glsl, terrain_frag_glsl);
     unsigned int terrainVAO, terrainVBO, terrainHeight, terrainTex, terrainDetail;
     std::vector<float> terrainVertices;
     for (int i = 0; i < 20; i++) {
@@ -80,8 +79,10 @@ int main(int argc, char ** argv)
     terrainHeight = loadTexture("resource/heightmap.bmp");
     terrainDetail = loadTexture("resource/detail.bmp");
 
+    //unsigned int waterShader = loadShaderProgramS(water_vert_glsl, water_tesc_glsl, water_tese_glsl, water_frag_glsl);
+    //unsigned int waterVAO, waterVBO;
 
-    unsigned int skyboxShader = loadShaderProgram("skybox.vert.glsl", "skybox.frag.glsl");
+    unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
     unsigned int skyboxVAO, skyboxVBO, skyboxCube;
     float skyboxVertices[] = {         
         -1.0f,  1.0f, -1.0f,
@@ -186,8 +187,7 @@ int main(int argc, char ** argv)
         glUseProgram(terrainShader);
         glBindVertexArray(terrainVAO);
         setVec3(terrainShader, "viewPos", camera.Position);
-        setMat4(terrainShader, "model", glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f)));
-        //setMat4(terrainShader, "model", glm::mat4(1.0f));
+        setMat4(terrainShader, "model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f)), glm::vec3(-0.5f, 0.0f, 0.0f)));
         setMat4(terrainShader, "view", camera.GetViewMatrix());
         setMat4(terrainShader, "proj", proj);
         setFloat(terrainShader, "base", -0.1f);
@@ -203,6 +203,7 @@ int main(int argc, char ** argv)
         glBindTexture(GL_TEXTURE_2D, terrainDetail);
         glPatchParameteri(GL_PATCH_VERTICES, 4);
         glDrawArrays(GL_PATCHES, 0, terrainVertices.size() / 4);
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

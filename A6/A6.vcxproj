@@ -94,9 +94,11 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
-xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
-xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -111,9 +113,11 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
-xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
-xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -132,9 +136,11 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
-xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
-xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,9 +159,11 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
-xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y
-xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
+xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\glad.c" />
@@ -165,6 +173,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
   <ItemGroup>
     <ClInclude Include="fps_camera.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shaders.glsl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="skybox.frag.glsl" />
@@ -173,6 +182,10 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /S /E /C /Y</Command>
     <None Include="terrain.tesc.glsl" />
     <None Include="terrain.tese.glsl" />
     <None Include="terrain.vert.glsl" />
+    <None Include="water.frag.glsl" />
+    <None Include="water.tesc.glsl" />
+    <None Include="water.tese.glsl" />
+    <None Include="water.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

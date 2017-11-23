@@ -23,9 +23,18 @@
     <ClInclude Include="shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="data.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.comp.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="main.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="main.frag.glsl">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>

@@ -32,6 +32,9 @@
     <ClInclude Include="fps_camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="shaders.glsl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="terrain.vert.glsl">
@@ -50,6 +53,18 @@
       <Filter>资源文件</Filter>
     </None>
     <None Include="skybox.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="water.vert.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="water.frag.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="water.tesc.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="water.tese.glsl">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
