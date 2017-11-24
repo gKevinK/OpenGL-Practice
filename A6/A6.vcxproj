@@ -182,10 +182,12 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <None Include="terrain.tesc.glsl" />
     <None Include="terrain.tese.glsl" />
     <None Include="terrain.vert.glsl" />
+    <None Include="texture.frag.glsl" />
     <None Include="water.frag.glsl" />
     <None Include="water.tesc.glsl" />
     <None Include="water.tese.glsl" />
     <None Include="water.vert.glsl" />
+    <None Include="window.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

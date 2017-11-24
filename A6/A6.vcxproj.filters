@@ -70,5 +70,11 @@
     <None Include="water.vert.glsl">
       <Filter>源文件\shaders</Filter>
     </None>
+    <None Include="window.vert.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="texture.frag.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

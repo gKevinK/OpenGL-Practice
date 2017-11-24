@@ -7,6 +7,10 @@
 #include "shaders.glsl.hpp"
 #include "fps_camera.h"
 
+#define gv3 glm::vec3
+#define gm3 glm::mat3
+#define gm4 glm::mat4
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xposd, double yposd);
 void processInput(GLFWwindow *window);
@@ -20,7 +24,7 @@ float lastY = ScrHeight / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-Camera camera = Camera(glm::vec3(0.0f, 0.0f, 5.0f));
+Camera camera = Camera(gv3(0.0f, 0.0f, 5.0f));
 
 int main(int argc, char ** argv)
 {
@@ -207,19 +211,19 @@ int main(int argc, char ** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //setVec3(shader, "viewPos", camera.Position);
-        //setVec3(shader, "ambient", glm::vec3(0.4f));
+        //setVec3(shader, "ambient", gv3(0.4f));
         //setFloat(shader, "material.diffuse", 0.8f);
         //setFloat(shader, "material.specular", 0.0f);
         //setFloat(shader, "material.shininess", 64.0f);
-        //setVec3(terrainShader, "dirLight.direction", glm::vec3(1.0f));
-        //setVec3(terrainShader, "dirLight.color", glm::vec3(0.5f));
+        //setVec3(terrainShader, "dirLight.direction", gv3(1.0f));
+        //setVec3(terrainShader, "dirLight.color", gv3(0.5f));
 
         //glEnable(GL_FRAMEBUFFER_SRGB);
 
         glDepthMask(GL_FALSE);
         glUseProgram(skyboxShader);
-        glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-        glm::mat4 proj = glm::perspective(camera.Zoom, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
+        gm4 view = gm4(gm3(camera.GetViewMatrix()));
+        gm4 proj = glm::perspective(camera.Zoom, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
         setMat4(skyboxShader, "view", view);
         setMat4(skyboxShader, "proj", proj);
         glBindVertexArray(skyboxVAO);
@@ -234,7 +238,7 @@ int main(int argc, char ** argv)
         glUseProgram(terrainShader);
         glBindVertexArray(terrainVAO);
         setVec3(terrainShader, "viewPos", camera.Position);
-        setMat4(terrainShader, "model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f)), glm::vec3(-0.5f, 0.0f, 0.0f)));
+        setMat4(terrainShader, "model", glm::translate(glm::scale(gm4(1.0f), gv3(5.0f, 5.0f, 5.0f)), gv3(-0.5f, 0.0f, 0.0f)));
         setMat4(terrainShader, "view", camera.GetViewMatrix());
         setMat4(terrainShader, "proj", proj);
         setFloat(terrainShader, "base", -0.1f);
