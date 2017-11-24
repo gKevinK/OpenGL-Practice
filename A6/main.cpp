@@ -7,6 +7,8 @@
 #include "shaders.glsl.hpp"
 #include "fps_camera.h"
 
+#include "skybox2.hpp"
+
 #define gv3 glm::vec3
 #define gm3 glm::mat3
 #define gm4 glm::mat4
@@ -163,7 +165,7 @@ int main(int argc, char ** argv)
 
     // Skybox Build
     //unsigned int skyboxCube;
-    unsigned int skybox2TexIds[] = {
+    std::vector<unsigned int> skybox2TexIds = {
         loadTexture("resource\\SkyBox\\SkyBox0.bmp", GL_CLAMP_TO_EDGE),
         loadTexture("resource\\SkyBox\\SkyBox1.bmp", GL_CLAMP_TO_EDGE),
         loadTexture("resource\\SkyBox\\SkyBox2.bmp", GL_CLAMP_TO_EDGE),
@@ -171,58 +173,9 @@ int main(int argc, char ** argv)
         loadTexture("resource\\SkyBox\\SkyBox4.bmp", GL_CLAMP_TO_EDGE),
         //loadTexture("resource\\SkyBox\\SkyBox5.bmp")
     };
-    float skybox2Vertices[] = {
-        -1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-         1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-         1.0f, 2.0f, -1.0f, 1.0f, 1.0f,
-         1.0f, 2.0f, -1.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f, -1.0f, 0.0f, 1.0f,
-        -1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-
-        1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
-        1.0f, 2.0f,  1.0f, 1.0f, 1.0f,
-        1.0f, 2.0f,  1.0f, 1.0f, 1.0f,
-        1.0f, 2.0f, -1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-
-         1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        -1.0f, 2.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, 2.0f, 1.0f, 0.0f, 1.0f,
-         1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-        -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-        -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 2.0f, -1.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f, -1.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f,  1.0f, 0.0f, 1.0f,
-        -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-
-        -1.0f, 2.0f, -1.0f, 0.0f, 0.0f,
-         1.0f, 2.0f, -1.0f, 1.0f, 0.0f,
-         1.0f, 2.0f,  1.0f, 1.0f, 1.0f,
-         1.0f, 2.0f,  1.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f,  1.0f, 0.0f, 1.0f,
-        -1.0f, 2.0f, -1.0f, 0.0f, 0.0f,
-    };
-    //int skybox2Texs[] = { 0, 1, 2, 3, 4 };
-    unsigned int skybox2VAO, skybox2VBO;
-    glGenVertexArrays(1, &skybox2VAO);
-    glGenBuffers(1, &skybox2VBO);
-    glBindVertexArray(skybox2VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, skybox2VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skybox2Vertices), &skybox2Vertices, GL_STATIC_DRAW);
-    //glBufferSubData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), sizeof(skybox2Texs), &skybox2Texs);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(2);
-    //glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, 1 * sizeof(int), (void *)sizeof(skybox2Vertices));
-    glBindVertexArray(0);
-
+    Skybox2 skybox2;
+    skybox2.Init();
+    skybox2.TexIds = skybox2TexIds;
 
     {
     //    glViewport(0, 0, 256, 256);
@@ -284,14 +237,7 @@ int main(int argc, char ** argv)
         //glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxCube);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         //glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(skybox2VAO);
-        glActiveTexture(GL_TEXTURE0);
-        setInt(terrainShader, "tex", 0);
-        for (int i = 0; i < 5; i++) {
-            glBindTexture(GL_TEXTURE_2D, skybox2TexIds[i]);
-            glDrawArrays(GL_TRIANGLES, i * 6, 6);
-        }
-        glBindVertexArray(0);
+        skybox2.Draw(skybox2Shader);
         glDepthMask(GL_TRUE);
 
         glUseProgram(terrainShader);

@@ -27,6 +27,9 @@
     <ClCompile Include="..\shared\stb_image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="skybox2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fps_camera.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="skybox2.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

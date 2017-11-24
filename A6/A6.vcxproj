@@ -169,11 +169,13 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClCompile Include="..\shared\glad.c" />
     <ClCompile Include="..\shared\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="skybox2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shader.h" />
     <ClInclude Include="fps_camera.h" />
     <ClInclude Include="shaders.glsl.hpp" />
+    <ClInclude Include="skybox2.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="skybox.frag.glsl" />
