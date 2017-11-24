@@ -76,5 +76,11 @@
     <None Include="texture.frag.glsl">
       <Filter>源文件\shaders</Filter>
     </None>
+    <None Include="skybox2.vert.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="skybox2.frag.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

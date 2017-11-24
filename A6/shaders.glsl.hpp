@@ -24,6 +24,33 @@ void main()
     TexCoord = aPos;
 })=====";
 
+const std::string skybox2_frag_glsl = R"=====(#version 430 core
+in vec2 TexCoord;
+
+out vec4 Color;
+
+uniform sampler2D tex;
+
+void main()
+{
+    Color = texture(tex, TexCoord);
+})=====";
+
+const std::string skybox2_vert_glsl = R"=====(#version 430 core
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
+
+uniform mat4 proj;
+uniform mat4 view;
+
+void main()
+{
+    gl_Position = proj * view * vec4(aPos, 1.0);
+    TexCoord = aTexCoord;
+})=====";
+
 const std::string terrain_frag_glsl = R"=====(#version 430 core
 
 out vec4 FragColor;
@@ -126,6 +153,18 @@ void main()
 }
 )=====";
 
+const std::string texture_frag_glsl = R"=====(#version 430 core
+out vec4 FragColor;
+
+in vec2 TexCoord;
+
+uniform sampler2D screenTexture;
+
+void main()
+{ 
+    FragColor = texture(screenTexture, TexCoord);
+})=====";
+
 const std::string water_frag_glsl = R"=====(#version 430 core
 
 out vec4 FragColor;
@@ -216,3 +255,20 @@ void main()
     gl_Position = vec4(aPos.x, 0.0, -aPos.y, 1.0);
 }
 )=====";
+
+const std::string window_vert_glsl = R"=====(#version 430 core
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
+
+uniform float x;
+uniform float y;
+uniform float w;
+uniform float h;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+    TexCoord = aTexCoord;
+})=====";

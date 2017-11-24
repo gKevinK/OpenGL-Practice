@@ -178,6 +178,8 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
   <ItemGroup>
     <None Include="skybox.frag.glsl" />
     <None Include="skybox.vert.glsl" />
+    <None Include="skybox2.frag.glsl" />
+    <None Include="skybox2.vert.glsl" />
     <None Include="terrain.frag.glsl" />
     <None Include="terrain.tesc.glsl" />
     <None Include="terrain.tese.glsl" />
