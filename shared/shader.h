@@ -48,6 +48,12 @@ void inline setBool(unsigned int program, const std::string & name, bool value)
     glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
 }
 
+void inline setTexture2D(unsigned int program, const std::string & name, int tex, int texId)
+{
+    glActiveTexture(GL_TEXTURE0 + tex);
+    glBindTexture(GL_TEXTURE_2D, texId);
+    glUniform1i(glGetUniformLocation(program, name.c_str()), tex);
+}
 
 void checkCompileErrors(GLuint shader, const std::string & type)
 {

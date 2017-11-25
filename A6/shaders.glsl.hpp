@@ -27,13 +27,13 @@ void main()
 const std::string skybox2_frag_glsl = R"=====(#version 430 core
 in vec2 TexCoord;
 
-out vec4 Color;
+layout(location = 0) out vec3 Color;
 
 uniform sampler2D tex;
 
 void main()
 {
-    Color = texture(tex, TexCoord);
+    Color = texture(tex, TexCoord).xyz;
 })=====";
 
 const std::string skybox2_vert_glsl = R"=====(#version 430 core
@@ -158,11 +158,11 @@ out vec4 FragColor;
 
 in vec2 TexCoord;
 
-uniform sampler2D screenTexture;
+uniform sampler2D tex;
 
 void main()
 { 
-    FragColor = texture(screenTexture, TexCoord);
+    FragColor = texture(tex, TexCoord);
 })=====";
 
 const std::string water_frag_glsl = R"=====(#version 430 core

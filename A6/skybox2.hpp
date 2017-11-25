@@ -10,6 +10,7 @@ public:
     unsigned int VAO, VBO;
     std::vector<unsigned int> TexIds;
 
+    ~Skybox2();
     void Init();
     void Draw(unsigned int shader);
 

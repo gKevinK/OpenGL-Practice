@@ -37,6 +37,12 @@ const float Skybox2::skybox2Vertices[] {
     -1.0f, 2.0f, -1.0f, 0.0f, 0.0f,
 };
 
+Skybox2::~Skybox2()
+{
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
 void Skybox2::Init()
 {
     glGenVertexArrays(1, &VAO);
