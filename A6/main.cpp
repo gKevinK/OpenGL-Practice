@@ -104,8 +104,6 @@ int main(int argc, char ** argv)
     terrainHeight = loadTexture("resource/heightmap.bmp");
     terrainDetail = loadTexture("resource/detail.bmp");
 
-    unsigned int waterVAO, waterVBO;
-
     // Skybox
     //unsigned int skyboxVAO, skyboxVBO, skyboxCube;
     //float skyboxVertices[] = {
@@ -183,6 +181,22 @@ int main(int argc, char ** argv)
         //loadTexture("resource\\SkyBox\\SkyBox5.bmp")
     };
 
+    float waterVertices[] = {
+        -100.0f, -100.0f,
+         100.0f, -100.0f,
+        -100.0f,  100.0f,
+         100.0f,  100.0f,
+    };
+    unsigned int waterVAO, waterVBO;
+    glGenVertexArrays(1, &waterVAO);
+    glGenBuffers(1, &waterVBO);
+    glBindVertexArray(waterVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(waterVertices), &waterVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
+    glBindVertexArray(0);
+
     {
     //    glViewport(0, 0, 256, 256);
     //    unsigned int frameBuffer;
@@ -220,7 +234,7 @@ int main(int argc, char ** argv)
     //    glViewport(0, 0, ScrWidth, ScrHeight);
     }
 
-    unsigned int frameBuffer, RBO;
+    unsigned int frameBuffer;
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
     unsigned int texColorBuffer, texDepthBuffer;
@@ -231,7 +245,6 @@ int main(int argc, char ** argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
-    //glGenRenderbuffers(1, &RBO);
     glGenTextures(1, &texDepthBuffer);
     glBindTexture(GL_TEXTURE_2D, texDepthBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, ScrWidth, ScrHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -239,6 +252,7 @@ int main(int argc, char ** argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texDepthBuffer, 0);
+    //glGenRenderbuffers(1, &RBO);
     //glBindRenderbuffer(GL_RENDERBUFFER, RBO);
     //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, ScrWidth, ScrHeight);
     //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO);
@@ -257,12 +271,14 @@ int main(int argc, char ** argv)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glEnable(GL_FRAMEBUFFER_SRGB);
+        glEnable(GL_CULL_FACE);
 
         gv3 worldUp = gv3(0.0f, 1.0f, 0.0f);
         gv3 reflectPos = glm::reflect(camera.Position, worldUp);
-        gm4 reflectView = glm::lookAt(reflectPos, reflectPos + glm::reflect(camera.Front, worldUp), gv3(0.0f, 1.0f, 0.0f));
+        gm4 view = camera.GetViewMatrix();
         gm4 proj = glm::perspective(camera.Zoom, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
-        gm4 reflectProj = glm::perspective(75.0f, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
+        gm4 reflectView = glm::lookAt(reflectPos, reflectPos + glm::reflect(camera.Front, worldUp), worldUp);
+        gm4 reflectProj = glm::perspective(45.0f, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
         
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -271,7 +287,7 @@ int main(int argc, char ** argv)
         glDepthMask(GL_FALSE);
         glUseProgram(skybox2Shader);
         setMat4(skyboxShader, "view", gm4(gm3(reflectView)));
-        setMat4(skyboxShader, "proj", proj);
+        setMat4(skyboxShader, "proj", reflectProj);
         skybox2.Draw(skybox2Shader);
         glDepthMask(GL_TRUE);
 
@@ -280,7 +296,7 @@ int main(int argc, char ** argv)
         setVec3(terrainShader, "viewPos", reflectPos);
         setMat4(terrainShader, "model", glm::translate(glm::scale(gm4(1.0f), gv3(5.0f, 5.0f, 5.0f)), gv3(-0.5f, 0.0f, 0.0f)));
         setMat4(terrainShader, "view", reflectView);
-        setMat4(terrainShader, "proj", proj);
+        setMat4(terrainShader, "proj", reflectProj);
         setFloat(terrainShader, "base", -0.06f);
         setFloat(terrainShader, "scale", 0.2f);
         setTexture2D(terrainShader, "heightMap", 1, terrainHeight);
@@ -312,6 +328,20 @@ int main(int argc, char ** argv)
         setTexture2D(terrainShader, "detailMap", 3, terrainDetail);
         glPatchParameteri(GL_PATCH_VERTICES, 4);
         glDrawArrays(GL_PATCHES, 0, terrainVertices.size() / 4);
+        glBindVertexArray(0);
+
+        glUseProgram(waterShader);
+        glBindVertexArray(waterVAO);
+        setVec3(waterShader, "viewPos", camera.Position);
+        setMat4(waterShader, "model", gm4(1.0f));
+        setMat4(waterShader, "view", camera.GetViewMatrix());
+        setMat4(waterShader, "proj", proj);
+        setMat4(waterShader, "reflViewMat", reflectView);
+        setMat4(waterShader, "reflProjMat", reflectProj);
+        setTexture2D(waterShader, "reflColor", 1, texColorBuffer);
+        setTexture2D(waterShader, "reflDepth", 2, texDepthBuffer);
+        glPatchParameteri(GL_PATCH_VERTICES, 4);
+        glDrawArrays(GL_PATCHES, 0, 4);
         glBindVertexArray(0);
 
         glUseProgram(windowShader);

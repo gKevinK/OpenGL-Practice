@@ -1,6 +1,6 @@
 #version 430 core
 
-layout(quads, equal_spacing, cw) in;
+layout(quads, equal_spacing, ccw) in;
 
 in vec2 TexCoord_te[];
 

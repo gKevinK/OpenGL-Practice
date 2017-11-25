@@ -173,10 +173,20 @@ in vec3 FragPos;
 in vec3 Normal;
 
 uniform vec3 viewPos;
+uniform mat4 reflViewMat;
+uniform mat4 reflProjMat;
+uniform sampler2D reflColor;
+uniform sampler2D reflDepth;
 
 void main()
 {
+	vec3 norm = normalize(Normal);
+	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);
+	vec2 texCoord = vec2(reflProjMat * reflViewMat * vec4(FragPos, 1.0));
     FragColor = vec4(Normal, 1.0);
+	FragColor = texture(reflColor, texCoord);
+	FragColor = vec4(texCoord, 0.0, 1.0);
+	//FragColor = reflViewMat * vec4(FragPos, 1.0);
 })=====";
 
 const std::string water_tesc_glsl = R"=====(#version 430 core
@@ -206,6 +216,7 @@ void main()
             d = 6;
         else
             d = 3;
+		d = 1;
         gl_TessLevelOuter[0] = d;
         gl_TessLevelOuter[1] = d;
         gl_TessLevelOuter[2] = d;
@@ -219,7 +230,7 @@ void main()
 
 const std::string water_tese_glsl = R"=====(#version 430 core
 
-layout(quads, equal_spacing, cw) in;
+layout(quads, equal_spacing, ccw) in;
 
 in vec2 TexCoord_te[];
 
@@ -269,6 +280,6 @@ uniform float h;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, 1.0, 1.0); 
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
     TexCoord = aTexCoord;
 })=====";

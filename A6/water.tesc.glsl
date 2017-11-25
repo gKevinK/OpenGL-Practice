@@ -25,6 +25,8 @@ void main()
             d = 6;
         else
             d = 3;
+		d = 1;
+		// Left down right up column row
         gl_TessLevelOuter[0] = d;
         gl_TessLevelOuter[1] = d;
         gl_TessLevelOuter[2] = d;
