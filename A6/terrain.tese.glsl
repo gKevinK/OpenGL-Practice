@@ -30,4 +30,5 @@ void main()
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     pos.y = base + texture(heightMap, TexCoord).x * scale;
     gl_Position = proj * view * model * vec4(pos, 1.0);
+	FragPos = vec3(model * vec4(pos, 1.0));
 }

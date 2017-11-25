@@ -27,7 +27,7 @@ float lastY = ScrHeight / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-Camera camera = Camera(gv3(0.0f, 0.0f, 5.0f));
+Camera camera = Camera(gv3(0.0f, 1.0f, 5.0f));
 
 int main(int argc, char ** argv)
 {
@@ -112,36 +112,31 @@ int main(int argc, char ** argv)
     //     1.0f, -1.0f, -1.0f,
     //     1.0f, -1.0f, -1.0f,
     //     1.0f,  1.0f, -1.0f,
-    //    -1.0f,  1.0f, -1.0f,
-
+    //    -1.0f,  1.0f, -1.0f, //
     //    -1.0f, -1.0f,  1.0f,
     //    -1.0f, -1.0f, -1.0f,
     //    -1.0f,  1.0f, -1.0f,
     //    -1.0f,  1.0f, -1.0f,
     //    -1.0f,  1.0f,  1.0f,
-    //    -1.0f, -1.0f,  1.0f,
-
+    //    -1.0f, -1.0f,  1.0f, //
     //    1.0f, -1.0f, -1.0f,
     //    1.0f, -1.0f,  1.0f,
     //    1.0f,  1.0f,  1.0f,
     //    1.0f,  1.0f,  1.0f,
     //    1.0f,  1.0f, -1.0f,
-    //    1.0f, -1.0f, -1.0f,
-
+    //    1.0f, -1.0f, -1.0f, //
     //    -1.0f, -1.0f,  1.0f,
     //    -1.0f,  1.0f,  1.0f,
     //     1.0f,  1.0f,  1.0f,
     //     1.0f,  1.0f,  1.0f,
     //     1.0f, -1.0f,  1.0f,
-    //    -1.0f, -1.0f,  1.0f,
-
+    //    -1.0f, -1.0f,  1.0f, //
     //    -1.0f,  1.0f, -1.0f,
     //     1.0f,  1.0f, -1.0f,
     //     1.0f,  1.0f,  1.0f,
     //     1.0f,  1.0f,  1.0f,
     //    -1.0f,  1.0f,  1.0f,
-    //    -1.0f,  1.0f, -1.0f,
-
+    //    -1.0f,  1.0f, -1.0f, //
     //    -1.0f, -1.0f, -1.0f,
     //    -1.0f, -1.0f,  1.0f,
     //     1.0f, -1.0f, -1.0f,
@@ -149,7 +144,6 @@ int main(int argc, char ** argv)
     //    -1.0f, -1.0f,  1.0f,
     //     1.0f, -1.0f,  1.0f,
     //};
-
     //std::vector<std::string> cubePaths =
     //{
     //    "resource\\right.jpg",
@@ -187,7 +181,7 @@ int main(int argc, char ** argv)
         -100.0f,  100.0f,
          100.0f,  100.0f,
     };
-    unsigned int waterVAO, waterVBO;
+    unsigned int waterVAO, waterVBO, waterTex;
     glGenVertexArrays(1, &waterVAO);
     glGenBuffers(1, &waterVBO);
     glBindVertexArray(waterVAO);
@@ -196,6 +190,7 @@ int main(int argc, char ** argv)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
     glBindVertexArray(0);
+    waterTex = loadTexture("resource\\SkyBox\\SkyBox5.bmp");
 
     {
     //    glViewport(0, 0, 256, 256);
@@ -340,6 +335,7 @@ int main(int argc, char ** argv)
         setMat4(waterShader, "reflProjMat", reflectProj);
         setTexture2D(waterShader, "reflColor", 1, texColorBuffer);
         setTexture2D(waterShader, "reflDepth", 2, texDepthBuffer);
+        setTexture2D(waterShader, "waterTex", 3, waterTex);
         glPatchParameteri(GL_PATCH_VERTICES, 4);
         glDrawArrays(GL_PATCHES, 0, 4);
         glBindVertexArray(0);
@@ -386,8 +382,10 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
         camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-        if (camera.Position.y > 0.1)
-            camera.ProcessKeyboard(DOWN, deltaTime);
+        camera.ProcessKeyboard(DOWN, deltaTime);
+    if (camera.Position.y < 0.1) {
+        camera.Position.y = 0.1;
+    }
 }
 
 void mouse_callback(GLFWwindow* window, double xposd, double yposd)

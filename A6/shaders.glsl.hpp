@@ -55,6 +55,7 @@ const std::string terrain_frag_glsl = R"=====(#version 430 core
 
 out vec4 FragColor;
 
+in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
 
@@ -64,6 +65,7 @@ uniform sampler2D detailMap;
 
 void main()
 {
+	if (FragPos.y < 0) discard;
     vec3 detail = texture(detailMap, TexCoord * 10).rgb * 0.5 - vec3(0.25);
     FragColor = vec4(texture(textureMap, TexCoord).rgb + detail, 1.0);
 })=====";
@@ -138,6 +140,7 @@ void main()
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     pos.y = base + texture(heightMap, TexCoord).x * scale;
     gl_Position = proj * view * model * vec4(pos, 1.0);
+	FragPos = vec3(model * vec4(pos, 1.0));
 })=====";
 
 const std::string terrain_vert_glsl = R"=====(#version 430 core
@@ -177,16 +180,16 @@ uniform mat4 reflViewMat;
 uniform mat4 reflProjMat;
 uniform sampler2D reflColor;
 uniform sampler2D reflDepth;
+uniform sampler2D waterTex;
 
 void main()
 {
 	vec3 norm = normalize(Normal);
 	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);
-	vec2 texCoord = vec2(reflProjMat * reflViewMat * vec4(FragPos, 1.0));
+	vec4 texCoord_t = reflProjMat * reflViewMat * vec4(FragPos, 1.0);
+	vec2 texCoord = vec2(0.5) + 0.5 * texCoord_t.xy / texCoord_t.w;
     FragColor = vec4(Normal, 1.0);
 	FragColor = texture(reflColor, texCoord);
-	FragColor = vec4(texCoord, 0.0, 1.0);
-	//FragColor = reflViewMat * vec4(FragPos, 1.0);
 })=====";
 
 const std::string water_tesc_glsl = R"=====(#version 430 core
@@ -217,6 +220,7 @@ void main()
         else
             d = 3;
 		d = 1;
+		// Left down right up column row
         gl_TessLevelOuter[0] = d;
         gl_TessLevelOuter[1] = d;
         gl_TessLevelOuter[2] = d;
@@ -280,6 +284,6 @@ uniform float h;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+    gl_Position = vec4(aPos.x, aPos.y, 0.5, 1.0); 
     TexCoord = aTexCoord;
 })=====";
