@@ -234,7 +234,7 @@ int main(int argc, char ** argv)
     //glGenRenderbuffers(1, &RBO);
     glGenTextures(1, &texDepthBuffer);
     glBindTexture(GL_TEXTURE_2D, texDepthBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, ScrWidth, ScrHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, ScrWidth, ScrHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -270,6 +270,30 @@ int main(int argc, char ** argv)
 
         glDepthMask(GL_FALSE);
         glUseProgram(skybox2Shader);
+        setMat4(skyboxShader, "view", gm4(gm3(reflectView)));
+        setMat4(skyboxShader, "proj", proj);
+        skybox2.Draw(skybox2Shader);
+        glDepthMask(GL_TRUE);
+
+        glUseProgram(terrainShader);
+        glBindVertexArray(terrainVAO);
+        setVec3(terrainShader, "viewPos", reflectPos);
+        setMat4(terrainShader, "model", glm::translate(glm::scale(gm4(1.0f), gv3(5.0f, 5.0f, 5.0f)), gv3(-0.5f, 0.0f, 0.0f)));
+        setMat4(terrainShader, "view", reflectView);
+        setMat4(terrainShader, "proj", proj);
+        setFloat(terrainShader, "base", -0.06f);
+        setFloat(terrainShader, "scale", 0.2f);
+        setTexture2D(terrainShader, "heightMap", 1, terrainHeight);
+        setTexture2D(terrainShader, "textureMap", 2, terrainTex);
+        setTexture2D(terrainShader, "detailMap", 3, terrainDetail);
+        glPatchParameteri(GL_PATCH_VERTICES, 4);
+        glDrawArrays(GL_PATCHES, 0, terrainVertices.size() / 4);
+        glBindVertexArray(0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        glDepthMask(GL_FALSE);
+        glUseProgram(skybox2Shader);
         setMat4(skyboxShader, "view", gm4(gm3(camera.GetViewMatrix())));
         setMat4(skyboxShader, "proj", proj);
         skybox2.Draw(skybox2Shader);
@@ -290,7 +314,6 @@ int main(int argc, char ** argv)
         glDrawArrays(GL_PATCHES, 0, terrainVertices.size() / 4);
         glBindVertexArray(0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glUseProgram(windowShader);
         setTexture2D(windowShader, "tex", 1, texColorBuffer);
         wind.Draw(windowShader);
