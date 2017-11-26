@@ -175,6 +175,7 @@ out vec4 FragColor;
 in vec3 FragPos;
 in vec3 Normal;
 
+uniform float time;
 uniform vec3 viewPos;
 uniform mat4 reflViewMat;
 uniform mat4 reflProjMat;
@@ -284,6 +285,6 @@ uniform float h;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, 0.5, 1.0); 
+    gl_Position = vec4(aPos.x, aPos.y, -1.0, 1.0); 
     TexCoord = aTexCoord;
 })=====";

@@ -229,10 +229,9 @@ int main(int argc, char ** argv)
     //    glViewport(0, 0, ScrWidth, ScrHeight);
     }
 
-    unsigned int frameBuffer;
+    unsigned int frameBuffer, texColorBuffer, texDepthBuffer;
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-    unsigned int texColorBuffer, texDepthBuffer;
     glGenTextures(1, &texColorBuffer);
     glBindTexture(GL_TEXTURE_2D, texColorBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ScrWidth, ScrHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -255,8 +254,6 @@ int main(int argc, char ** argv)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
-
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -273,7 +270,7 @@ int main(int argc, char ** argv)
         gm4 view = camera.GetViewMatrix();
         gm4 proj = glm::perspective(camera.Zoom, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
         gm4 reflectView = glm::lookAt(reflectPos, reflectPos + glm::reflect(camera.Front, worldUp), worldUp);
-        gm4 reflectProj = glm::perspective(45.0f, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
+        gm4 reflectProj = glm::perspective(30.0f, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
         
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -327,6 +324,7 @@ int main(int argc, char ** argv)
 
         glUseProgram(waterShader);
         glBindVertexArray(waterVAO);
+        setFloat(waterShader, "time", currentFrame);
         setVec3(waterShader, "viewPos", camera.Position);
         setMat4(waterShader, "model", gm4(1.0f));
         setMat4(waterShader, "view", camera.GetViewMatrix());
