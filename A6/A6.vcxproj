@@ -170,6 +170,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClCompile Include="..\shared\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="skybox2.cpp" />
+    <ClCompile Include="terrain.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClInclude Include="fps_camera.h" />
     <ClInclude Include="shaders.glsl.hpp" />
     <ClInclude Include="skybox2.hpp" />
+    <ClInclude Include="terrain.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>

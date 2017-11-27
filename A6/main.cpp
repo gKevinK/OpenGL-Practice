@@ -382,8 +382,8 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         camera.ProcessKeyboard(DOWN, deltaTime);
-    if (camera.Position.y < 0.1) {
-        camera.Position.y = 0.1;
+    if (camera.Position.y < 0.1f) {
+        camera.Position.y = 0.1f;
     }
 }
 

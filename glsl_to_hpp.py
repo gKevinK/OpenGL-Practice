@@ -9,7 +9,7 @@ if len(sys.argv) < 2:
     exit(1)
 
 proj_dir = sys.argv[1]
-content = ["#include <string>"]
+content = ["#ifndef SHADERS_GLSL_HPP\n#define SHADERS_GLSL_HPP", "#include <string>"]
 for file_name in os.listdir(proj_dir):
     path = os.path.join(proj_dir, file_name)
     if not file_name.endswith('.glsl'):
@@ -22,6 +22,7 @@ for file_name in os.listdir(proj_dir):
         string = 'const std::string ' + file_name.replace('.', '_') \
                  + ' = R"=====(' + string + ')=====";'
         content.append(string)
+content.append("#endif")
 
 target_name = "shaders.glsl.hpp" if len(sys.argv) < 3 else sys.argv[2]
 target = open(os.path.join(proj_dir, target_name), "w")
