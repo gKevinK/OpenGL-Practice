@@ -68,9 +68,9 @@ int main(int argc, char ** argv)
 #endif // _DEBUG
 
     // Window
-    Window wind = Window(-1.0f, -1.0f, 0.8f, 0.8f);
+    Window wind = Window(-1.0f, -1.0f, 0.6f, 0.6f);
     wind.Init();
-    Window wind2 = Window(-0.2f, -1.0f, 0.8f, 0.8f);
+    Window wind2 = Window(-0.4f, -1.0f, 0.6f, 0.6f);
     wind2.Init();
 
     // Terrain
@@ -172,7 +172,7 @@ int main(int argc, char ** argv)
         loadTexture("resource\\SkyBox\\SkyBox2.bmp", GL_CLAMP_TO_EDGE),
         loadTexture("resource\\SkyBox\\SkyBox3.bmp", GL_CLAMP_TO_EDGE),
         loadTexture("resource\\SkyBox\\SkyBox4.bmp", GL_CLAMP_TO_EDGE),
-        //loadTexture("resource\\SkyBox\\SkyBox5.bmp")
+        //loadTexture("resource\\SkyBox\\SkyBox5.bmp", GL_CLAMP_TO_EDGE),
     };
 
     float waterVertices[] = {
@@ -263,7 +263,7 @@ int main(int argc, char ** argv)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glEnable(GL_FRAMEBUFFER_SRGB);
-        glEnable(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
 
         gv3 worldUp = gv3(0.0f, 1.0f, 0.0f);
         gv3 reflectPos = glm::reflect(camera.Position, worldUp);
@@ -300,6 +300,7 @@ int main(int argc, char ** argv)
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        glEnable(GL_CULL_FACE);
         glDepthMask(GL_FALSE);
         glUseProgram(skybox2Shader);
         setMat4(skyboxShader, "view", gm4(gm3(camera.GetViewMatrix())));
@@ -338,11 +339,11 @@ int main(int argc, char ** argv)
         glDrawArrays(GL_PATCHES, 0, 4);
         glBindVertexArray(0);
 
-        glUseProgram(windowShader);
-        setTexture2D(windowShader, "tex", 1, texColorBuffer);
-        wind.Draw(windowShader);
-        setTexture2D(windowShader, "tex", 2, texDepthBuffer);
-        wind2.Draw(windowShader);
+        //glUseProgram(windowShader);
+        //setTexture2D(windowShader, "tex", 1, texColorBuffer);
+        //wind.Draw(windowShader);
+        //setTexture2D(windowShader, "tex", 2, texDepthBuffer);
+        //wind2.Draw(windowShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
