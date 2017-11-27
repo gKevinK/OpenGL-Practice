@@ -22,18 +22,18 @@ void main()
 	vec3 fragCoord = reflTexCoord(FragPos);
 	vec3 endCoord = reflTexCoord(reflectDir);
 	float rLength = 1.0 / length(fragCoord.xy - endCoord.xy);
-	for (float i = 0; i < 1;) {
-		vec3 coord = mix(fragCoord, endCoord, i);
+	for (float i = 0.0; i < 10.0; ) {
+		vec3 coord = reflTexCoord(FragPos + reflectDir * i);
 		float depth = texture(reflDepth, coord.xy).r;
-		if (depth < reflTexCoord(coord).z) {
+		if (depth > coord.z) {
 			FragColor = texture(reflColor, coord.xy);
 			return;
 		}
-		//i += max(0.05, rLength / 20);
-		i += 0.02;
+		//i += max(0.02, rLength / 20);
+		i += 0.05;
 	}
-
-	FragColor = texture(reflColor, fragCoord.xy);
+	
+	FragColor = vec4(vec3(0.0), 1.0);//texture(reflColor, fragCoord.xy);
 }
 
 vec3 reflTexCoord(vec3 pos)
