@@ -195,8 +195,8 @@ void main()
 {
     // Wave
 	vec3 norm = normalize(Normal);
-    norm += 0.001 * normalize(vec3(1.0, 0.0, 3.0)) * sin(25 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.001 * normalize(vec3(3.0, 0.0, 1.0)) * sin(25 * (1.0 * FragPos.x + 3.0 * FragPos.z + time));
+    norm += 0.001 * normalize(vec3(1.0, 0.0, 3.0)) * sin(20 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
+    norm += 0.001 * normalize(vec3(3.0, 0.0, 1.0)) * sin(20 * (1.0 * FragPos.x + 3.0 * FragPos.z + time));
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);
@@ -206,7 +206,7 @@ void main()
     // Ray marching
     vec2 hitCoord;
     float i;
-	for (i = 0.0; i < 10.0; i += 0.1) {
+	for (i = 0.0; i < 10.0; i += 0.2) {
 		vec3 coord = reflTexCoord(FragPos + reflectDir * i);
 		float depth = texture(reflDepth, coord.xy).r;
 		if (depth < coord.z) {
