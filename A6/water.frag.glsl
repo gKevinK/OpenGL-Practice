@@ -71,6 +71,11 @@ vec3 hit(vec3 pos, vec3 dir)
 {
     float dl = max(0, 0);
     vec3 l = pos + dir * dl;
+	// 
+	for (int i = 0; i < 10; i++) {
+		// 
+		l = pos + dir * dl;
+	}
     return l;
 }
 
