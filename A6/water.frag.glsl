@@ -16,7 +16,6 @@ uniform sampler2D waterTex;
 vec3 reflTexCoord(vec3 pos);
 //vec3 reflDirTexCoord(vec3 dir);
 vec3 hit(vec3 pos, vec3 dir);
-vec3 Hit(vec3 pos, vec3 dir);
 
 const float R0 = (0.33 * 0.33) / (2.33 * 2.33);
 
@@ -79,6 +78,7 @@ vec3 hit(vec3 pos, vec3 dir)
     return l;
 }
 
+/*
 vec3 Hit(vec3 x, vec3 R) {
 	float rl = texCUBE(mp, R).a; // |r|
 	float dp = rl - dot(x, R);
@@ -106,3 +106,4 @@ vec3 Hit(vec3 x, vec3 R) {
 	}
 	return l;
 }
+*/

@@ -188,6 +188,7 @@ uniform sampler2D waterTex;
 
 vec3 reflTexCoord(vec3 pos);
 //vec3 reflDirTexCoord(vec3 dir);
+vec3 hit(vec3 pos, vec3 dir);
 
 const float R0 = (0.33 * 0.33) / (2.33 * 2.33);
 
@@ -237,7 +238,48 @@ vec3 reflTexCoord(vec3 pos)
 //    vec4 texCoord_t = reflProjMat * reflViewMat * vec4(dir, 0.0);
 //    return vec3(0.5, 0.5, 0.0) + vec3(0.5, 0.5, 1.0) * texCoord_t.xyz;
 //}
-)=====";
+
+vec3 hit(vec3 pos, vec3 dir)
+{
+    float dl = max(0, 0);
+    vec3 l = pos + dir * dl;
+	// 
+	for (int i = 0; i < 10; i++) {
+		// 
+		l = pos + dir * dl;
+	}
+    return l;
+}
+
+/*
+vec3 Hit(vec3 x, vec3 R) {
+	float rl = texCUBE(mp, R).a; // |r|
+	float dp = rl - dot(x, R);
+	vec3 p = x + R * dp;
+	float ppp = length(p)/texCUBE(mp,p).a;
+	float dun =0, dov =0, pun = ppp, pov = ppp;
+	if (ppp < 1) dun = dp; else dov = dp;
+	float dl = max(dp + rl * (1 - ppp), 0);
+	vec3 l = x + R * dl;
+	// iteration
+	for(int i = 0; i < NITER; i++) {
+		float ddl;
+		float llp = length(l)/texCUBE(mp,l).a;
+		if (llp < 1) { // undershooting
+			dun = dl; pun = llp;
+			ddl = (dov == 0) ? rl * (1 - llp) :
+				(dl-dov) * (1-llp)/(llp-pov);
+		} else { // overshooting
+			dov = dl; pov = llp;
+			ddl = (dun == 0) ? rl * (1 - llp) :
+				(dl-dun) * (1-llp)/(llp-pun);
+		}
+		dl = max(dl + ddl, 0); // avoid flip
+		l = x + R * dl;
+	}
+	return l;
+}
+*/)=====";
 
 const std::string water_tesc_glsl = R"=====(#version 430 core
 

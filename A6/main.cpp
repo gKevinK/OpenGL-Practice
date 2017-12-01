@@ -27,6 +27,7 @@ float lastY = ScrHeight / 2.0f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+unsigned int texColorBuffer, texDepthBuffer;
 Camera camera = Camera(gv3(0.0f, 1.0f, 5.0f));
 
 int main(int argc, char ** argv)
@@ -229,7 +230,7 @@ int main(int argc, char ** argv)
     //    glViewport(0, 0, ScrWidth, ScrHeight);
     }
 
-    unsigned int frameBuffer, texColorBuffer, texDepthBuffer;
+    unsigned int frameBuffer;
     glGenFramebuffers(1, &frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
     glGenTextures(1, &texColorBuffer);
@@ -360,6 +361,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     ScrWidth = width;
     ScrHeight = height;
     glViewport(0, 0, width, height);
+    glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ScrWidth, ScrHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, texDepthBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, ScrWidth, ScrHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 }
 
 void processInput(GLFWwindow *window)
