@@ -25,6 +25,8 @@ void main()
 	vec3 norm = normalize(Normal);
     norm += 0.001 * normalize(vec3(1.0, 0.0, 3.0)) * sin(20 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
     norm += 0.001 * normalize(vec3(3.0, 0.0, 1.0)) * sin(20 * (1.0 * FragPos.x + 3.0 * FragPos.z + time));
+    norm += 0.001 * normalize(vec3(1.0, 0.0, 3.0)) * sin(5 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
+    norm += 0.001 * normalize(vec3(3.0, 0.0, 1.0)) * sin(5 * (1.0 * FragPos.x + 3.0 * FragPos.z + time));
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);
