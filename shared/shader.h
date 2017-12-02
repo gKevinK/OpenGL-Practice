@@ -108,6 +108,28 @@ unsigned loadShader(GLenum SHADER, const char * path, const std::string & type)
     return loadShaderS(SHADER, code, type);
 }
 
+unsigned int loadShaderProgram(const char *comp_path)
+{
+    unsigned int comp = loadShader(GL_COMPUTE_SHADER, comp_path, "COMPUTE");
+    unsigned int program = glCreateProgram();
+    glAttachShader(program, comp);
+    glLinkProgram(program);
+    checkCompileErrors(program, "PROGRAM");
+    glDeleteShader(comp);
+    return program;
+}
+
+unsigned int loadShaderProgramS(const std::string & comp_c)
+{
+    unsigned int comp = loadShaderS(GL_COMPUTE_SHADER, comp_c, "COMPUTE");
+    unsigned int program = glCreateProgram();
+    glAttachShader(program, comp);
+    glLinkProgram(program);
+    checkCompileErrors(program, "PROGRAM");
+    glDeleteShader(comp);
+    return program;
+}
+
 unsigned int loadShaderProgram(const char *vert_path, const char *frag_path, const char *geom_path = nullptr)
 {
     unsigned int vert = loadShader(GL_VERTEX_SHADER, vert_path, "VERTEX");
