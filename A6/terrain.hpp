@@ -8,6 +8,7 @@ class Terrain
 {
 public:
     unsigned int VAO, VBO;
+    unsigned int TextureMap, HeightMap, DetailMap;
 
     Terrain();
     void Init();

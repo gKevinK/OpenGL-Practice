@@ -35,6 +35,18 @@ void Terrain::Init()
 void Terrain::Draw(unsigned int shader)
 {
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glActiveTexture(GL_TEXTURE1);
+    glUniform1i(glGetUniformLocation(shader, "textureMap"), 1);
+    glBindTexture(GL_TEXTURE_2D, TextureMap);
+    glActiveTexture(GL_TEXTURE2);
+    glUniform1i(glGetUniformLocation(shader, "heightMap"), 2);
+    glBindTexture(GL_TEXTURE_2D, HeightMap);
+    glActiveTexture(GL_TEXTURE3);
+    glUniform1i(glGetUniformLocation(shader, "detailMap"), 3);
+    glBindTexture(GL_TEXTURE_2D, DetailMap);
+
+    glPatchParameteri(GL_PATCH_VERTICES, 4);
+    glDrawArrays(GL_PATCHES, 0, vertices.size() / 4);
     glBindVertexArray(0);
 }
