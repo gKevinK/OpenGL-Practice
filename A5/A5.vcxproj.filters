@@ -13,12 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\shaders">
+      <UniqueIdentifier>{2538815b-55c1-494f-b827-fb9c1e20d43f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\glad.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,16 +38,19 @@
     <ClInclude Include="shaders.glsl.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="window.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.comp.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="main.vert.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
     </None>
     <None Include="main.frag.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="main.vert.glsl">
+      <Filter>源文件\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

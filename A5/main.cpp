@@ -5,6 +5,8 @@
 #include "shader.h"
 #include "shaders.glsl.hpp"
 
+#include "window.hpp"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
@@ -42,6 +44,8 @@ int main(int argc, char ** argv)
     unsigned int compShader = loadShaderProgramS(main_comp_glsl);
 #endif // _DEBUG
 
+    Window win;
+    win.Init();
 
     while (!glfwWindowShouldClose(window)) {
         //float currentFrame = (float)glfwGetTime();
@@ -52,6 +56,8 @@ int main(int argc, char ** argv)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        glUseProgram(mainShader);
+        win.Draw(mainShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

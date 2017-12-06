@@ -162,11 +162,13 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
   <ItemGroup>
     <ClCompile Include="..\shared\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shader.h" />
     <ClInclude Include="data.h" />
     <ClInclude Include="shaders.glsl.hpp" />
+    <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main.comp.glsl" />
