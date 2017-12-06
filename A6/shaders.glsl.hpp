@@ -63,14 +63,19 @@ in vec3 Normal;
 in vec2 TexCoord;
 
 uniform vec3 viewPos;
+uniform vec3 dirLight;
 uniform sampler2D textureMap;
 uniform sampler2D detailMap;
 
 void main()
 {
 	if (FragPos.y < 0) discard;
+    vec3 lightDir = normalize(dirLight);
+    vec3 norm = normalize(Normal);
+    float diff = max(dot(norm, lightDir), 0.0);
+
     vec3 detail = texture(detailMap, TexCoord * 10).rgb * 0.5 - vec3(0.25);
-    FragColor = vec4(texture(textureMap, TexCoord).rgb + detail, 1.0);
+    FragColor = vec4(diff * (texture(textureMap, TexCoord).rgb + detail), 1.0);
 })=====";
 
 const std::string terrain_tesc_glsl = R"=====(#version 430 core
@@ -144,6 +149,10 @@ void main()
     pos.y = base + texture(heightMap, TexCoord).x * scale;
     gl_Position = proj * view * model * vec4(pos, 1.0);
 	FragPos = vec3(model * vec4(pos, 1.0));
+
+    float d1 = vec3(1.0, 0.0, 0.0);
+    float d2 = vec3(0.0, 0.0,-1.0);
+    Normal = normalize(cross(d1, d2));
 })=====";
 
 const std::string terrain_vert_glsl = R"=====(#version 430 core

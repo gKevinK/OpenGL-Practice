@@ -231,6 +231,7 @@ int main(int argc, char ** argv)
         setMat4(terrainShader, "proj", reflectProj);
         setFloat(terrainShader, "base", -0.06f);
         setFloat(terrainShader, "scale", 0.2f);
+        setVec3(terrainShader, "dirLight", gv3(-1.0f, 0.5f, 0.0f));
         terrain.Draw(terrainShader);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
