@@ -53,16 +53,15 @@ void main()
     vec4 texColor = texture(waterTex, FragPos.xz + 10 * norm.xz); //  + vec2(-0.1, 0.1) * time
 
     // Mix reflection and refraction
-	float a = 1 - dot(norm, reflectDir);
-	float aa = 
-    float R = R0 + (1 - R0) * a * a * a * a * a;
-    FragColor = reflectColor * R + ;
+    float R = fresnel(dot(norm, reflectDir));
+    FragColor = reflectColor * R + texColor * (1 - R) * 0.5;
 }
 
 float fresnel(float cosine)
 {
-	
-	return 0;
+    float a = 1 - cosine;
+    float aa = a * a;
+    return R0 + (1 - R0) * aa * aa * a;
 }
 
 vec3 reflTexCoord(vec3 pos)

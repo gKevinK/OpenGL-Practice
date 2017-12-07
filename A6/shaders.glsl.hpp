@@ -198,6 +198,7 @@ uniform sampler2D reflColor;
 uniform sampler2D reflDepth;
 uniform sampler2D waterTex;
 
+float fresnel(float cosine);
 vec3 reflTexCoord(vec3 pos);
 //vec3 reflDirTexCoord(vec3 dir);
 vec3 hit(vec3 pos, vec3 dir);
@@ -237,9 +238,15 @@ void main()
     vec4 texColor = texture(waterTex, FragPos.xz + 10 * norm.xz); //  + vec2(-0.1, 0.1) * time
 
     // Mix reflection and refraction
-	//float ang
-    float R = R0 + (1 - R0) * pow(1 - dot(norm, -reflectDir), 2);
-    FragColor = mix(reflectColor, texColor, R);
+    float R = fresnel(dot(norm, reflectDir));
+    FragColor = reflectColor * R + texColor * (1 - R) * 0.5;
+}
+
+float fresnel(float cosine)
+{
+    float a = 1 - cosine;
+    float aa = a * a;
+    return R0 + (1 - R0) * aa * aa * a;
 }
 
 vec3 reflTexCoord(vec3 pos)
