@@ -47,6 +47,8 @@ int main(int argc, char ** argv)
     Window win;
     win.Init();
 
+
+
     while (!glfwWindowShouldClose(window)) {
         //float currentFrame = (float)glfwGetTime();
         //deltaTime = currentFrame - lastFrame;
@@ -63,8 +65,6 @@ int main(int argc, char ** argv)
         glfwPollEvents();
     }
     glfwTerminate();
-    return 0;
-
     return 0;
 }
 

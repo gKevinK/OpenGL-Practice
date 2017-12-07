@@ -237,7 +237,8 @@ void main()
     vec4 texColor = texture(waterTex, FragPos.xz + 10 * norm.xz); //  + vec2(-0.1, 0.1) * time
 
     // Mix reflection and refraction
-    float R = R0 + (1 - R0) * pow(1 - cos(dot(norm, -reflectDir)), 2);
+	//float ang
+    float R = R0 + (1 - R0) * pow(1 - dot(norm, -reflectDir), 2);
     FragColor = mix(reflectColor, texColor, R);
 }
 
