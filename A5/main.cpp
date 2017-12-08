@@ -10,8 +10,8 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
-unsigned int ScrWidth = 1000;
-unsigned int ScrHeight = 800;
+unsigned int ScrWidth = 512;
+unsigned int ScrHeight = 512;
 
 int main(int argc, char ** argv)
 {
@@ -47,7 +47,16 @@ int main(int argc, char ** argv)
     Window win;
     win.Init();
 
-
+    unsigned int frame;
+    glGenTextures(1, &frame);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, frame);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, ScrWidth, ScrHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindImageTexture(0, frame, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
     while (!glfwWindowShouldClose(window)) {
         //float currentFrame = (float)glfwGetTime();
@@ -57,8 +66,13 @@ int main(int argc, char ** argv)
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glUseProgram(compShader);
+        setTexture2D(compShader, "img", 0, frame);
+        glDispatchCompute(512 / 8, 512 / 8, 1);
         
         glUseProgram(mainShader);
+        setTexture2D(mainShader, "tex", 0, frame);
         win.Draw(mainShader);
 
         glfwSwapBuffers(window);

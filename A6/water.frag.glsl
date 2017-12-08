@@ -24,13 +24,14 @@ void main()
 {
     // Wave
 	vec3 norm = normalize(Normal);
-    norm += 0.001 * normalize(vec3(1.0, 0.0, 3.0)) * sin(20 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.001 * normalize(vec3(3.0, 0.0, 1.0)) * sin(20 * (1.0 * FragPos.x + 3.0 * FragPos.z + time));
-    norm += 0.001 * normalize(vec3(1.0, 0.0, 3.0)) * sin(5 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.001 * normalize(vec3(3.0, 0.0, 1.0)) * sin(5 * (1.0 * FragPos.x + 3.0 * FragPos.z + time));
+    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(20 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
+    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(20 * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
+    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(5 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
+    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(5 * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);
+    if (reflectDir.y < 0) reflectDir.y = 0.0;
 	vec3 fragCoord = reflTexCoord(FragPos);
 	//vec3 endCoord = reflDirTexCoord(reflectDir);
 
@@ -50,7 +51,7 @@ void main()
     //if (gl_FragCoord.x < 400)
     //    FragColor = vec4(100 * norm.x, 0.0, 100 * norm.z, 1.0);
     vec4 reflectColor = texture(reflColor, hitCoord);
-    vec4 texColor = texture(waterTex, FragPos.xz + 10 * norm.xz); //  + vec2(-0.1, 0.1) * time
+    vec4 texColor = texture(waterTex, FragPos.xz + 20 * norm.xz); //  + vec2(-0.1, 0.1) * time
 
     // Mix reflection and refraction
     float R = fresnel(dot(norm, reflectDir));

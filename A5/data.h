@@ -8,14 +8,18 @@ struct Sphere
     glm::vec3 Position;
     glm::vec3 Color;
     float Radius;
-    float Reflection;
-    float Refraction;
-    float RefractIndex;
+    float Eta1;
+    float Eta2;
 };
 
 struct Triangle
 {
-    glm::vec3 Position0;
+    glm::vec3 V1;
+    glm::vec3 V2;
+    glm::vec3 V3;
+    glm::vec3 Color;
+    float Eta1;
+    float Eta2;
 };
 
 struct Ray
