@@ -5,7 +5,7 @@
 
 struct Sphere
 {
-    glm::vec3 Position;
+    glm::vec3 Center;
     glm::vec3 Color;
     float Radius;
     float Eta1;
@@ -29,4 +29,3 @@ struct Ray
 };
 
 #endif // !DATA_H
-
