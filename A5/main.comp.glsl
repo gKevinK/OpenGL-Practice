@@ -41,14 +41,14 @@ bool hitSphere(Sphere sphere, Ray ray);
 bool hitTriangle(Triangle triangle, Ray ray);
 
 void main() {
-	vec4 pixel = vec4(1.0, 0.0, 0.0, 1.0);
+	vec4 pixel = vec4(0.1, 0.1, 0.1, 1.0);
 	ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
     ivec2 localCoord = ivec2(gl_LocalInvocationID.xy);
 
 	if (length(coord - ivec2(width, height) / 2) < 100)
-		pixel = vec4(1.0, 1.0, 0.0, 1.0);
+		pixel = vec4(1.0, 0.0, 0.0, 1.0);
 	if (length(coord - ivec2(width, height) / 2) < 25)
-		pixel = vec4(1.0, 1.0, 1.0, 1.0);
+		pixel = vec4(1.0, 1.0, 0.0, 1.0);
 
 	imageStore(img, coord, pixel);
 }
