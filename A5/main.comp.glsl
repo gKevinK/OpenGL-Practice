@@ -26,8 +26,15 @@ struct Ray {
 	vec3 dir;
 };
 
+struct StackFrame {
+    Ray ray;
+    vec3 weight;
+};
+
 uniform sampler2D spheres;
 uniform sampler2D triangles;
+uniform int sphereNum;
+uniform int triangNum;
 
 uniform int width;
 uniform int height;
@@ -38,19 +45,26 @@ uniform vec3 r10;
 uniform vec3 r11;
 
 bool hitSphere(Sphere sphere, Ray ray);
-bool hitTriangle(Triangle triangle, Ray ray);
+bool hitTriangle(Triangle triang, Ray ray);
+
+StackFrame frames[16];
 
 void main() {
 	vec4 pixel = vec4(0.1, 0.1, 0.1, 1.0);
-	ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
-    ivec2 localCoord = ivec2(gl_LocalInvocationID.xy);
+	ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    vec2 up = vec2(p) / vec2(width, height);
+    //ivec2 lp = ivec2(gl_LocalInvocationID.xy);
 
-	if (length(coord - ivec2(width, height) / 2) < 100)
+    Ray ray;
+    ray.origin = viewPos;
+    ray.dir = mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y);
+
+	if (length(p - ivec2(width, height) / 2) < 100)
 		pixel = vec4(1.0, 0.0, 0.0, 1.0);
-	if (length(coord - ivec2(width, height) / 2) < 25)
+	if (length(p - ivec2(width, height) / 2) < 25)
 		pixel = vec4(1.0, 1.0, 0.0, 1.0);
 
-	imageStore(img, coord, pixel);
+	imageStore(img, p, pixel);
 }
 
 bool hitSphere(Sphere sphere, Ray ray)
@@ -58,7 +72,7 @@ bool hitSphere(Sphere sphere, Ray ray)
 	return false;
 }
 
-bool hitTriangle(Triangle triangle, Ray ray)
+bool hitTriangle(Triangle triang, Ray ray)
 {
 	return false;
 }

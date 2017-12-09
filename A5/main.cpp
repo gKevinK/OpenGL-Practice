@@ -7,6 +7,9 @@
 
 #include "window.hpp"
 
+#define gv3 glm::vec3
+#define gm4 glm::mat4
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
@@ -67,10 +70,18 @@ int main(int argc, char ** argv)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(compShader);
-        setTexture2D(compShader, "img", 0, frame);
-        setInt(compShader, "width", ScrWidth);
-        setInt(compShader, "height", ScrHeight);
+        unsigned shader;
+
+        shader = compShader;
+        glUseProgram(shader);
+        setTexture2D(shader, "img", 0, frame);
+        setInt(shader, "width", ScrWidth);
+        setInt(shader, "height", ScrHeight);
+        setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));
+        setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -1.0f)));
+        setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -1.0f)));
+        setVec3(shader, "r10", glm::normalize(gv3(-1.0f,  1.0f, -1.0f)));
+        setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -1.0f)));
         glDispatchCompute(512 / 8, 512 / 8, 1);
         
         glUseProgram(mainShader);
