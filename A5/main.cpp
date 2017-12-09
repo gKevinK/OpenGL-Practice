@@ -15,6 +15,9 @@ void processInput(GLFWwindow *window);
 
 unsigned int ScrWidth = 512;
 unsigned int ScrHeight = 512;
+float lastFrame;
+float deltaTime;
+
 
 int main(int argc, char ** argv)
 {
@@ -61,11 +64,20 @@ int main(int argc, char ** argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindImageTexture(0, frame, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
+    int frameRate = 0;
+    int lastSecond = 0;
     while (!glfwWindowShouldClose(window)) {
-        //float currentFrame = (float)glfwGetTime();
-        //deltaTime = currentFrame - lastFrame;
-        //lastFrame = currentFrame;
+        float currentFrame = (float)glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
         processInput(window);
+
+        frameRate++;
+        if ((int)currentFrame > lastSecond) {
+            std::cout << "\rFrame Rate:  " << frameRate << "  ";
+            lastSecond = (int)currentFrame;
+            frameRate = 0;
+        }
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -84,9 +96,10 @@ int main(int argc, char ** argv)
         setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -1.0f)));
         glDispatchCompute(512 / 8, 512 / 8, 1);
         
-        glUseProgram(mainShader);
-        setTexture2D(mainShader, "tex", 0, frame);
-        win.Draw(mainShader);
+        shader = mainShader;
+        glUseProgram(shader);
+        setTexture2D(shader, "tex", 0, frame);
+        win.Draw(shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

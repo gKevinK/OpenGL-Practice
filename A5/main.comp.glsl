@@ -47,9 +47,16 @@ uniform vec3 r11;
 bool hitSphere(Sphere sphere, Ray ray);
 bool hitTriangle(Triangle triang, Ray ray);
 
+int value(int a)
+{
+	if (a == 0) return 0;
+	return 1 + value(a - 1);
+}
+
 StackFrame frames[16];
 
-void main() {
+void main()
+{
 	vec4 pixel = vec4(0.1, 0.1, 0.1, 1.0);
 	ivec2 p = ivec2(gl_GlobalInvocationID.xy);
     vec2 up = vec2(p) / vec2(width, height);
@@ -59,10 +66,11 @@ void main() {
     ray.origin = viewPos;
     ray.dir = mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y);
 
-	if (length(p - ivec2(width, height) / 2) < 100)
-		pixel = vec4(1.0, 0.0, 0.0, 1.0);
-	if (length(p - ivec2(width, height) / 2) < 25)
-		pixel = vec4(1.0, 1.0, 0.0, 1.0);
+	int i = 1;
+	while (true) {
+		if (i == 0) break;
+		i--;
+	}
 
 	imageStore(img, p, pixel);
 }
