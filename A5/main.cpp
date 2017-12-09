@@ -21,7 +21,7 @@ int main(int argc, char ** argv)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    GLFWwindow* window = glfwCreateWindow(ScrWidth, ScrHeight, "B-7", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(ScrWidth, ScrHeight, "A-5", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -69,6 +69,8 @@ int main(int argc, char ** argv)
 
         glUseProgram(compShader);
         setTexture2D(compShader, "img", 0, frame);
+        setInt(compShader, "width", ScrWidth);
+        setInt(compShader, "height", ScrHeight);
         glDispatchCompute(512 / 8, 512 / 8, 1);
         
         glUseProgram(mainShader);
