@@ -3,6 +3,8 @@
 layout(local_size_x = 8, local_size_y = 8) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
+#define EPSILON 0.00001
+
 struct Sphere {
 	vec3 center;
 	vec3 color;
@@ -75,8 +77,19 @@ void main()
 	imageStore(img, p, pixel);
 }
 
-bool hitSphere(Sphere sphere, Ray ray)
+bool hitSphere(Sphere s, Ray r)
 {
+/* vec2 intersectSphere(vec3 origin, vec3 dir, const sphere s) {
+	vec3 L = s.center - r.origin;
+	float tca = dot(L, r.dir);
+	float d2 = dot(L, L) - tca * tca;
+	if (d2 > s.radius * s.radius)
+		return vec2(-1.0);
+	float thc = sqrt(s.r * s.r - d2);
+	float t0 = tca - thc;
+	float t1 = tca + thc;
+	if (t0 < t1 && t1 >= 0.0)
+		return vec2(t0, t1); */
 	return false;
 }
 
