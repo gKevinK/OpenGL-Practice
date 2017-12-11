@@ -53,7 +53,8 @@ int main(int argc, char ** argv)
     Window win;
     win.Init();
 
-    unsigned int frame;
+
+    unsigned int frame, sphereTex;
     glGenTextures(1, &frame);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, frame);
@@ -63,6 +64,15 @@ int main(int argc, char ** argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindImageTexture(0, frame, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+
+    float spheres[] = {
+        0.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+    };
+    glGenTextures(1, &sphereTex);
+    glBindTexture(GL_TEXTURE_2D, sphereTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 1, 3, 0, GL_RGB32F, GL_FLOAT, spheres);
 
     int frameRate = 0;
     int lastSecond = 0;
@@ -87,6 +97,8 @@ int main(int argc, char ** argv)
         shader = compShader;
         glUseProgram(shader);
         setTexture2D(shader, "img", 0, frame);
+        setTexture2D(shader, "spheres", 1, sphereTex);
+        setInt(shader, "sphereNum", 1);
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));

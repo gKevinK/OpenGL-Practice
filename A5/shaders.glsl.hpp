@@ -59,8 +59,9 @@ uniform vec3 r10;
 uniform vec3 r11;
 uniform DirLight dirLight;
 
-bool hitSphere(Sphere sphere, Ray ray, float d);
-float sphereReflect(Sphere sphere, Ray ray, inout Ray rays, out int num);
+Sphere getSphere(int i);
+bool hitSphere(Sphere sphere, Ray ray, out float d);
+float sphereReflect(Sphere sphere, Ray ray, out vec3 norm, inout Ray rays, out int num);
 //float sphereRefract(Sphere sphere, Ray ray, out Ray refr);
 bool hitTriangle(Triangle triang, Ray ray, float d);
 
@@ -72,7 +73,7 @@ Sphere sph = Sphere(vec3(0.0), vec3(1.0), 1.0, 1.0, 1.0);
 
 void main()
 {
-    vec4 pixel = vec4(0.1, 0.1, 0.1, 1.0);
+    vec4 pixel = vec4(0.0, 0.0, 0.0, 1.0);
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
     vec2 up = vec2(p) / vec2(width, height);
     //ivec2 lp = ivec2(gl_LocalInvocationID.xy);
@@ -81,15 +82,28 @@ void main()
     Ray ray = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
 
     float dist = EPSILON;
-    Ray 
-    if (hitSphere(sph, ray, dist))
-        pixel = Calc;
+    Ray rs[2];
+    Sphere s;
+    Triangle t;
+    for (int i = 0; i < sphereNum; i++) {
+        Sphere st = getSphere(i);
+        pixel.xyz = st.color;
+        //if (hitSphere(st, ray, dist))
+            //pixel.xyz += ray.weight * calcDirLight(dirLight, vec3(0.0, 1.0, 0.0), ray.dir);
+            //pixel.xyz = vec3(1.0, 1.0, 1.0);
+    }
 
     pixel = pow(pixel, vec4(1 / GAMMA));
     imageStore(img, p, pixel);
 }
 
-bool hitSphere(Sphere s, Ray r, float d)
+Sphere getSphere(int i)
+{
+    return Sphere(texture(spheres, ivec2(i, 0)).rgb, texture(spheres, ivec2(i, 1)).xyz,
+        texture(spheres, ivec2(i, 2)).x, texture(spheres, ivec2(i, 2)).y, texture(spheres, ivec2(i, 2)).z);
+}
+
+bool hitSphere(Sphere s, Ray r, out float d)
 {
     vec3 L = s.center - r.origin;
     float tca = dot(L, r.dir);
@@ -100,13 +114,16 @@ bool hitSphere(Sphere s, Ray r, float d)
     float t0 = tca - thc;
     float t1 = tca + thc;
     d = t0 > 0.0 ? t0 : t1;
+    //norm = normalize(-(r.origin + d * r.dir - s.center));
     return true;
 }
 
-//float sphereReflect(Sphere s, Ray r, out Ray[] rs)
-//{
-//
-//}
+float sphereReflect(Sphere s, Ray r, out vec3 norm, inout Ray rs[2], out int num)
+{
+    norm = vec3(1.0);
+    num = 0;
+    return 0.0;
+}
 
 bool hitTriangle(Triangle triang, Ray ray)
 {
@@ -118,8 +135,10 @@ vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.direction);
     float diff = max(dot(normal, lightDir), 0.0);
-    float spec = BlinnPhong(normal, lightDir, viewDir, material.shininess);
-    return light.color * (diff * material.diffuse + spec * material.specular);
+    //float spec = blinnPhong(normal, lightDir, viewDir, material.shininess);
+    //return light.color * (diff * material.diffuse + spec * material.specular);
+    float spec = blinnPhong(normal, lightDir, viewDir, 32);
+    return light.color * (diff * 0.8 + spec * 1.0);
 }
 
 //vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
