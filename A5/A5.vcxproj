@@ -119,6 +119,9 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
 xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -135,6 +138,9 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
       <Command>xcopy $(SolutionDir)resource\* $(TargetDir) /S /E /C /Y
 xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)glsl_to_hpp.py $(ProjectDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

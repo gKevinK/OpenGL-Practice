@@ -90,11 +90,13 @@ int main(int argc, char ** argv)
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));
-        setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -1.0f)));
-        setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -1.0f)));
-        setVec3(shader, "r10", glm::normalize(gv3(-1.0f,  1.0f, -1.0f)));
-        setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -1.0f)));
-        glDispatchCompute(512 / 8, 512 / 8, 1);
+        setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -2.0f)));
+        setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -2.0f)));
+        setVec3(shader, "r10", glm::normalize(gv3(-1.0f,  1.0f, -2.0f)));
+        setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -2.0f)));
+        setVec3(shader, "dirLight.direction", gv3(0.0f, -1.0, 0.0f));
+        setVec3(shader, "dirLight.color", gv3(1.0f, 1.0f, 1.0f));
+        glDispatchCompute(ScrWidth / 8, ScrHeight / 8, 1);
         
         shader = mainShader;
         glUseProgram(shader);
