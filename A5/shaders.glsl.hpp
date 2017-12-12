@@ -8,6 +8,7 @@ const std::string main_comp_glsl = R"=====(#version 430 core
 layout(local_size_x = 8, local_size_y = 8) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
+#define FARCUT 100.0
 #define EPSILON 0.00001
 #define GAMMA 2.2
 
@@ -40,15 +41,15 @@ struct Ray {
     vec3 weight;
 };
 
-struct StackFrame {
-    Ray ray;
-    vec3 weight;
-};
+//struct StackFrame {
+//    Ray ray;
+//    vec3 weight;
+//};
 
-uniform sampler2D spheres;
-uniform sampler2D triangles;
+uniform samplerBuffer spheres;
+//uniform sampler2D triangles;
 uniform int sphereNum;
-uniform int triangNum;
+//uniform int triangNum;
 
 uniform int width;
 uniform int height;
@@ -61,7 +62,7 @@ uniform DirLight dirLight;
 
 Sphere getSphere(int i);
 bool hitSphere(Sphere sphere, Ray ray, out float d);
-float sphereReflect(Sphere sphere, Ray ray, out vec3 norm, inout Ray rays, out int num);
+vec3 calcSphere(Sphere sphere, Ray ray, inout Ray rays[2], out int num);
 //float sphereRefract(Sphere sphere, Ray ray, out Ray refr);
 bool hitTriangle(Triangle triang, Ray ray, float d);
 
@@ -77,20 +78,30 @@ void main()
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
     vec2 up = vec2(p) / vec2(width, height);
     //ivec2 lp = ivec2(gl_LocalInvocationID.xy);
-    StackFrame frames[16];
+    //StackFrame frames[16];
     
     Ray ray = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
 
-    float dist = EPSILON;
+    float dist = FARCUT;
     Ray rs[2];
+    int rnum;
     Sphere s;
-    Triangle t;
+    //Triangle t;
     for (int i = 0; i < sphereNum; i++) {
         Sphere st = getSphere(i);
-        pixel.xyz = st.color;
-        //if (hitSphere(st, ray, dist))
-            //pixel.xyz += ray.weight * calcDirLight(dirLight, vec3(0.0, 1.0, 0.0), ray.dir);
-            //pixel.xyz = vec3(1.0, 1.0, 1.0);
+        float d;
+        if (hitSphere(st, ray, d)) {
+            if (dist > d) {
+                dist = d;
+                s = st;
+            }
+        }
+    }
+    /* for (int i = 0; i < triangNum; i++) {}*/
+
+    if (dist < FARCUT) {
+        vec3 norm = calcSphere(s, ray, rs, rnum);
+        pixel.rgb += ray.weight * calcDirLight(dirLight, norm, ray.dir);
     }
 
     pixel = pow(pixel, vec4(1 / GAMMA));
@@ -99,8 +110,9 @@ void main()
 
 Sphere getSphere(int i)
 {
-    return Sphere(texture(spheres, ivec2(i, 0)).xyz, texture(spheres, ivec2(i, 2)).rgb,
-        texture(spheres, ivec2(i, 2)).x, texture(spheres, ivec2(i, 2)).y, texture(spheres, ivec2(i, 2)).z);
+    return Sphere(texelFetch(spheres, i * 3 + 0).xyz,
+        texelFetch(spheres, i * 3 + 1).rgb,
+        texelFetch(spheres, i * 3 + 2).x, texelFetch(spheres, i * 3 + 2).y, texelFetch(spheres, i * 3 + 2).z);
 }
 
 bool hitSphere(Sphere s, Ray r, out float d)
@@ -118,11 +130,18 @@ bool hitSphere(Sphere s, Ray r, out float d)
     return true;
 }
 
-float sphereReflect(Sphere s, Ray r, out vec3 norm, inout Ray rs[2], out int num)
+vec3 calcSphere(Sphere s, Ray r, inout Ray rs[2], out int num)
 {
-    norm = vec3(1.0);
+    vec3 L = s.center - r.origin;
+    float tca = dot(L, r.dir);
+    float d2 = dot(L, L) - tca * tca;
+    float thc = sqrt(s.radius * s.radius - d2);
+    float t0 = tca - thc;
+    float t1 = tca + thc;
+    float d = t0 > 0.0 ? t0 : t1;
+    vec3 p = r.origin + d * r.dir;
     num = 0;
-    return 0.0;
+    return normalize(p - s.center);
 }
 
 bool hitTriangle(Triangle triang, Ray ray)

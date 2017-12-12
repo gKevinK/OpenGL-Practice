@@ -54,7 +54,7 @@ int main(int argc, char ** argv)
     win.Init();
 
 
-    unsigned int frame, sphereTex;
+    unsigned int frame, sphereBuf;
     glGenTextures(1, &frame);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, frame);
@@ -69,11 +69,16 @@ int main(int argc, char ** argv)
         0.0f, 0.0f, 0.0f,
         1.0f, 1.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
-    };
-    glGenTextures(1, &sphereTex);
-    glBindTexture(GL_TEXTURE_2D, sphereTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 3, 0, GL_RGB, GL_FLOAT, spheres);
 
+        1.5f, 1.0f, 0.0f,
+        0.0f, 1.0f, 1.0f,
+        0.5f, 0.0f, 0.0f,
+    };
+    glGenBuffers(1, &sphereBuf);
+    glBindBuffer(GL_TEXTURE_BUFFER, sphereBuf);
+    glBufferData(GL_TEXTURE_BUFFER, sizeof(spheres), spheres, GL_STATIC_DRAW);
+    glBindBuffer(GL_TEXTURE_BUFFER, 0);
+    
     int frameRate = 0;
     int lastSecond = 0;
     while (!glfwWindowShouldClose(window)) {
@@ -97,8 +102,9 @@ int main(int argc, char ** argv)
         shader = compShader;
         glUseProgram(shader);
         setTexture2D(shader, "img", 0, frame);
-        setTexture2D(shader, "spheres", 1, sphereTex);
-        setInt(shader, "sphereNum", 1);
+        //setTexture2D(shader, "spheres", 1, sphereTex);
+        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, sphereBuf);
+        setInt(shader, "sphereNum", 2);
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));
@@ -106,7 +112,7 @@ int main(int argc, char ** argv)
         setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -2.0f)));
         setVec3(shader, "r10", glm::normalize(gv3(-1.0f,  1.0f, -2.0f)));
         setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -2.0f)));
-        setVec3(shader, "dirLight.direction", gv3(0.0f, -1.0, 0.0f));
+        setVec3(shader, "dirLight.direction", gv3(0.0f, 1.0, 0.0f));
         setVec3(shader, "dirLight.color", gv3(1.0f, 1.0f, 1.0f));
         glDispatchCompute(ScrWidth / 8, ScrHeight / 8, 1);
         
