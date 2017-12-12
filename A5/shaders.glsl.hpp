@@ -99,7 +99,7 @@ void main()
 
 Sphere getSphere(int i)
 {
-    return Sphere(texture(spheres, ivec2(i, 0)).rgb, texture(spheres, ivec2(i, 1)).xyz,
+    return Sphere(texture(spheres, ivec2(i, 0)).xyz, texture(spheres, ivec2(i, 2)).rgb,
         texture(spheres, ivec2(i, 2)).x, texture(spheres, ivec2(i, 2)).y, texture(spheres, ivec2(i, 2)).z);
 }
 

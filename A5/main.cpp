@@ -72,7 +72,7 @@ int main(int argc, char ** argv)
     };
     glGenTextures(1, &sphereTex);
     glBindTexture(GL_TEXTURE_2D, sphereTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 1, 3, 0, GL_RGB32F, GL_FLOAT, spheres);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 3, 0, GL_RGB, GL_FLOAT, spheres);
 
     int frameRate = 0;
     int lastSecond = 0;
