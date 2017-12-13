@@ -46,43 +46,77 @@ struct Stack {
     int size;
     Ray rs[8];
 };
-
-//Stack stackNew()
-//{
-//    Stack s;
-//    s.size = 0;
-//    return s;
-//}
-
-void stackInit(Stack s)
+/* Inout version
+void stackInit(inout Stack s)
 {
     s.size = 0;
 }
 
-bool stackEmpty(Stack s)
+bool stackEmpty(inout Stack s)
 {
     return s.size == 0;
 }
 
-void stackPush(Stack s, Ray r)
+void stackPush(inout Stack s, Ray r)
 {
     s.rs[s.size] = r;
     s.size++;
 }
 
-Ray stackTop(Stack s)
+Ray stackTop(inout Stack s)
 {
     if (s.size == 0)
         return Ray(vec3(0.0), vec3(1.0), vec3(0.0));
-    return s.rs[s.size - 1];
+    Ray r = s.rs[s.size - 1];
+    return r;
 }
 
-Ray stackPop(Stack s)
+Ray stackPop(inout Stack s)
 {
     if (s.size <= 0)
         return Ray(vec3(0.0), vec3(1.0), vec3(0.0));
     s.size--;
     return s.rs[s.size];
+}
+*/
+
+// Global variable version
+Stack stack;
+
+void stackInit()
+{
+    stack.size = 0;
+}
+
+bool stackEmpty()
+{
+    return stack.size == 0;
+}
+
+bool stackFull()
+{
+    return stack.size >= 8;
+}
+
+void stackPush(Ray r)
+{
+    stack.rs[stack.size] = r;
+    stack.size++;
+}
+
+Ray stackTop()
+{
+    if (stack.size == 0)
+        return Ray(vec3(0.0), vec3(1.0), vec3(0.0));
+    return stack.rs[stack.size - 1];
+}
+
+Ray stackPop()
+{
+    if (stack.size <= 0)
+        return Ray(vec3(0.0), vec3(1.0), vec3(0.0));
+    stack.size--;
+    return stack.rs[stack.size];
 }
 
 uniform samplerBuffer spheres;
@@ -109,7 +143,7 @@ vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 //vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 float blinnPhong(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess);
 
-Sphere sph = Sphere(vec3(0.0), vec3(1.0), 1.0, 1.0, 1.0);
+// Sphere sph = Sphere(vec3(0.0), vec3(1.0), 1.0, 1.0, 1.0);
 
 void main()
 {
@@ -118,19 +152,17 @@ void main()
     vec2 up = vec2(p) / vec2(width, height);
     //ivec2 lp = ivec2(gl_LocalInvocationID.xy);
     
-    Stack stack;
-    stack.size = 0;
+    // Stack stack;
     //stackInit(stack);
     Ray oRay = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
-    stackPush(stack, oRay);
-    pixel.rgb = vec3(stack.size);
+    stackPush(oRay);
     
-    while (!stackEmpty(stack)) {
-        Ray ray = stackPop(stack);
-        float dist = FARCUT;
+    while (!stackEmpty()) {
+        Ray ray = stackPop();
+        float dist = FARCUT + 0.1;
         Ray rs[2];
         int rnum;
-        Sphere s = Sphere(vec3(0.0), vec3(0.0), EPSILON, 0.0, 0.0);
+        Sphere s;// = Sphere(vec3(0.0), vec3(0.0), EPSILON, 0.0, 0.0);
         //Triangle t;
         for (int i = 0; i < sphereNum; i++) {
             Sphere st = getSphere(i);
@@ -145,12 +177,14 @@ void main()
         /* for (int i = 0; i < triangNum; i++) {}*/
 
         if (dist < FARCUT) {
-            //vec3 norm = calcSphere(s, ray, rs, rnum);
-            //pixel.rgb += ray.weight * calcDirLight(dirLight, norm, -ray.dir);
-            //pixel.rgb = vec3(1.0);
+            vec3 norm = calcSphere(s, ray, rs, rnum);
+            // for (int j = 0; j < rnum; j++) {
+            //     if (!stackFull() && length(rs[j].weight) > 0.1) {
+            //         stackPush(rs[j]);
+            //     }
+            // }
+            pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
         }
-        //stack.size = 0;
-        //pixel.rgb = ray.dir;
     }
 
     pixel = pow(pixel, vec4(1 / GAMMA));
@@ -159,7 +193,8 @@ void main()
 
 Sphere getSphere(int i)
 {
-    return Sphere(texelFetch(spheres, i * 3 + 0).xyz,
+    return Sphere(
+        texelFetch(spheres, i * 3 + 0).xyz,
         texelFetch(spheres, i * 3 + 1).rgb,
         texelFetch(spheres, i * 3 + 2).x, texelFetch(spheres, i * 3 + 2).y, texelFetch(spheres, i * 3 + 2).z);
 }
@@ -189,8 +224,11 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
     float t1 = tca + thc;
     float d = t0 > 0.0 ? t0 : t1;
     vec3 p = r.origin + d * r.dir;
-    num = 0;
-    return normalize(p - s.center);
+    vec3 norm = normalize(p - s.center);
+    num = 1;
+    rs[0] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
+    //rs[1] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
+    return norm;
 }
 
 bool hitTriangle(Triangle triang, Ray ray)

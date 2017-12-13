@@ -73,6 +73,10 @@ int main(int argc, char ** argv)
         1.5f, 1.0f, 0.0f,
         0.0f, 1.0f, 1.0f,
         0.5f, 0.0f, 0.0f,
+
+       -1.5f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f,
+        0.5f, 0.0f, 0.0f,
     };
     glGenBuffers(1, &sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, sphereBuf);
@@ -105,7 +109,7 @@ int main(int argc, char ** argv)
         setTexture2D(shader, "img", 0, frame);
         //setTexture2D(shader, "spheres", 1, sphereTex);
         
-        setInt(shader, "sphereNum", 2);
+        setInt(shader, "sphereNum", sizeof(spheres) / 9);
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));
