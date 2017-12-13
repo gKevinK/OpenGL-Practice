@@ -58,17 +58,17 @@ void inline setTexture2D(unsigned int program, const std::string & name, int tex
 void checkCompileErrors(GLuint shader, const std::string & type)
 {
     GLint success;
-    GLchar infoLog[2048];
+    GLchar infoLog[4096];
     if (type != "PROGRAM") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(shader, 2048, NULL, infoLog);
+            glGetShaderInfoLog(shader, 4096, NULL, infoLog);
             std::cout << "ERROR::SHADER_COMPILATION_ERROR : " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(shader, 2048, NULL, infoLog);
+            glGetProgramInfoLog(shader, 4096, NULL, infoLog);
             std::cout << "ERROR::PROGRAM_LINKING_ERROR : " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }

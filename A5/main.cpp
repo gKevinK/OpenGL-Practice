@@ -77,6 +77,7 @@ int main(int argc, char ** argv)
     glGenBuffers(1, &sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, sphereBuf);
     glBufferData(GL_TEXTURE_BUFFER, sizeof(spheres), spheres, GL_STATIC_DRAW);
+    glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, 0);
     
     int frameRate = 0;
@@ -103,7 +104,7 @@ int main(int argc, char ** argv)
         glUseProgram(shader);
         setTexture2D(shader, "img", 0, frame);
         //setTexture2D(shader, "spheres", 1, sphereTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, sphereBuf);
+        
         setInt(shader, "sphereNum", 2);
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);

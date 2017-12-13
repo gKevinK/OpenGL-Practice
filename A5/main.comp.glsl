@@ -38,15 +38,20 @@ struct Ray {
 
 // Stack
 struct Stack {
-    Ray rs[8];
     int size;
+    Ray rs[8];
 };
 
-Stack stackNew()
+//Stack stackNew()
+//{
+//    Stack s;
+//    s.size = 0;
+//    return s;
+//}
+
+void stackInit(Stack s)
 {
-    Stack s;
     s.size = 0;
-    return s;
 }
 
 bool stackEmpty(Stack s)
@@ -64,7 +69,8 @@ Ray stackTop(Stack s)
 {
     if (s.size == 0)
         return Ray(vec3(0.0), vec3(1.0), vec3(0.0));
-    return s.rs[s.size - 1];
+    Ray r = s.rs[s.size - 1];
+    return r;
 }
 
 Ray stackPop(Stack s)
@@ -107,36 +113,41 @@ void main()
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
     vec2 up = vec2(p) / vec2(width, height);
     //ivec2 lp = ivec2(gl_LocalInvocationID.xy);
-    Stack stack = stackNew();
     
-    Ray ray = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
-    stackPush(stack, ray);
+    Stack stack;
+    stack.size = 0;
+    //stackInit(stack);
+    Ray oRay = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
+    pixel.rgb = vec3(stack.size);
+    stackPush(stack, oRay);
+    
+    ////while (!stackEmpty(stack)) {
+    //    Ray ray = oRay;// stackPop(stack);
+    //    float dist = FARCUT;
+    //    Ray rs[2];
+    //    int rnum;
+    //    Sphere s = Sphere(vec3(0.0), vec3(0.0), EPSILON, 0.0, 0.0);
+    //    //Triangle t;
+    //    for (int i = 0; i < sphereNum; i++) {
+    //        Sphere st = getSphere(i);
+    //        float d;
+    //        if (hitSphere(st, ray, d)) {
+    //            if (d < dist) {
+    //                dist = d;
+    //                s = st;
+    //            }
+    //        }
+    //    }
+    //    /* for (int i = 0; i < triangNum; i++) {}*/
 
-    while (!stackEmpty(stack)) {
-        Ray ray = stackPop(stack);
-        float dist = FARCUT;
-        Ray rs[2];
-        int rnum;
-        Sphere s = Sphere(vec3(0.0), vec3(0.0), EPSILON, 0.0, 0.0);
-        //Triangle t;
-        for (int i = 0; i < sphereNum; i++) {
-            Sphere st = getSphere(i);
-            float d;
-            if (hitSphere(st, ray, d)) {
-                if (dist > d) {
-                    dist = d;
-                    s = st;
-                }
-            }
-        }
-        /* for (int i = 0; i < triangNum; i++) {}*/
-
-        if (dist < FARCUT) {
-            vec3 norm = calcSphere(s, ray, rs, rnum);
-            pixel.rgb += ray.weight * calcDirLight(dirLight, norm, -ray.dir);
-        }
-
-    }
+    //    if (dist < FARCUT) {
+    //        //vec3 norm = calcSphere(s, ray, rs, rnum);
+    //        //pixel.rgb += ray.weight * calcDirLight(dirLight, norm, -ray.dir);
+    //        pixel.rgb = vec3(1.0);
+    //    }
+    //    stack.size = 0;
+    //    //pixel.rgb = ray.dir;
+    ////}
 
     pixel = pow(pixel, vec4(1 / GAMMA));
     imageStore(img, p, pixel);

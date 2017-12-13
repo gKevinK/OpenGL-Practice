@@ -6,9 +6,14 @@ out vec2 TexCoord;
 
 uniform mat4 proj;
 uniform mat4 view;
+uniform bool invert;
 
 void main()
 {
-    gl_Position = proj * view * vec4(aPos, 1.0);
+    if (invert) {
+        gl_Position = proj * view * vec4(aPos.x, -aPos.y, aPos.z, 1.0);
+    } else {
+        gl_Position = proj * view * vec4(aPos, 1.0);
+    }
     TexCoord = aTexCoord;
 }
