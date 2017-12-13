@@ -11,7 +11,7 @@ uniform bool invert;
 void main()
 {
     if (invert) {
-        gl_Position = proj * view * vec4(1.0, -1.0, 1.0, 1.0) * vec4(aPos, 1.0);
+        gl_Position = proj * view * vec4(aPos.x, -aPos.y, aPos.z, 1.0);
     } else {
         gl_Position = proj * view * vec4(aPos, 1.0);
     }

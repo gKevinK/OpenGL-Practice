@@ -237,9 +237,9 @@ int main(int argc, char ** argv)
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        glEnable(GL_CULL_FACE);
         shader = skybox2Shader;
         glUseProgram(shader);
+        glDisable(GL_CULL_FACE);
         setMat4(shader, "view", gm4(gm3(camera.GetViewMatrix())));
         setMat4(shader, "proj", proj);
         setBool(shader, "invert", true);
@@ -247,6 +247,7 @@ int main(int argc, char ** argv)
         setBool(shader, "invert", false);
         skybox2.Draw(shader);
 
+        glEnable(GL_CULL_FACE);
         glUseProgram(terrainShader);
         setVec3(terrainShader, "viewPos", camera.Position);
         setMat4(terrainShader, "model", glm::translate(glm::scale(gm4(1.0f), gv3(5.0f, 5.0f, 5.0f)), gv3(-0.5f, 0.0f, 0.0f)));
