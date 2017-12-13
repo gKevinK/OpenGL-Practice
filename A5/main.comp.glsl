@@ -126,6 +126,7 @@ uniform vec3 r00;
 uniform vec3 r01;
 uniform vec3 r10;
 uniform vec3 r11;
+uniform vec3 ambient;
 uniform DirLight dirLight;
 
 Sphere getSphere(int i);
@@ -178,7 +179,9 @@ void main()
                     stackPush(rs[j]);
                 }
             }
+
             pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
+            pixel.rgb += s.color * ambient;
         }
     }
 

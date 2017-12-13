@@ -29,7 +29,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 unsigned int texColorBuffer, texDepthBuffer;
-Camera camera = Camera(gv3(0.0f, 1.0f, 5.0f));
+Camera camera = Camera(gv3(3.0f, 0.5f, 3.0f), gv3(0.0f, 1.0f, 0.0f), -120);
 
 int main(int argc, char ** argv)
 {
@@ -60,12 +60,12 @@ int main(int argc, char ** argv)
     unsigned int windowShader = loadShaderProgram("window.vert.glsl", "texture.frag.glsl");
     unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
     unsigned int waterShader = loadShaderProgram("water.vert.glsl", "water.tesc.glsl", "water.tese.glsl", "water.frag.glsl");
-    unsigned int skyboxShader = loadShaderProgram("skybox.vert.glsl", "skybox.frag.glsl");
+    //unsigned int skyboxShader = loadShaderProgram("skybox.vert.glsl", "skybox.frag.glsl");
     unsigned int skybox2Shader = loadShaderProgram("skybox2.vert.glsl", "skybox2.frag.glsl");
 #else
     unsigned int terrainShader = loadShaderProgramS(terrain_vert_glsl, terrain_tesc_glsl, terrain_tese_glsl, terrain_frag_glsl);
     unsigned int waterShader = loadShaderProgramS(water_vert_glsl, water_tesc_glsl, water_tese_glsl, water_frag_glsl);
-    unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
+    //unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
     unsigned int skybox2Shader = loadShaderProgramS(skybox2_vert_glsl, skybox2_frag_glsl);
 #endif // _DEBUG
 
@@ -216,13 +216,14 @@ int main(int argc, char ** argv)
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        unsigned int shader;
 
-        glDepthMask(GL_FALSE);
-        glUseProgram(skybox2Shader);
-        setMat4(skyboxShader, "view", gm4(gm3(reflectView)));
-        setMat4(skyboxShader, "proj", reflectProj);
-        skybox2.Draw(skybox2Shader);
-        glDepthMask(GL_TRUE);
+        shader = skybox2Shader;
+        glUseProgram(shader);
+        setMat4(shader, "view", gm4(gm3(reflectView)));
+        setMat4(shader, "proj", reflectProj);
+        setBool(shader, "invert", false);
+        skybox2.Draw(shader);
 
         glUseProgram(terrainShader);
         setVec3(terrainShader, "viewPos", reflectPos);
@@ -237,12 +238,14 @@ int main(int argc, char ** argv)
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glEnable(GL_CULL_FACE);
-        glDepthMask(GL_FALSE);
-        glUseProgram(skybox2Shader);
-        setMat4(skyboxShader, "view", gm4(gm3(camera.GetViewMatrix())));
-        setMat4(skyboxShader, "proj", proj);
-        skybox2.Draw(skybox2Shader);
-        glDepthMask(GL_TRUE);
+        shader = skybox2Shader;
+        glUseProgram(shader);
+        setMat4(shader, "view", gm4(gm3(camera.GetViewMatrix())));
+        setMat4(shader, "proj", proj);
+        setBool(shader, "invert", true);
+        skybox2.Draw(shader);
+        setBool(shader, "invert", false);
+        skybox2.Draw(shader);
 
         glUseProgram(terrainShader);
         setVec3(terrainShader, "viewPos", camera.Position);

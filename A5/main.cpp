@@ -112,6 +112,7 @@ int main(int argc, char ** argv)
         setInt(shader, "sphereNum", sizeof(spheres) / 9);
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
+        setVec3(shader, "ambient", gv3(0.02f));
         setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));
         setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -2.0f)));
         setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -2.0f)));

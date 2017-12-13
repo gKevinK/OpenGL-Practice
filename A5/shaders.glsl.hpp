@@ -131,6 +131,7 @@ uniform vec3 r00;
 uniform vec3 r01;
 uniform vec3 r10;
 uniform vec3 r11;
+uniform vec3 ambient;
 uniform DirLight dirLight;
 
 Sphere getSphere(int i);
@@ -168,7 +169,7 @@ void main()
             Sphere st = getSphere(i);
             float d;
             if (hitSphere(st, ray, d)) {
-                if (d < dist) {
+                if (EPSILON < d && d < dist) {
                     dist = d;
                     s = st;
                 }
@@ -178,12 +179,14 @@ void main()
 
         if (dist < FARCUT) {
             vec3 norm = calcSphere(s, ray, rs, rnum);
-            // for (int j = 0; j < rnum; j++) {
-            //     if (!stackFull() && length(rs[j].weight) > 0.1) {
-            //         stackPush(rs[j]);
-            //     }
-            // }
+            for (int j = 0; j < rnum; j++) {
+                if (!stackFull() && length(rs[j].weight) > 0.1) {
+                    stackPush(rs[j]);
+                }
+            }
+
             pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
+            pixel.rgb += s.color * ambient;
         }
     }
 
