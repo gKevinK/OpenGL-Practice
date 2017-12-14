@@ -9,7 +9,7 @@ layout(local_size_x = 8, local_size_y = 8) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
 #define FARCUT 100.0
-#define EPSILON 0.00001
+#define EPSILON 0.00002
 #define GAMMA 2.2
 
 struct DirLight {
@@ -137,24 +137,22 @@ uniform DirLight dirLight;
 Sphere getSphere(int i);
 bool hitSphere(Sphere sphere, Ray ray, out float d);
 vec3 calcSphere(Sphere sphere, Ray ray, out Ray rays[2], out int num);
-//float sphereRefract(Sphere sphere, Ray ray, out Ray refr);
+int secondRays(vec3 norm, vec3 light, int eta0, int eta1, out vec3 dirs[2]);
 bool hitTriangle(Triangle triang, Ray ray, float d);
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 //vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 float blinnPhong(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess);
 
-// Sphere sph = Sphere(vec3(0.0), vec3(1.0), 1.0, 1.0, 1.0);
-
 void main()
 {
     vec4 pixel = vec4(0.0, 0.0, 0.0, 1.0);
     ivec2 p = ivec2(gl_GlobalInvocationID.xy);
     vec2 up = vec2(p) / vec2(width, height);
-    //ivec2 lp = ivec2(gl_LocalInvocationID.xy);
+    // ivec2 lp = ivec2(gl_LocalInvocationID.xy);
     
     // Stack stack;
-    //stackInit(stack);
+    // stackInit(stack);
     Ray oRay = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
     stackPush(oRay);
     
@@ -163,7 +161,7 @@ void main()
         float dist = FARCUT + 0.1;
         Ray rs[2];
         int rnum;
-        Sphere s;// = Sphere(vec3(0.0), vec3(0.0), EPSILON, 0.0, 0.0);
+        Sphere s;
         //Triangle t;
         for (int i = 0; i < sphereNum; i++) {
             Sphere st = getSphere(i);
@@ -212,7 +210,7 @@ bool hitSphere(Sphere s, Ray r, out float d)
     float thc = sqrt(s.radius * s.radius - d2);
     float t0 = tca - thc;
     float t1 = tca + thc;
-    d = t0 > 0.0 ? t0 : t1;
+    d = t0 > EPSILON ? t0 : t1;
     //norm = normalize(-(r.origin + d * r.dir - s.center));
     return true;
 }
@@ -232,6 +230,11 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
     rs[0] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
     //rs[1] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
     return norm;
+}
+
+int secondRays(vec3 norm, vec3 light, int eta0, int eta1, out vec3 dirs[2])
+{
+    return 1;
 }
 
 bool hitTriangle(Triangle triang, Ray ray)

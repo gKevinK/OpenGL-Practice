@@ -5,6 +5,13 @@ out vec4 FragColor;
 in vec3 FragPos;
 in vec3 Normal;
 
+struct Wave {
+    vec3 dir;
+    float fraq;
+    float length;
+    float amp;
+};
+
 uniform float time;
 uniform vec3 viewPos;
 uniform mat4 reflViewMat;
@@ -12,6 +19,8 @@ uniform mat4 reflProjMat;
 uniform sampler2D reflColor;
 uniform sampler2D reflDepth;
 uniform sampler2D waterTex;
+uniform Wave waves[8];
+uniform int waveNum;
 
 float fresnel(float cosine);
 vec3 reflTexCoord(vec3 pos);
@@ -24,12 +33,15 @@ void main()
 {
     // Wave
 	vec3 norm = normalize(Normal);
-    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(20 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(20 * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
-    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(5 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(5 * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
-    //norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(1 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    //norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(1 * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
+    //for (int i = 0; i < waveNum; i++) {
+    //    norm += waves[i].amp * normalize(waves[i].dir * sin(0));
+    //}
+    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(20  * (3.0 * FragPos.x + 1.0 * FragPos.z + time) + sin(time) * 5 * length(FragPos.xz));
+    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(20  * (0.0 * FragPos.x + 3.0 * FragPos.z + time) + sin(time) * 5 * length(FragPos.xz));
+    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(5   * (3.0 * FragPos.x + 1.0 * FragPos.z + time) + sin(time) * 5 * length(FragPos.xz));
+    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(5   * (0.0 * FragPos.x + 3.0 * FragPos.z + time) + sin(time) * 5 * length(FragPos.xz));
+    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0)) * sin(1.5 * (3.0 * FragPos.x + 1.0 * FragPos.z + time) + sin(time) * 5 * length(FragPos.xz));
+    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0)) * sin(1.5 * (0.0 * FragPos.x + 3.0 * FragPos.z + time) + sin(time) * 5 * length(FragPos.xz));
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);

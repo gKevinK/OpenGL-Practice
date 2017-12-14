@@ -18,6 +18,7 @@ unsigned int ScrHeight = 512;
 float lastFrame;
 float deltaTime;
 
+unsigned int frame;
 
 int main(int argc, char ** argv)
 {
@@ -34,7 +35,7 @@ int main(int argc, char ** argv)
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(2);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -53,8 +54,7 @@ int main(int argc, char ** argv)
     Window win;
     win.Init();
 
-
-    unsigned int frame, sphereBuf;
+    unsigned int sphereBuf;
     glGenTextures(1, &frame);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, frame);
@@ -68,7 +68,8 @@ int main(int argc, char ** argv)
     float spheres[] = {
         0.0f, 0.0f, 0.0f,
         1.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 1.5f,
+        //1.0f, 1.5f, 0.0f,
 
         1.5f, 1.0f, 0.0f,
         0.0f, 1.0f, 1.0f,
@@ -139,6 +140,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     ScrWidth = width;
     ScrHeight = height;
     glViewport(0, 0, width, height);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, frame);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, ScrWidth, ScrHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 }
 
 void processInput(GLFWwindow *window)
