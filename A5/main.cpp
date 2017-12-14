@@ -79,18 +79,18 @@ int main(int argc, char ** argv)
     unsigned int skyboxCube = loadCubeMap(cubePaths);
 
     float spheres[] = {
-        //0.0f, 0.0f, 0.0f,
-        //1.0f, 1.0f, 0.0f,
-        //1.0f, 1.0f, 20.0f,
+        0.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 200.0f,
         //1.0f, 1.5f, 0.0f,
 
         1.5f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
-        0.5f, 1.0f, 20.0f,
+        0.5f, 1.0f, 200.0f,
 
        -1.5f, 1.0f,-1.0f,
         1.0f, 1.0f, 1.0f,
-        0.5f, 1.0f, 20.0f,
+        0.5f, 1.0f, 200.0f,
 
         0.5f,-0.2f, 2.5f,
         0.01f, 0.01f, 0.01f,
@@ -131,7 +131,7 @@ int main(int argc, char ** argv)
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "ambient", gv3(0.02f));
-        setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 5.0f));
+        setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 6.0f));
         setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -2.0f)));
         setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -2.0f)));
         setVec3(shader, "r10", glm::normalize(gv3(-1.0f,  1.0f, -2.0f)));

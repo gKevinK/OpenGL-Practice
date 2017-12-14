@@ -4,7 +4,7 @@ layout(local_size_x = 8, local_size_y = 8) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
 #define FARCUT 100.0
-#define EPSILON 0.00005
+#define EPSILON 0.0001
 #define GAMMA 2.2
 
 struct DirLight {
@@ -90,7 +90,7 @@ bool stackEmpty()
 
 bool stackFull()
 {
-    return stack.size >= 4;
+    return stack.size >= 8;
 }
 
 void stackPush(Ray r)
@@ -174,14 +174,13 @@ void main()
         if (dist < FARCUT) {
             vec3 norm = calcSphere(s, ray, rs, rnum);
             for (int j = 0; j < rnum; j++) {
-                if (!stackFull() && length(rs[j].weight) > 0.1) {
+                if (!stackFull() && length(rs[j].weight) > 0.02) {
                     stackPush(rs[j]);
                 }
             }
-            pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
-            pixel.rgb += s.color * ambient;
-            //pixel.rgb = vec3(0.1) + rs[1].dir;
-            //pixel.rgb = vec3(dist);
+            //pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
+            //pixel.rgb += s.color * ray.weight * ambient;
+            //pixel.rgb = length(rs[1].weight) > 0.02 ? vec3(rs[1].dir) : vec3(0.0);
         } else {
             pixel.rgb += ray.weight * pow(texture(box, ray.dir).rgb, vec3(GAMMA));
         }
@@ -241,7 +240,8 @@ int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], 
     float eta = (cosine < 0) ? eta1 / eta0 : eta0 / eta1;
 
     dirs[0] = reflect(light, norm);
-    dirs[1] = normalize(refract(light, norm, eta));
+    dirs[1] = (cosine < 0) ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
+    //dirs[1] = light;
     
     float a = 1 - abs(cosine);
     float R = R0 + (1 - R0) * a * a * a * a * a;
@@ -249,8 +249,6 @@ int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], 
     a = 1 - abs(dot(norm, dirs[1]));
     R = R0 + (1 - R0) * a * a * a * a * a;
     ws[1] = 1 - R;
-    ws[0] = 0.5;
-    ws[1] = 0.5;
     return 2;
 }
 
