@@ -32,9 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="data.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -42,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="window.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="data.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

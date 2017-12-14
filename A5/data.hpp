@@ -10,6 +10,9 @@ struct Sphere
     float Radius;
     float Eta1;
     float Eta2;
+    float Reflect;
+    float Transparency;
+    float _a;
 };
 
 struct Triangle
@@ -20,12 +23,13 @@ struct Triangle
     glm::vec3 Color;
     float Eta1;
     float Eta2;
+    float _a;
 };
 
-struct Ray
-{
-    glm::vec3 Origin;
-    glm::vec3 Dir;
-};
+//struct Ray
+//{
+//    glm::vec3 Origin;
+//    glm::vec3 Dir;
+//};
 
 #endif // !DATA_H

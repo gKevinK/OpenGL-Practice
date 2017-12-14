@@ -227,13 +227,13 @@ void main()
     //for (int i = 0; i < waveNum; i++) {
     //    norm += waves[i].amp * normalize(waves[i].dir * sin(0));
     //}
-    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(20  * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(20  * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
-    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(5   * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
-    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(5   * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
+    norm += 0.01 * normalize(vec3(1.0, 0.0, 3.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(20  * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
+    norm += 0.01 * normalize(vec3(3.0, 0.0, 1.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(20  * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
+    norm += 0.01 * normalize(vec3(1.0, 0.0, 3.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(5   * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
+    norm += 0.01 * normalize(vec3(3.0, 0.0, 1.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(5   * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
     norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(1.5 * (3.0 * FragPos.x + 1.0 * FragPos.z + time));
     norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0) + vec3(FragPos.x, 0.0, FragPos.z)) * sin(1.5 * (0.0 * FragPos.x + 3.0 * FragPos.z + time));
-    norm.xz = norm.xz * max(0.0, 1 - length(FragPos - viewPos) / viewPos.y / 10);
+    norm.xz = norm.xz * max(0.0, 1 - length(FragPos - viewPos) / viewPos.y / 20);
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(FragPos - viewPos), norm);
@@ -263,7 +263,7 @@ void main()
     float R = fresnel(dot(norm, reflectDir));
     FragColor = reflectColor * R + texColor * (1 - R) * 0.5;
     if (length(reflectDir - dirLight) < 0.2)
-        FragColor += reflectColor * max(0.0, length(reflectDir - dirLight) / 0.4 + 0.5);
+        FragColor += reflectColor * max(0.0, 0.5 - length(reflectDir - dirLight) / 0.4);
 }
 
 float fresnel(float cosine)
@@ -394,6 +394,7 @@ void main()
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     gl_Position = proj * view * model * vec4(pos, 1.0);
     FragPos = vec3(model * vec4(pos, 1.0));
+
     Normal = vec3(0.0, 1.0, 0.0);
 })=====";
 

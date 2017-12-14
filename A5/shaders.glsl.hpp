@@ -242,11 +242,11 @@ int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], 
 {
     float R0 = (eta0 - eta1) * (eta0 - eta1) / (eta0 + eta1) / (eta0 + eta1);
     float cosine = dot(norm, light);
-    //bool 
-    float eta = (cosine < 0) ? eta1 / eta0 : eta0 / eta1;
+    bool f = cosine < 0;
+    float eta = f ? eta1 / eta0 : eta0 / eta1;
 
     dirs[0] = reflect(light, norm);
-    dirs[1] = (cosine < 0) ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
+    dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
     //dirs[1] = light;
     
     float a = 1 - abs(cosine);
