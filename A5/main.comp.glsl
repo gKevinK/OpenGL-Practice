@@ -240,17 +240,22 @@ int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], 
     bool f = cosine < 0;
     float eta = f ? eta1 / eta0 : eta0 / eta1;
 
-    dirs[0] = reflect(light, norm);
-    dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
-    //dirs[1] = light;
-    
     float a = 1 - abs(cosine);
     float R = R0 + (1 - R0) * a * a * a * a * a;
     ws[0] = R;
     a = 1 - abs(dot(norm, dirs[1]));
     R = R0 + (1 - R0) * a * a * a * a * a;
     ws[1] = 1 - R;
+
+    dirs[0] = reflect(light, norm);
+    dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
     return 2;
+    // if (ws[1] < 0.02) {
+    //     return 1;
+    // } else {
+    //     dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
+    //     return 2;
+    // }
 }
 
 bool hitTriangle(Triangle triang, Ray ray)
