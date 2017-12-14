@@ -171,14 +171,16 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="skybox2.cpp" />
     <ClCompile Include="terrain.cpp" />
+    <ClCompile Include="water.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shader.h" />
-    <ClInclude Include="fps_camera.h" />
+    <ClInclude Include="fps_camera.hpp" />
     <ClInclude Include="shaders.glsl.hpp" />
     <ClInclude Include="skybox2.hpp" />
     <ClInclude Include="terrain.hpp" />
+    <ClInclude Include="water.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>

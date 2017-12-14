@@ -1,21 +1,22 @@
-#ifndef TERRAIN_H
-#define TERRAIN_H
+#ifndef WATER_H
+#define WATER_H
 
 #include <glad\glad.h>
 #include <vector>
 
-class Terrain
+class Water
 {
 public:
     unsigned int VAO, VBO;
-    unsigned int TextureMap, HeightMap, DetailMap;
+    unsigned int Tex;
 
-    Terrain();
+    Water();
     void Init();
+    void Update(float x, float y, float z);
     void Draw(unsigned int shader);
 
 private:
     std::vector<float> vertices;
 };
 
-#endif // !TERRAIN_H
+#endif // !WATER_H

@@ -36,11 +36,11 @@
     <ClCompile Include="terrain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="water.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fps_camera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="shaders.glsl.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -54,6 +54,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="terrain.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="water.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fps_camera.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

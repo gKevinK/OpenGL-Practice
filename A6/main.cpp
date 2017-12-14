@@ -5,11 +5,12 @@
 #include <iostream>
 #include "shader.h"
 #include "shaders.glsl.hpp"
-#include "fps_camera.h"
+#include "fps_camera.hpp"
 
 #include "skybox2.hpp"
 #include "window.hpp"
 #include "terrain.hpp"
+#include "water.hpp"
 
 #define gv3 glm::vec3
 #define gm3 glm::mat3
@@ -153,22 +154,10 @@ int main(int argc, char ** argv)
         //loadTexture("resource\\SkyBox\\SkyBox5.bmp", GL_CLAMP_TO_EDGE),
     };
 
-    float waterVertices[] = {
-        -100.0f, -100.0f,
-         100.0f, -100.0f,
-        -100.0f,  100.0f,
-         100.0f,  100.0f,
-    };
-    unsigned int waterVAO, waterVBO, waterTex;
-    glGenVertexArrays(1, &waterVAO);
-    glGenBuffers(1, &waterVBO);
-    glBindVertexArray(waterVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(waterVertices), &waterVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
-    glBindVertexArray(0);
-    waterTex = loadTexture("resource\\SkyBox\\SkyBox5.bmp");
+    // Water
+    Water water;
+    water.Init();
+    water.Tex = loadTexture("resource\\SkyBox\\SkyBox5.bmp");
 
     unsigned int frameBuffer;
     glGenFramebuffers(1, &frameBuffer);
@@ -201,7 +190,7 @@ int main(int argc, char ** argv)
         lastFrame = currentFrame;
         processInput(window);
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glEnable(GL_FRAMEBUFFER_SRGB);
         glDisable(GL_CULL_FACE);
@@ -214,7 +203,7 @@ int main(int argc, char ** argv)
         gm4 reflectProj = glm::perspective(30.0f, (float)ScrWidth / (float)ScrHeight, 0.1f, 100.0f);
         
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         unsigned int shader;
 
@@ -257,21 +246,19 @@ int main(int argc, char ** argv)
         setFloat(terrainShader, "scale", 0.2f);
         terrain.Draw(terrainShader);
 
-        glUseProgram(waterShader);
-        glBindVertexArray(waterVAO);
-        setFloat(waterShader, "time", currentFrame);
-        setVec3(waterShader, "viewPos", camera.Position);
-        setMat4(waterShader, "model", gm4(1.0f));
-        setMat4(waterShader, "view", camera.GetViewMatrix());
-        setMat4(waterShader, "proj", proj);
-        setMat4(waterShader, "reflViewMat", reflectView);
-        setMat4(waterShader, "reflProjMat", reflectProj);
-        setTexture2D(waterShader, "reflColor", 1, texColorBuffer);
-        setTexture2D(waterShader, "reflDepth", 2, texDepthBuffer);
-        setTexture2D(waterShader, "waterTex", 3, waterTex);
-        glPatchParameteri(GL_PATCH_VERTICES, 4);
-        glDrawArrays(GL_PATCHES, 0, 4);
-        glBindVertexArray(0);
+        shader = waterShader;
+        glUseProgram(shader);
+        setFloat(shader, "time", currentFrame);
+        setVec3(shader, "viewPos", camera.Position);
+        setMat4(shader, "model", gm4(1.0f));
+        setMat4(shader, "view", camera.GetViewMatrix());
+        setMat4(shader, "proj", proj);
+        setMat4(shader, "reflViewMat", reflectView);
+        setMat4(shader, "reflProjMat", reflectProj);
+        setTexture2D(shader, "reflColor", 2, texColorBuffer);
+        setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
+        water.Update(camera.Position.x, camera.Position.y, camera.Position.z);
+        water.Draw(shader);
 
         //glUseProgram(windowShader);
         //setTexture2D(windowShader, "tex", 1, texColorBuffer);
