@@ -9,7 +9,7 @@ layout(local_size_x = 8, local_size_y = 8) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
 #define FARCUT 100.0
-#define EPSILON 0.00002
+#define EPSILON 0.00005
 #define GAMMA 2.2
 
 struct DirLight {
@@ -194,10 +194,11 @@ void main()
 
 Sphere getSphere(int i)
 {
+    const int s = 3;
     return Sphere(
-        texelFetch(spheres, i * 3 + 0).xyz,
-        texelFetch(spheres, i * 3 + 1).rgb,
-        texelFetch(spheres, i * 3 + 2).x, texelFetch(spheres, i * 3 + 2).y, texelFetch(spheres, i * 3 + 2).z);
+        texelFetch(spheres, i * s + 0).xyz,
+        texelFetch(spheres, i * s + 1).rgb,
+        texelFetch(spheres, i * s + 2).x, texelFetch(spheres, i * s + 2).y, texelFetch(spheres, i * s + 2).z);
 }
 
 bool hitSphere(Sphere s, Ray r, out float d)
@@ -223,7 +224,7 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
     float thc = sqrt(s.radius * s.radius - d2);
     float t0 = tca - thc;
     float t1 = tca + thc;
-    float d = t0 > 0.0 ? t0 : t1;
+    float d = t0 > EPSILON ? t0 : t1;
     vec3 p = r.origin + d * r.dir;
     vec3 norm = normalize(p - s.center);
     num = 1;
@@ -234,6 +235,7 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
 
 int secondRays(vec3 norm, vec3 light, int eta0, int eta1, out vec3 dirs[2])
 {
+    float R0 = (eta0 - eta1) * (eta0 - eta1) / (eta0 + eta1) / (eta0 + eta1);
     return 1;
 }
 
