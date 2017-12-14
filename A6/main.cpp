@@ -221,7 +221,7 @@ int main(int argc, char ** argv)
         setMat4(terrainShader, "proj", reflectProj);
         setFloat(terrainShader, "base", -0.06f);
         setFloat(terrainShader, "scale", 0.2f);
-        setVec3(terrainShader, "dirLight", gv3(-1.0f, 0.5f, 0.3f));
+        setVec3(terrainShader, "dirLight", glm::normalize(gv3(-1.0f, 0.7f, 0.5f)));
         terrain.Draw(terrainShader);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -250,6 +250,7 @@ int main(int argc, char ** argv)
         glUseProgram(shader);
         setFloat(shader, "time", currentFrame);
         setVec3(shader, "viewPos", camera.Position);
+        setVec3(shader, "dirLight", glm::normalize(gv3(-1.0f, 0.1f, 0.6f)));
         setMat4(shader, "model", gm4(1.0f));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", proj);
