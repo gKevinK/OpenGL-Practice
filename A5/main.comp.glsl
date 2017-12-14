@@ -132,7 +132,7 @@ uniform DirLight dirLight;
 Sphere getSphere(int i);
 bool hitSphere(Sphere sphere, Ray ray, out float d);
 vec3 calcSphere(Sphere sphere, Ray ray, out Ray rays[2], out int num);
-//float sphereRefract(Sphere sphere, Ray ray, out Ray refr);
+int secondRays(vec3 norm, vec3 light, out vec3 dirs[2]);
 bool hitTriangle(Triangle triang, Ray ray, float d);
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -227,6 +227,11 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
     rs[0] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
     //rs[1] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
     return norm;
+}
+
+int secondRays(vec3 norm, vec3 light, out vec3 dirs[2])
+{
+	return 0;
 }
 
 bool hitTriangle(Triangle triang, Ray ray)
