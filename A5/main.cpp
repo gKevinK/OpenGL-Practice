@@ -1,6 +1,7 @@
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
+#include <stb_image.h>
 #include <iostream>
 #include "shader.h"
 #include "shaders.glsl.hpp"
@@ -12,6 +13,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+unsigned int loadCubeMap(const std::vector<std::string> & paths);
 
 unsigned int ScrWidth = 512;
 unsigned int ScrHeight = 512;
@@ -65,19 +67,34 @@ int main(int argc, char ** argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindImageTexture(0, frame, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
+    std::vector<std::string> cubePaths =
+    {
+        "resource\\right.jpg",
+        "resource\\left.jpg",
+        "resource\\top.jpg",
+        "resource\\bottom.jpg",
+        "resource\\back.jpg",
+        "resource\\front.jpg"
+    };
+    unsigned int skyboxCube = loadCubeMap(cubePaths);
+
     float spheres[] = {
-        0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 1.5f,
+        //0.0f, 0.0f, 0.0f,
+        //1.0f, 1.0f, 0.0f,
+        //1.0f, 1.0f, 20.0f,
         //1.0f, 1.5f, 0.0f,
 
         1.5f, 1.0f, 0.0f,
-        0.0f, 1.0f, 1.0f,
-        0.5f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.5f, 1.0f, 20.0f,
 
-       -1.5f, 1.0f, 0.0f,
+       -1.5f, 1.0f,-1.0f,
         1.0f, 1.0f, 1.0f,
-        0.5f, 0.0f, 0.0f,
+        0.5f, 1.0f, 20.0f,
+
+        0.5f,-0.2f, 2.5f,
+        0.01f, 0.01f, 0.01f,
+        0.5f, 1.0f, 1.5f,
     };
     glGenBuffers(1, &sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, sphereBuf);
@@ -121,7 +138,11 @@ int main(int argc, char ** argv)
         setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -2.0f)));
         setVec3(shader, "dirLight.direction", gv3(0.0f, 1.0, 0.0f));
         setVec3(shader, "dirLight.color", gv3(1.0f, 1.0f, 1.0f));
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxCube);
+        setInt(shader, "box", 1);
         glDispatchCompute(ScrWidth / 8, ScrHeight / 8, 1);
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         
         shader = mainShader;
         glUseProgram(shader);
@@ -149,4 +170,32 @@ void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+}
+
+unsigned int loadCubeMap(const std::vector<std::string> & paths)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(false);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    for (int i = 0; i < paths.size(); i++)
+    {
+        unsigned char *data = stbi_load(paths[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        } else {
+            std::cout << "Cubemap texture failed to load at path: " << paths[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    return textureID;
 }

@@ -21,8 +21,8 @@ struct Sphere {
     vec3 center;
     vec3 color;
     float radius;
+    float eta0;
     float eta1;
-    float eta2;
 };
 
 struct Triangle
@@ -31,8 +31,8 @@ struct Triangle
     vec3 v2;
     vec3 v3;
     vec3 color;
+    float eta0;
     float eta1;
-    float eta2;
 };
 
 struct Ray {
@@ -44,7 +44,7 @@ struct Ray {
 // Stack
 struct Stack {
     int size;
-    Ray rs[8];
+    Ray rs[10];
 };
 /* Inout version
 void stackInit(inout Stack s)
@@ -95,7 +95,7 @@ bool stackEmpty()
 
 bool stackFull()
 {
-    return stack.size >= 8;
+    return stack.size >= 4;
 }
 
 void stackPush(Ray r)
@@ -133,11 +133,12 @@ uniform vec3 r10;
 uniform vec3 r11;
 uniform vec3 ambient;
 uniform DirLight dirLight;
+uniform samplerCube box;
 
 Sphere getSphere(int i);
 bool hitSphere(Sphere sphere, Ray ray, out float d);
 vec3 calcSphere(Sphere sphere, Ray ray, out Ray rays[2], out int num);
-int secondRays(vec3 norm, vec3 light, int eta0, int eta1, out vec3 dirs[2]);
+int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], out float ws[2]);
 bool hitTriangle(Triangle triang, Ray ray, float d);
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -159,8 +160,6 @@ void main()
     while (!stackEmpty()) {
         Ray ray = stackPop();
         float dist = FARCUT + 0.1;
-        Ray rs[2];
-        int rnum;
         Sphere s;
         //Triangle t;
         for (int i = 0; i < sphereNum; i++) {
@@ -173,8 +172,10 @@ void main()
                 }
             }
         }
-        /* for (int i = 0; i < triangNum; i++) {}*/
+        /* for (int i = 0; i < triangNum; i++) {} */
 
+        Ray rs[2];
+        int rnum;
         if (dist < FARCUT) {
             vec3 norm = calcSphere(s, ray, rs, rnum);
             for (int j = 0; j < rnum; j++) {
@@ -182,9 +183,12 @@ void main()
                     stackPush(rs[j]);
                 }
             }
-
             pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
             pixel.rgb += s.color * ambient;
+            //pixel.rgb = vec3(0.1) + rs[1].dir;
+            //pixel.rgb = vec3(dist);
+        } else {
+            pixel.rgb += ray.weight * pow(texture(box, ray.dir).rgb, vec3(GAMMA));
         }
     }
 
@@ -227,16 +231,32 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
     float d = t0 > EPSILON ? t0 : t1;
     vec3 p = r.origin + d * r.dir;
     vec3 norm = normalize(p - s.center);
-    num = 1;
-    rs[0] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
-    //rs[1] = Ray(p, reflect(r.dir, norm), r.weight * vec3(0.5));
+    vec3 dirs[2];
+    float ws[2];
+    num = secondRays(norm, r.dir, s.eta0, s.eta1, dirs, ws);
+    rs[0] = Ray(p, dirs[0], r.weight * ws[0]);
+    rs[1] = Ray(p, dirs[1], r.weight * ws[1]);
     return norm;
 }
 
-int secondRays(vec3 norm, vec3 light, int eta0, int eta1, out vec3 dirs[2])
+int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], out float ws[2])
 {
     float R0 = (eta0 - eta1) * (eta0 - eta1) / (eta0 + eta1) / (eta0 + eta1);
-    return 1;
+    float cosine = dot(norm, light);
+    float eta = (cosine < 0) ? eta1 / eta0 : eta0 / eta1;
+
+    dirs[0] = reflect(light, norm);
+    dirs[1] = normalize(refract(light, norm, eta));
+    
+    float a = 1 - abs(cosine);
+    float R = R0 + (1 - R0) * a * a * a * a * a;
+    ws[0] = R;
+    a = 1 - abs(dot(norm, dirs[1]));
+    R = R0 + (1 - R0) * a * a * a * a * a;
+    ws[1] = 1 - R;
+    ws[0] = 0.5;
+    ws[1] = 0.5;
+    return 2;
 }
 
 bool hitTriangle(Triangle triang, Ray ray)
