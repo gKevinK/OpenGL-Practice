@@ -79,54 +79,18 @@ int main(int argc, char ** argv)
     };
     unsigned int skyboxCube = loadCubeMap(cubePaths);
 
-    //std::vector<Sphere> spheres;
-    float spheres[] = {
-        0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 200.0f,
-        1.0f, 1.5f, 0.0f,
-
-        1.5f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.5f, 1.0f, 200.0f,
-        1.0f, 1.5f, 0.0f,
-
-       -1.5f, 1.0f,-1.0f,
-        1.0f, 1.0f, 1.0f,
-        0.5f, 1.0f, 200.0f,
-        1.0f, 1.5f, 0.0f,
-
-        0.5f,-0.2f, 2.5f,
-        0.01f, 0.01f, 0.01f,
-        0.5f, 1.0f, 1.5f,
-        1.0f, 1.5f, 0.0f,
+    std::vector<Sphere> spheres = {
+        { gv3(0.0f, 0.0f, 0.0f), gv3(1.0f, 1.0f, 1.0f), 1.0f, 1.0f, 500.0f, 0.2f, 0.0f, 0.0f },
+        { gv3(-1.0f,-1.0f, 1.0f), gv3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 0.0f, 0.0f, 0.0f },
+        { gv3(1.5f, 1.0f, 0.0f), gv3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 1.0f, 0.0f, 0.0f },
+        { gv3(-1.5f, 1.0f,-1.0f), gv3(1.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 1.0f, 0.0f, 0.0f },
+        { gv3(0.5f,-0.2f, 2.5f), gv3(0.1f, 0.1f, 0.1f), 0.5f, 1.0f, 1.5f, 1.0f, 1.5f, 0.0f },
     };
     glGenBuffers(1, &sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, sphereBuf);
-    glBufferData(GL_TEXTURE_BUFFER, sizeof(spheres), spheres, GL_STATIC_DRAW);
+    glBufferData(GL_TEXTURE_BUFFER, sizeof(Sphere) * spheres.size(), &spheres[0], GL_STATIC_DRAW);
     glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-    //unsigned shader;
-    //shader = compShader;
-    //glUseProgram(shader);
-    //setTexture2D(shader, "img", 0, frame);
-    ////setTexture2D(shader, "spheres", 1, sphereTex);
-    //setInt(shader, "sphereNum", sizeof(spheres) / 12);
-    //setInt(shader, "width", ScrWidth);
-    //setInt(shader, "height", ScrHeight);
-    //setVec3(shader, "ambient", gv3(0.02f));
-    //setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 6.0f));
-    //setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -2.0f)));
-    //setVec3(shader, "r01", glm::normalize(gv3(1.0f, -1.0f, -2.0f)));
-    //setVec3(shader, "r10", glm::normalize(gv3(-1.0f, 1.0f, -2.0f)));
-    //setVec3(shader, "r11", glm::normalize(gv3(1.0f, 1.0f, -2.0f)));
-    //setVec3(shader, "dirLight.direction", gv3(0.0f, 1.0, 0.0f));
-    //setVec3(shader, "dirLight.color", gv3(1.0f, 1.0f, 1.0f));
-    //glActiveTexture(GL_TEXTURE1);
-    //glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxCube);
-    //setInt(shader, "box", 1);
-    //glDispatchCompute(ScrWidth / 16, ScrHeight / 16, 1);
     
     int frameRate = 0;
     int lastSecond = 0;
@@ -152,7 +116,7 @@ int main(int argc, char ** argv)
         glUseProgram(shader);
         setTexture2D(shader, "img", 0, frame);
         //setTexture2D(shader, "spheres", 1, sphereTex);
-        setInt(shader, "sphereNum", sizeof(spheres) / 12);
+        setInt(shader, "sphereNum", spheres.size());
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "ambient", gv3(0.02f));
@@ -166,7 +130,7 @@ int main(int argc, char ** argv)
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxCube);
         setInt(shader, "box", 1);
-        glDispatchCompute(ScrWidth / 16, ScrHeight / 16, 1);
+        glDispatchCompute((ScrWidth + 7)/ 16, (ScrHeight + 7)/ 16, 1);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         
         shader = mainShader;

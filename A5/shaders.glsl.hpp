@@ -23,6 +23,8 @@ struct Sphere {
     float radius;
     float eta0;
     float eta1;
+    float reflect;
+    float transparency;
 };
 
 struct Triangle
@@ -183,7 +185,8 @@ void main()
                     stackPush(rs[j]);
                 }
             }
-            //pixel.rgb += s.color * ray.weight * calcDirLight(dirLight, norm, -ray.dir);
+            vec3 light = ambient + calcDirLight(dirLight, norm, -ray.dir);
+            pixel.rgb += (1 - s.reflect) * s.color * ray.weight * light;
             //pixel.rgb += s.color * ray.weight * ambient;
             //pixel.rgb = length(rs[1].weight) > 0.02 ? vec3(rs[1].dir) : vec3(0.0);
         } else {
@@ -201,7 +204,8 @@ Sphere getSphere(int i)
     return Sphere(
         texelFetch(spheres, i * s + 0).xyz,
         texelFetch(spheres, i * s + 1).rgb,
-        texelFetch(spheres, i * s + 2).x, texelFetch(spheres, i * s + 2).y, texelFetch(spheres, i * s + 2).z);
+        texelFetch(spheres, i * s + 2).x, texelFetch(spheres, i * s + 2).y, texelFetch(spheres, i * s + 2).z,
+        texelFetch(spheres, i * s + 3).x, texelFetch(spheres, i * s + 3).y);
 }
 
 bool hitSphere(Sphere s, Ray r, out float d)
@@ -232,8 +236,8 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
     vec3 dirs[2];
     float ws[2];
     num = secondRays(norm, r.dir, s.eta0, s.eta1, dirs, ws);
-    rs[0] = Ray(p, dirs[0], r.weight * ws[0]);
-    rs[1] = Ray(p, dirs[1], r.weight * ws[1]);
+    rs[0] = Ray(p, dirs[0], s.reflect * r.weight * ws[0]);
+    rs[1] = Ray(p, dirs[1], s.transparency * r.weight * ws[1]);
     return norm;
 }
 
@@ -243,24 +247,22 @@ int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], 
     bool f = cosine < 0;
     float eta = f ? eta0 / eta1 : eta1 / eta0;
     vec3 normp = f ? norm : -norm;
+    float cosp = f ? -cosine : cosine;
 
     float R0 = (eta0 - eta1) * (eta0 - eta1) / (eta0 + eta1) / (eta0 + eta1);
-    float a = 1 - abs(cosine);
+    float a = 1 - cosp;
     float R = R0 + (1 - R0) * a * a * a * a * a;
     ws[0] = R;
-    a = 1 - abs(dot(norm, dirs[1]));
-    R = R0 + (1 - R0) * a * a * a * a * a;
-    ws[1] = 1 - R;
-
     dirs[0] = reflect(light, norm);
-    dirs[1] = light;// normalize(refract(light, normp, eta));
-    return 2;
-    //if (ws[1] < 0.04) {
-    //    return 1;
-    //} else {
-    //    dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
-    //    return 2;
-    //}
+    if (R > 0.98) {
+        return 1;
+    } else {
+        dirs[1] = normalize(refract(light, normp, eta));
+        a = 1 - dot(-normp, dirs[1]);
+        R = R0 + (1 - R0) * a * a * a * a * a;
+        ws[1] = 1 - R;
+        return 2;
+    }
 }
 
 bool hitTriangle(Triangle triang, Ray ray)

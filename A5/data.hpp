@@ -8,11 +8,15 @@ struct Sphere
     glm::vec3 Center;
     glm::vec3 Color;
     float Radius;
+    float Eta0;
     float Eta1;
-    float Eta2;
     float Reflect;
     float Transparency;
     float _a;
+
+    //Sphere() {};
+    //Sphere(glm::vec3 center, glm::vec3 color, float radius, float eta0, float eta1, float reflect, float transparency)
+    //    : Center(center), Color(color), Radius(radius), Eta0(eta0), Eta1(eta1), Reflect(reflect), Transparency(transparency) {};
 };
 
 struct Triangle
