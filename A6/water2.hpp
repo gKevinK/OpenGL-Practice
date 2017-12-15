@@ -1,5 +1,5 @@
-#ifndef WATER_H
-#define WATER_H
+#ifndef WATER2_H
+#define WATER2_H
 
 #include <glad\glad.h>
 
@@ -15,8 +15,8 @@ public:
     void Draw(unsigned int shader);
 
 private:
-    const static float vertices[16];
-    const static int indices[24];
+    const static float vertices[20];
+    //const static int indices[24];
 };
 
-#endif // !WATER_H
+#endif // !WATER2_H

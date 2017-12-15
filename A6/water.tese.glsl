@@ -24,7 +24,7 @@ void main()
 
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
     gl_Position = proj * view * vec4(pos, 1.0);
-    FragPos = vec3(vec4(pos, 1.0));
+    FragPos = pos;
 
     Normal = vec3(0.0, 1.0, 0.0);
 }

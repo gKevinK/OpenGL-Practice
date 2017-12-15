@@ -11,6 +11,7 @@
 #include "window.hpp"
 #include "terrain.hpp"
 #include "water.hpp"
+#include "water2.hpp"
 
 #define gv3 glm::vec3
 #define gm3 glm::mat3
@@ -160,6 +161,9 @@ int main(int argc, char ** argv)
     Water water;
     water.Init();
     water.Tex = loadTexture("resource\\SkyBox\\SkyBox5.bmp");
+    Water2 water2;
+    water2.Init();
+    water2.Tex = water.Tex;
 
     unsigned int frameBuffer;
     glGenFramebuffers(1, &frameBuffer);
@@ -253,7 +257,7 @@ int main(int argc, char ** argv)
         setFloat(shader, "time", currentFrame);
         setVec3(shader, "viewPos", camera.Position);
         setVec3(shader, "dirLight", glm::normalize(gv3(-1.0f, 0.8f, 0.6f)));
-        setMat4(shader, "model", gm4(1.0f));
+        //setMat4(shader, "model", gm4(1.0f));
         setMat4(shader, "view", camera.GetViewMatrix());
         setMat4(shader, "proj", proj);
         setMat4(shader, "reflViewMat", reflectView);
@@ -262,6 +266,18 @@ int main(int argc, char ** argv)
         setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
         //water.Update(camera.Position.x, camera.Position.y, camera.Position.z);
         water.Draw(shader);
+        shader = water2Shader;
+        glUseProgram(shader);
+        setFloat(shader, "time", currentFrame);
+        setVec3(shader, "viewPos", camera.Position);
+        setVec3(shader, "dirLight", glm::normalize(gv3(-1.0f, 0.8f, 0.6f)));
+        setMat4(shader, "view", camera.GetViewMatrix());
+        setMat4(shader, "proj", proj);
+        setMat4(shader, "reflViewMat", reflectView);
+        setMat4(shader, "reflProjMat", reflectProj);
+        setTexture2D(shader, "reflColor", 2, texColorBuffer);
+        setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
+        water2.Draw(shader);
 
         //glUseProgram(windowShader);
         //setTexture2D(windowShader, "tex", 1, texColorBuffer);

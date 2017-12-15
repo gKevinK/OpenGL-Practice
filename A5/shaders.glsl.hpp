@@ -9,7 +9,7 @@ layout(local_size_x = 16, local_size_y = 16) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
 #define FARCUT 100.0
-#define EPSILON 0.0001
+#define EPSILON 0.0005
 #define GAMMA 2.2
 
 struct DirLight {

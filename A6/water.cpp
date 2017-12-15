@@ -1,10 +1,12 @@
 #include "water.hpp"
 
+const float Range = 20.0f;
+
 const float Water::vertices[] {
-    -100.0f, -100.0f,
-    100.0f, -100.0f,
-    -100.0f,  100.0f,
-    100.0f,  100.0f,
+   -Range, -Range,
+    Range, -Range,
+   -Range,  Range,
+    Range,  Range,
 };
 
 void Water::Init()
