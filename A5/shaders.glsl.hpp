@@ -5,7 +5,7 @@
 
 const std::string main_comp_glsl = R"=====(#version 430 core
 
-layout(local_size_x = 8, local_size_y = 8) in;
+layout(local_size_x = 16, local_size_y = 16) in;
 layout(rgba32f, binding = 0) uniform image2D img;
 
 #define FARCUT 100.0
@@ -44,7 +44,7 @@ struct Ray {
 // Stack
 struct Stack {
     int size;
-    Ray rs[10];
+    Ray rs[8];
 };
 /* Inout version
 void stackInit(inout Stack s)
@@ -197,7 +197,7 @@ void main()
 
 Sphere getSphere(int i)
 {
-    const int s = 3;
+    const int s = 4;
     return Sphere(
         texelFetch(spheres, i * s + 0).xyz,
         texelFetch(spheres, i * s + 1).rgb,
@@ -215,7 +215,6 @@ bool hitSphere(Sphere s, Ray r, out float d)
     float t0 = tca - thc;
     float t1 = tca + thc;
     d = t0 > EPSILON ? t0 : t1;
-    //norm = normalize(-(r.origin + d * r.dir - s.center));
     return true;
 }
 
@@ -240,22 +239,28 @@ vec3 calcSphere(Sphere s, Ray r, out Ray rs[2], out int num)
 
 int secondRays(vec3 norm, vec3 light, float eta0, float eta1, out vec3 dirs[2], out float ws[2])
 {
-    float R0 = (eta0 - eta1) * (eta0 - eta1) / (eta0 + eta1) / (eta0 + eta1);
     float cosine = dot(norm, light);
     bool f = cosine < 0;
-    float eta = f ? eta1 / eta0 : eta0 / eta1;
+    float eta = f ? eta0 / eta1 : eta1 / eta0;
+    vec3 normp = f ? norm : -norm;
 
-    dirs[0] = reflect(light, norm);
-    dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
-    //dirs[1] = light;
-    
+    float R0 = (eta0 - eta1) * (eta0 - eta1) / (eta0 + eta1) / (eta0 + eta1);
     float a = 1 - abs(cosine);
     float R = R0 + (1 - R0) * a * a * a * a * a;
     ws[0] = R;
     a = 1 - abs(dot(norm, dirs[1]));
     R = R0 + (1 - R0) * a * a * a * a * a;
     ws[1] = 1 - R;
+
+    dirs[0] = reflect(light, norm);
+    dirs[1] = light;// normalize(refract(light, normp, eta));
     return 2;
+    //if (ws[1] < 0.04) {
+    //    return 1;
+    //} else {
+    //    dirs[1] = f ? normalize(refract(light, norm, 1 / eta)) : normalize(refract(light, -norm, 1 / eta));
+    //    return 2;
+    //}
 }
 
 bool hitTriangle(Triangle triang, Ray ray)

@@ -197,6 +197,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <None Include="water.tesc.glsl" />
     <None Include="water.tese.glsl" />
     <None Include="water.vert.glsl" />
+    <None Include="water2.vert.glsl" />
     <None Include="window.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
