@@ -46,21 +46,6 @@ void Water2::Init()
     glBindVertexArray(0);
 }
 
-//void Water::Update(float x, float y, float z)
-//{
-//    float r = y > 5.0f ? y * 40.0f : 200.0f;
-//    vertices = {
-//        x - r, -z - r,
-//        x + r, -z - r,
-//        x - r, -z + r,
-//        x + r, -z + r,
-//    };
-//    glBindVertexArray(VAO);
-//    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_DYNAMIC_DRAW);
-//    glBindVertexArray(0);
-//}
-
 void Water2::Draw(unsigned int shader)
 {
     glBindVertexArray(VAO);

@@ -12,8 +12,7 @@ void main()
 {
     vec3 pos = vec3(aPos.x, 0.0, -aPos.y);
     if (length(aPos) > 8000.0) {
-        gl_Position = proj * mat4(mat3(view)) * vec4(pos, 1.0);
-        gl_Position.z = 1.0 * gl_Position.w;
+        gl_Position = (proj * mat4(mat3(view)) * vec4(pos, 1.0)).xyww;
     } else {
         pos.xz = pos.xz + viewPos.xz;
         gl_Position = proj * view * vec4(pos, 1.0);
