@@ -61,11 +61,13 @@ int main(int argc, char ** argv)
     unsigned int windowShader = loadShaderProgram("window.vert.glsl", "texture.frag.glsl");
     unsigned int terrainShader = loadShaderProgram("terrain.vert.glsl", "terrain.tesc.glsl", "terrain.tese.glsl", "terrain.frag.glsl");
     unsigned int waterShader = loadShaderProgram("water.vert.glsl", "water.tesc.glsl", "water.tese.glsl", "water.frag.glsl");
+    unsigned int water2Shader = loadShaderProgram("water2.vert.glsl", "water.frag.glsl");
     //unsigned int skyboxShader = loadShaderProgram("skybox.vert.glsl", "skybox.frag.glsl");
     unsigned int skybox2Shader = loadShaderProgram("skybox2.vert.glsl", "skybox2.frag.glsl");
 #else
     unsigned int terrainShader = loadShaderProgramS(terrain_vert_glsl, terrain_tesc_glsl, terrain_tese_glsl, terrain_frag_glsl);
     unsigned int waterShader = loadShaderProgramS(water_vert_glsl, water_tesc_glsl, water_tese_glsl, water_frag_glsl);
+    unsigned int water2Shader = loadShaderProgramS(water2_vert_glsl, water_frag_glsl);
     //unsigned int skyboxShader = loadShaderProgramS(skybox_vert_glsl, skybox_frag_glsl);
     unsigned int skybox2Shader = loadShaderProgramS(skybox2_vert_glsl, skybox2_frag_glsl);
 #endif // _DEBUG

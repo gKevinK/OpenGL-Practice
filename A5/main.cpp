@@ -122,10 +122,11 @@ int main(int argc, char ** argv)
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "ambient", gv3(0.02f));
         setVec3(shader, "viewPos", camera.Position);
-        setVec3(shader, "r00", glm::normalize(camera.Front * 2.0f - camera.Up - camera.Right));
-        setVec3(shader, "r01", glm::normalize(camera.Front * 2.0f - camera.Up + camera.Right));
-        setVec3(shader, "r10", glm::normalize(camera.Front * 2.0f + camera.Up - camera.Right));
-        setVec3(shader, "r11", glm::normalize(camera.Front * 2.0f + camera.Up + camera.Right));
+        float ratio = (float)ScrWidth / ScrHeight;
+        setVec3(shader, "r00", glm::normalize(camera.Front * 2.0f - camera.Up - camera.Right * ratio));
+        setVec3(shader, "r01", glm::normalize(camera.Front * 2.0f - camera.Up + camera.Right * ratio));
+        setVec3(shader, "r10", glm::normalize(camera.Front * 2.0f + camera.Up - camera.Right * ratio));
+        setVec3(shader, "r11", glm::normalize(camera.Front * 2.0f + camera.Up + camera.Right * ratio));
         setVec3(shader, "dirLight.direction", gv3(0.0f, 1.0, 0.0f));
         setVec3(shader, "dirLight.color", gv3(1.0f, 1.0f, 1.0f));
         glActiveTexture(GL_TEXTURE1);
