@@ -5,6 +5,7 @@
 #include <iostream>
 #include "shader.h"
 #include "shaders.glsl.hpp"
+#include "fps_camera.hpp"
 
 #include "window.hpp"
 #include "data.hpp"
@@ -20,7 +21,7 @@ unsigned int ScrWidth = 512;
 unsigned int ScrHeight = 512;
 float lastFrame;
 float deltaTime;
-
+Camera camera = Camera(gv3(0.0f, 0.0f, 6.0f));
 unsigned int frame;
 
 int main(int argc, char ** argv)
@@ -120,11 +121,11 @@ int main(int argc, char ** argv)
         setInt(shader, "width", ScrWidth);
         setInt(shader, "height", ScrHeight);
         setVec3(shader, "ambient", gv3(0.02f));
-        setVec3(shader, "viewPos", gv3(0.0f, 0.0f, 6.0f));
-        setVec3(shader, "r00", glm::normalize(gv3(-1.0f, -1.0f, -2.0f)));
-        setVec3(shader, "r01", glm::normalize(gv3( 1.0f, -1.0f, -2.0f)));
-        setVec3(shader, "r10", glm::normalize(gv3(-1.0f,  1.0f, -2.0f)));
-        setVec3(shader, "r11", glm::normalize(gv3( 1.0f,  1.0f, -2.0f)));
+        setVec3(shader, "viewPos", camera.Position);
+        setVec3(shader, "r00", glm::normalize(camera.Front * 2.0f - camera.Up - camera.Right));
+        setVec3(shader, "r01", glm::normalize(camera.Front * 2.0f - camera.Up + camera.Right));
+        setVec3(shader, "r10", glm::normalize(camera.Front * 2.0f + camera.Up - camera.Right));
+        setVec3(shader, "r11", glm::normalize(camera.Front * 2.0f + camera.Up + camera.Right));
         setVec3(shader, "dirLight.direction", gv3(0.0f, 1.0, 0.0f));
         setVec3(shader, "dirLight.color", gv3(1.0f, 1.0f, 1.0f));
         glActiveTexture(GL_TEXTURE1);
@@ -159,6 +160,26 @@ void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(YAW_LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(YAW_RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        camera.ProcessKeyboard(PITCH_UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        camera.ProcessKeyboard(PITCH_DOWN, deltaTime);
 }
 
 unsigned int loadCubeMap(const std::vector<std::string> & paths)

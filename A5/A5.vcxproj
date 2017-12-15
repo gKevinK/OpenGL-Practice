@@ -174,6 +174,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
   <ItemGroup>
     <ClInclude Include="..\shared\shader.h" />
     <ClInclude Include="data.hpp" />
+    <ClInclude Include="fps_camera.hpp" />
     <ClInclude Include="shaders.glsl.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>

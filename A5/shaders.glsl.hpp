@@ -187,7 +187,6 @@ void main()
             }
             vec3 light = ambient + calcDirLight(dirLight, norm, -ray.dir);
             pixel.rgb += (1 - s.reflect) * s.color * ray.weight * light;
-            //pixel.rgb += s.color * ray.weight * ambient;
             //pixel.rgb = length(rs[1].weight) > 0.02 ? vec3(rs[1].dir) : vec3(0.0);
         } else {
             pixel.rgb += ray.weight * pow(texture(box, ray.dir).rgb, vec3(GAMMA));
