@@ -172,6 +172,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClCompile Include="skybox2.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="water.cpp" />
+    <ClCompile Include="water2.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +182,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClInclude Include="skybox2.hpp" />
     <ClInclude Include="terrain.hpp" />
     <ClInclude Include="water.hpp" />
+    <ClInclude Include="water2.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>

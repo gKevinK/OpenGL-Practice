@@ -258,7 +258,7 @@ int main(int argc, char ** argv)
         setMat4(shader, "reflProjMat", reflectProj);
         setTexture2D(shader, "reflColor", 2, texColorBuffer);
         setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
-        water.Update(camera.Position.x, camera.Position.y, camera.Position.z);
+        //water.Update(camera.Position.x, camera.Position.y, camera.Position.z);
         water.Draw(shader);
 
         //glUseProgram(windowShader);

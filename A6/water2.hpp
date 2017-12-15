@@ -3,10 +3,10 @@
 
 #include <glad\glad.h>
 
-class Water
+class Water2
 {
 public:
-    unsigned int VAO, VBO;
+    unsigned int VAO, VBO, EBO;
     unsigned int Tex;
 
     //Water();
@@ -15,7 +15,8 @@ public:
     void Draw(unsigned int shader);
 
 private:
-    const static float vertices[8];
+    const static float vertices[16];
+    const static int indices[24];
 };
 
 #endif // !WATER_H

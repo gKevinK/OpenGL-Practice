@@ -7,7 +7,7 @@ in vec2 TexCoord_te[];
 out vec3 FragPos;
 out vec3 Normal;
 
-uniform mat4 model;
+//uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
@@ -23,8 +23,8 @@ void main()
     //TexCoord = mix(mix(TexCoord_te[0], TexCoord_te[1], u), mix(TexCoord_te[2], TexCoord_te[3], u), v);
 
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
-    gl_Position = proj * view * model * vec4(pos, 1.0);
-    FragPos = vec3(model * vec4(pos, 1.0));
+    gl_Position = proj * view * vec4(pos, 1.0);
+    FragPos = vec3(vec4(pos, 1.0));
 
     Normal = vec3(0.0, 1.0, 0.0);
 }
