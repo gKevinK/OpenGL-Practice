@@ -407,6 +407,19 @@ void main()
 }
 )=====";
 
+const std::string water2_vert_glsl = R"=====(#version 430 core
+layout(location = 0) in vec2 aPos;
+
+uniform mat4 view;
+uniform mat4 proj;
+
+void main()
+{
+    vec4 pos = vec4(aPos.x, 0.0, -aPos.y, 1.0);
+    gl_Position = pos;
+}
+)=====";
+
 const std::string window_vert_glsl = R"=====(#version 430 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoord;

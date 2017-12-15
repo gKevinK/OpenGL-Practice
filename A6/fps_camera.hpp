@@ -11,10 +11,12 @@ enum Camera_Movement {
     BACKWARD,
     LEFT,
     RIGHT,
-    YAW_LEFT,
-    YAW_RIGHT,
     UP,
     DOWN,
+    YAW_LEFT,
+    YAW_RIGHT,
+    PITCH_UP,
+    PITCH_DOWN,
 };
 
 const float YAW = -90.0f;
@@ -92,6 +94,14 @@ public:
             break;
         case DOWN:
             Position -= Up * velocity;
+            break;
+        case PITCH_UP:
+            Pitch += 10 * velocity;
+            updateCameraVectors();
+            break;
+        case PITCH_DOWN:
+            Pitch -= 10 * velocity;
+            updateCameraVectors();
             break;
         default:
             break;
