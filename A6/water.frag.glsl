@@ -6,10 +6,9 @@ in vec3 FragPos;
 in vec3 Normal;
 
 struct Wave {
-    vec3 dir;
-    float fraq;
-    float length;
-    float amp;
+    float o;
+    float s;
+    float k;
 };
 
 uniform float time;
@@ -20,8 +19,9 @@ uniform mat4 reflProjMat;
 uniform sampler2D reflColor;
 uniform sampler2D reflDepth;
 uniform sampler2D waterTex;
-uniform Wave waves[8];
+uniform Wave waves[10];
 uniform int waveNum;
+uniform vec3 waveDir;
 
 float fresnel(float cosine);
 vec3 reflTexCoord(vec3 pos);
@@ -29,6 +29,7 @@ vec3 reflTexCoord(vec3 pos);
 vec3 hit(vec3 pos, vec3 dir);
 
 const float R0 = (0.33 * 0.33) / (2.33 * 2.33);
+const float PI = 3.1415926535898;
 
 void main()
 {
@@ -39,16 +40,16 @@ void main()
 
     // Wave
 	vec3 norm = normalize(Normal);
-    //for (int i = 0; i < waveNum; i++) {
-    //    norm += waves[i].amp * normalize(waves[i].dir * sin(0));
-    //}
-    norm += 0.01 * normalize(vec3(1.0, 0.0, 3.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(20  * (3.0 * fragPos.x + 1.0 * fragPos.z + time));
-    norm += 0.01 * normalize(vec3(3.0, 0.0, 1.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(20  * (0.0 * fragPos.x + 3.0 * fragPos.z + time));
-    norm += 0.01 * normalize(vec3(1.0, 0.0, 3.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(5   * (3.0 * fragPos.x + 1.0 * fragPos.z + time));
-    norm += 0.01 * normalize(vec3(3.0, 0.0, 1.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(5   * (0.0 * fragPos.x + 3.0 * fragPos.z + time));
-    norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(1.5 * (3.0 * fragPos.x + 1.0 * fragPos.z + time));
-    norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(1.5 * (0.0 * fragPos.x + 3.0 * fragPos.z + time));
-    norm.xz = norm.xz * max(0.0, 1 - length(fragPos - viewPos) / viewPos.y / 20);
+    for (int i = 0; i < waveNum; i++) {
+        norm += 0.01 * sqrt(2 * waves[i].s) * waveDir * sin(dot(fragPos * 10, waveDir) * waves[i].k + waves[i].o * time);
+    }
+    //norm += 0.01 * normalize(vec3(1.0, 0.0, 3.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(20  * (3.0 * fragPos.x + 1.0 * fragPos.z + time));
+    //norm += 0.01 * normalize(vec3(3.0, 0.0, 1.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(20  * (0.0 * fragPos.x + 3.0 * fragPos.z + time));
+    //norm += 0.01 * normalize(vec3(1.0, 0.0, 3.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(5   * (3.0 * fragPos.x + 1.0 * fragPos.z + time));
+    //norm += 0.01 * normalize(vec3(3.0, 0.0, 1.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(5   * (0.0 * fragPos.x + 3.0 * fragPos.z + time));
+    //norm += 0.005 * normalize(vec3(1.0, 0.0, 3.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(1.5 * (3.0 * fragPos.x + 1.0 * fragPos.z + time));
+    //norm += 0.005 * normalize(vec3(3.0, 0.0, 1.0) + vec3(fragPos.x, 0.0, fragPos.z)) * sin(1.5 * (0.0 * fragPos.x + 3.0 * fragPos.z + time));
+    //norm.xz = norm.xz * max(0.0, 1 - length(fragPos - viewPos) / viewPos.y / 20);
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(fragPos - viewPos), norm);
@@ -59,7 +60,7 @@ void main()
     // Ray marching
     vec2 hitCoord;
     float i;
-	for (i = 0.0; i < 10.0; i += 0.2) {
+	for (i = 0.0; i < 10.0; i += 0.25) {
 		vec3 coord = reflTexCoord(fragPos + reflectDir * i);
 		float depth = texture(reflDepth, coord.xy).r;
 		if (depth < coord.z) {
@@ -72,7 +73,7 @@ void main()
     //if (gl_FragCoord.x < 400)
     //    FragColor = vec4(100 * norm.x, 0.0, 100 * norm.z, 1.0);
     vec4 reflectColor = texture(reflColor, hitCoord);
-    vec4 texColor = texture(waterTex, fragPos.xz + 20 * norm.xz); //  + vec2(-0.1, 0.1) * time
+    vec4 texColor = texture(waterTex, fragPos.xz + 1 * norm.xz); //  + vec2(-0.1, 0.1) * time
 
     // Mix reflection and refraction
     float R = fresnel(dot(norm, reflectDir));

@@ -68,6 +68,9 @@
     <ClInclude Include="water2.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="wave.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="skybox.frag.glsl">

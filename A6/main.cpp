@@ -12,6 +12,7 @@
 #include "terrain.hpp"
 #include "water.hpp"
 #include "water2.hpp"
+#include "wave.hpp"
 
 #define gv3 glm::vec3
 #define gm3 glm::mat3
@@ -190,6 +191,14 @@ int main(int argc, char ** argv)
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    float winds = 8;
+    Wave waves[10];
+    for (int i = 0; i < 10; i++) {
+        waves[i].o = 0.6f + i * 0.25;
+        waves[i].s = 0.78f / glm::pow(waves[i].o, 5) * glm::exp(-0.74f * glm::pow(9.8f / winds / waves[i].o, 4));
+        waves[i].k = waves[i].o * waves[i].o / 9.8f;
+    }
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -264,7 +273,13 @@ int main(int argc, char ** argv)
         setMat4(shader, "reflProjMat", reflectProj);
         setTexture2D(shader, "reflColor", 2, texColorBuffer);
         setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
-        //water.Update(camera.Position.x, camera.Position.y, camera.Position.z);
+        setInt(shader, "waveNum", 10);
+        setVec3(shader, "waveDir", glm::normalize(gv3(1.0f, 0.0f, 0.8f)));
+        for (int i = 0; i < 10; i++) {
+            setFloat(shader, "waves[" + std::to_string(i) + "].o", waves[i].o);
+            setFloat(shader, "waves[" + std::to_string(i) + "].s", waves[i].s);
+            setFloat(shader, "waves[" + std::to_string(i) + "].k", waves[i].k);
+        }
         water.Draw(shader);
         shader = water2Shader;
         glUseProgram(shader);
@@ -277,6 +292,13 @@ int main(int argc, char ** argv)
         setMat4(shader, "reflProjMat", reflectProj);
         setTexture2D(shader, "reflColor", 2, texColorBuffer);
         setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
+        setInt(shader, "waveNum", 10);
+        setVec3(shader, "waveDir", glm::normalize(gv3(1.0f, 0.0f, 0.8f)));
+        for (int i = 0; i < 10; i++) {
+            setFloat(shader, "waves[" + std::to_string(i) + "].o", waves[i].o);
+            setFloat(shader, "waves[" + std::to_string(i) + "].s", waves[i].s);
+            setFloat(shader, "waves[" + std::to_string(i) + "].k", waves[i].k);
+        }
         water2.Draw(shader);
 
         //glUseProgram(windowShader);

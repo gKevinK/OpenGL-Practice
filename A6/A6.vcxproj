@@ -183,6 +183,7 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClInclude Include="terrain.hpp" />
     <ClInclude Include="water.hpp" />
     <ClInclude Include="water2.hpp" />
+    <ClInclude Include="wave.hpp" />
     <ClInclude Include="window.hpp" />
   </ItemGroup>
   <ItemGroup>
