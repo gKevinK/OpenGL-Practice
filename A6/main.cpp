@@ -15,6 +15,7 @@
 #include "wave.hpp"
 
 #define gv3 glm::vec3
+#define gv4 glm::vec4
 #define gm3 glm::mat3
 #define gm4 glm::mat4
 
@@ -192,11 +193,21 @@ int main(int argc, char ** argv)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     float winds = 8;
-    Wave waves[10];
+    std::vector<Wave> waves;
     for (int i = 0; i < 10; i++) {
-        waves[i].o = 0.6f + i * 0.25;
-        waves[i].s = 0.78f / glm::pow(waves[i].o, 5) * glm::exp(-0.74f * glm::pow(9.8f / winds / waves[i].o, 4));
-        waves[i].k = waves[i].o * waves[i].o / 9.8f;
+        Wave wave;
+        wave.o = 0.6f + i * 0.25;
+        wave.s = 0.78f / glm::pow(wave.o, 5) * glm::exp(-0.74f * glm::pow(9.8f / winds / wave.o, 4));
+        wave.k = wave.o * wave.o / 9.8f;
+        waves.push_back(wave);
+    }
+    gv3 waveDirMain = -glm::normalize(gv3(1.0f, 0.0f, 0.6f));
+    std::vector<WaveDir> waveDirs;
+    for (int i = 0; i < 7; i++) {
+        WaveDir waveDir;
+        waveDir.dir = gm3(glm::rotate(gm4(1.0f), glm::radians(20.0f * (i - 3)), gv3(0.0f, 1.0f, 0.0f))) * waveDirMain;
+        waveDir.a = 2.0f / glm::radians(180.0f) * glm::dot(waveDir.dir, waveDirMain) * glm::dot(waveDir.dir, waveDirMain);
+        waveDirs.push_back(waveDir);
     }
 
     while (!glfwWindowShouldClose(window)) {
@@ -273,12 +284,17 @@ int main(int argc, char ** argv)
         setMat4(shader, "reflProjMat", reflectProj);
         setTexture2D(shader, "reflColor", 2, texColorBuffer);
         setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
-        setInt(shader, "waveNum", 10);
-        setVec3(shader, "waveDir", glm::normalize(gv3(1.0f, 0.0f, 0.8f)));
-        for (int i = 0; i < 10; i++) {
+        setInt(shader, "waveNum", waves.size());
+        for (int i = 0; i < waves.size(); i++) {
             setFloat(shader, "waves[" + std::to_string(i) + "].o", waves[i].o);
             setFloat(shader, "waves[" + std::to_string(i) + "].s", waves[i].s);
             setFloat(shader, "waves[" + std::to_string(i) + "].k", waves[i].k);
+        }
+        setInt(shader, "waveDirNum", waveDirs.size());
+        setVec3(shader, "waveDir", waveDirMain);
+        for (int i = 0; i < waveDirs.size(); i++) {
+            setVec3(shader, "waveDirs[" + std::to_string(i) + "].dir", waveDirs[i].dir);
+            setFloat(shader, "waveDirs[" + std::to_string(i) + "].a", waveDirs[i].a);
         }
         water.Draw(shader);
         shader = water2Shader;
@@ -292,12 +308,17 @@ int main(int argc, char ** argv)
         setMat4(shader, "reflProjMat", reflectProj);
         setTexture2D(shader, "reflColor", 2, texColorBuffer);
         setTexture2D(shader, "reflDepth", 3, texDepthBuffer);
-        setInt(shader, "waveNum", 10);
-        setVec3(shader, "waveDir", glm::normalize(gv3(1.0f, 0.0f, 0.8f)));
-        for (int i = 0; i < 10; i++) {
+        setInt(shader, "waveNum", waves.size());
+        for (int i = 0; i < waves.size(); i++) {
             setFloat(shader, "waves[" + std::to_string(i) + "].o", waves[i].o);
             setFloat(shader, "waves[" + std::to_string(i) + "].s", waves[i].s);
             setFloat(shader, "waves[" + std::to_string(i) + "].k", waves[i].k);
+        }
+        setInt(shader, "waveDirNum", waveDirs.size());
+        setVec3(shader, "waveDir", waveDirMain);
+        for (int i = 0; i < waveDirs.size(); i++) {
+            setVec3(shader, "waveDirs[" + std::to_string(i) + "].dir", waveDirs[i].dir);
+            setFloat(shader, "waveDirs[" + std::to_string(i) + "].a", waveDirs[i].a);
         }
         water2.Draw(shader);
 
