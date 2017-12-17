@@ -13,18 +13,18 @@ void main()
 {
     if (gl_InvocationID == 0) {
         float l = 0, d = 1;
-        for (int i = 0; i < 4; i++)
-            l += length((model * gl_in[gl_InvocationID].gl_Position).xyz - viewPos);
-        if (l < 3 * 4)
-            d = 40;
-        else if (l < 6 * 4)
-            d = 24;
-        else if (l < 10 * 4)
-            d = 12;
-        else if (l < 20 * 4)
-            d = 6;
-        else
-            d = 3;
+        //for (int i = 0; i < 4; i++)
+        //    l += length(gl_in[i].gl_Position.xyz - viewPos);
+        //if (l < 3 * 4)
+        //    d = 20;
+        //else if (l < 6 * 4)
+        //    d = 12;
+        //else if (l < 10 * 4)
+        //    d = 4;
+        //else if (l < 20 * 4)
+        //    d = 2;
+        //else
+        //    d = 1;
 		d = 1;
 		// Left down right up column row
         gl_TessLevelOuter[0] = d;

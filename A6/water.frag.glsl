@@ -26,7 +26,6 @@ uniform sampler2D reflDepth;
 uniform sampler2D waterTex;
 uniform Wave waves[10];
 uniform int waveNum;
-uniform vec3 waveDir;
 uniform WaveDir waveDirs[7];
 uniform int waveDirNum;
 
@@ -41,7 +40,7 @@ const float R0 = (0.33 * 0.33) / (2.33 * 2.33);
 void main()
 {
     vec3 fragPos = FragPos;
-    if (FragPos.y < -0.5) {
+    if (FragPos.y < -0.9) {
         fragPos.y = 0.0;
     }
 
@@ -51,10 +50,8 @@ void main()
         for (int j = 0; j < waveDirNum; j++) {
             norm += 0.05 * sqrt(2 * waves[i].s * waveDirs[j].a) * waveDirs[j].dir * sin(dot(fragPos * 100, waveDirs[j].dir) * waves[i].k - waves[i].o * time);
         }
-        //norm += 0.1 * sqrt(2 * waves[i].s) * waveDir * sin(dot(fragPos * 100, waveDir) * waves[i].k - waves[i].o * time);
     }
-
-    norm.xz = norm.xz / (1 + length(fragPos));
+    norm.xz = norm.xz / sqrt(1 + length(fragPos.xz - viewPos.xz) * min(2.0, viewPos.y) / 5.0);
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(fragPos - viewPos), norm);

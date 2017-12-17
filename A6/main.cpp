@@ -270,7 +270,9 @@ int main(int argc, char ** argv)
         setMat4(terrainShader, "proj", proj);
         setFloat(terrainShader, "base", -0.06f);
         setFloat(terrainShader, "scale", 0.2f);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         terrain.Draw(terrainShader);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         shader = waterShader;
         glUseProgram(shader);
@@ -296,7 +298,9 @@ int main(int argc, char ** argv)
             setVec3(shader, "waveDirs[" + std::to_string(i) + "].dir", waveDirs[i].dir);
             setFloat(shader, "waveDirs[" + std::to_string(i) + "].a", waveDirs[i].a);
         }
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         water.Draw(shader);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         shader = water2Shader;
         glUseProgram(shader);
         setFloat(shader, "time", currentFrame);

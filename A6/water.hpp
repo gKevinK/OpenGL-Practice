@@ -2,6 +2,7 @@
 #define WATER_H
 
 #include <glad\glad.h>
+#include <vector>
 
 class Water
 {
@@ -11,11 +12,10 @@ public:
 
     //Water();
     void Init();
-    //void Update(float x, float y, float z);
     void Draw(unsigned int shader);
 
 private:
-    const static float vertices[8];
+    std::vector<float> vertices;
 };
 
 #endif // !WATER_H

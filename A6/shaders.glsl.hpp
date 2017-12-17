@@ -97,32 +97,43 @@ out vec2 TexCoord_te[];
 uniform vec3 viewPos;
 uniform mat4 model;
 
+int level(float dist, int n);
+
 void main()
 {
     if (gl_InvocationID == 0) {
-        float l = 0, d = 1;
-        for (int i = 0; i < 4; i++)
-            l += length((model * gl_in[gl_InvocationID].gl_Position).xz - viewPos.xz);
-        if (l < 0.3 * 4)
-            d = 32;
-        else if (l < 0.5 * 4)
-            d = 20;
-        else if (l < 1 * 4)
-            d = 12;
-        else if (l < 3 * 4)
-            d = 6;
-        else
-            d = 3;
-        gl_TessLevelOuter[0] = d;
-        gl_TessLevelOuter[1] = d;
-        gl_TessLevelOuter[2] = d;
-        gl_TessLevelOuter[3] = d;
-        gl_TessLevelInner[0] = d;
-        gl_TessLevelInner[1] = d;
+        float d0 = length((model * gl_in[0].gl_Position).xz - viewPos.xz);
+        float d1 = length((model * gl_in[1].gl_Position).xz - viewPos.xz);
+        float d2 = length((model * gl_in[2].gl_Position).xz - viewPos.xz);
+        float d3 = length((model * gl_in[3].gl_Position).xz - viewPos.xz);
+        // Left down right up column row
+        gl_TessLevelOuter[0] = level(d0 + d2, 2);
+        gl_TessLevelOuter[1] = level(d0 + d1, 2);
+        gl_TessLevelOuter[2] = level(d1 + d3, 2);
+        gl_TessLevelOuter[3] = level(d2 + d3, 2);
+        gl_TessLevelInner[0] = level(d0 + d1 + d2 + d3, 4);
+        gl_TessLevelInner[1] = gl_TessLevelInner[0];
     }
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
     TexCoord_te[gl_InvocationID] = TexCoord_tc[gl_InvocationID];
-})=====";
+}
+
+int level(float dist, int n)
+{
+    int d = 3;
+    if (dist < 0.5 * n)
+        d = 40;
+    else if (dist < 1 * n)
+        d = 24;
+    else if (dist < 2 * n)
+        d = 12;
+    else if (dist < 4 * n)
+        d = 6;
+    else
+        d = 3;
+    return d;
+}
+)=====";
 
 const std::string terrain_tese_glsl = R"=====(#version 430 core
 
@@ -216,7 +227,6 @@ uniform sampler2D reflDepth;
 uniform sampler2D waterTex;
 uniform Wave waves[10];
 uniform int waveNum;
-uniform vec3 waveDir;
 uniform WaveDir waveDirs[7];
 uniform int waveDirNum;
 
@@ -231,7 +241,7 @@ const float R0 = (0.33 * 0.33) / (2.33 * 2.33);
 void main()
 {
     vec3 fragPos = FragPos;
-    if (FragPos.y < -0.5) {
+    if (FragPos.y < -0.9) {
         fragPos.y = 0.0;
     }
 
@@ -239,12 +249,10 @@ void main()
 	vec3 norm = normalize(Normal);
     for (int i = 0; i < waveNum; i++) {
         for (int j = 0; j < waveDirNum; j++) {
-            norm += 0.01 * sqrt(2 * waves[i].s * waveDirs[j].a) * waveDirs[j].dir * sin(dot(fragPos * 100, waveDirs[j].dir) * waves[i].k - waves[i].o * time);
+            norm += 0.05 * sqrt(2 * waves[i].s * waveDirs[j].a) * waveDirs[j].dir * sin(dot(fragPos * 100, waveDirs[j].dir) * waves[i].k - waves[i].o * time);
         }
-        //norm += 0.1 * sqrt(2 * waves[i].s) * waveDir * sin(dot(fragPos * 100, waveDir) * waves[i].k - waves[i].o * time);
     }
-
-    //norm.xz = norm.xz * max(0.0, 1 - length(fragPos - viewPos) / min(2.0, viewPos.y) / 20);
+    norm.xz = norm.xz / sqrt(1 + length(fragPos.xz - viewPos.xz) * min(2.0, viewPos.y) / 5.0);
     norm = normalize(norm);
 
 	vec3 reflectDir = reflect(normalize(fragPos - viewPos), norm);
@@ -353,18 +361,18 @@ void main()
 {
     if (gl_InvocationID == 0) {
         float l = 0, d = 1;
-        for (int i = 0; i < 4; i++)
-            l += length((model * gl_in[gl_InvocationID].gl_Position).xyz - viewPos);
-        if (l < 3 * 4)
-            d = 40;
-        else if (l < 6 * 4)
-            d = 24;
-        else if (l < 10 * 4)
-            d = 12;
-        else if (l < 20 * 4)
-            d = 6;
-        else
-            d = 3;
+        //for (int i = 0; i < 4; i++)
+        //    l += length(gl_in[i].gl_Position.xyz - viewPos);
+        //if (l < 3 * 4)
+        //    d = 20;
+        //else if (l < 6 * 4)
+        //    d = 12;
+        //else if (l < 10 * 4)
+        //    d = 4;
+        //else if (l < 20 * 4)
+        //    d = 2;
+        //else
+        //    d = 1;
 		d = 1;
 		// Left down right up column row
         gl_TessLevelOuter[0] = d;
@@ -387,9 +395,26 @@ in vec2 TexCoord_te[];
 out vec3 FragPos;
 out vec3 Normal;
 
+struct Wave {
+    float o;
+    float s;
+    float k;
+};
+
+struct WaveDir {
+    vec3 dir;
+    float a;
+};
+
 //uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
+
+uniform float time;
+uniform Wave waves[10];
+uniform int waveNum;
+uniform WaveDir waveDirs[7];
+uniform int waveDirNum;
 
 void main()
 {
@@ -400,9 +425,13 @@ void main()
     float u = gl_TessCoord.x;
     float v = gl_TessCoord.y;
 
-    //TexCoord = mix(mix(TexCoord_te[0], TexCoord_te[1], u), mix(TexCoord_te[2], TexCoord_te[3], u), v);
-
     vec3 pos = mix(mix(pos0, pos1, u), mix(pos2, pos3, u), v);
+    //for (int i = 0; i < waveNum; i++) {
+    //    for (int j = 0; j < waveDirNum; j++) {
+    //        pos.y += 0.01 * sqrt(2 * waves[i].s * waveDirs[j].a) * sin(dot(pos * 100, waveDirs[j].dir) * waves[i].k - waves[i].o * time);
+    //    }
+    //}
+    //pos.y /= (1 + length(pos) / 5.0);
     gl_Position = proj * view * vec4(pos, 1.0);
     FragPos = pos;
 
@@ -435,6 +464,7 @@ void main()
     vec3 pos = vec3(aPos.x, 0.0, -aPos.y);
     if (length(aPos) > 8000.0) {
         gl_Position = (proj * mat4(mat3(view)) * vec4(pos, 1.0)).xyww;
+        pos.xz = pos.xz + viewPos.xz;
     } else {
         pos.xz = pos.xz + viewPos.xz;
         gl_Position = proj * view * vec4(pos, 1.0);
