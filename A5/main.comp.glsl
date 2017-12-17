@@ -149,8 +149,6 @@ void main()
     vec2 up = vec2(p) / vec2(width, height);
     // ivec2 lp = ivec2(gl_LocalInvocationID.xy);
     
-    // Stack stack;
-    // stackInit(stack);
     Ray oRay = Ray(viewPos, normalize(mix(mix(r00, r01, up.x), mix(r10, r11, up.x), up.y)), vec3(1.0));
     stackPush(oRay);
     
@@ -191,14 +189,12 @@ void main()
                     continue;
                 if (hitSphere(st, ray2, d)) {
                     dist2 = d;
-                    //light += calcDirLight(dirLight, norm, -ray.dir);
                     break;
                 }
             }
             if (dist2 > FARCUT)
                 light += calcDirLight(dirLight, norm, -ray.dir);
             pixel.rgb += (1 - s.reflect) * s.color * ray.weight * light;
-            //pixel.rgb = length(rs[1].weight) > 0.02 ? vec3(rs[1].dir) : vec3(0.0);
         } else {
             pixel.rgb += ray.weight * pow(texture(box, ray.dir).rgb, vec3(GAMMA));
         }

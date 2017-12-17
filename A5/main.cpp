@@ -133,7 +133,7 @@ int main(int argc, char ** argv)
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxCube);
         setInt(shader, "box", 1);
-        glDispatchCompute((ScrWidth + 7)/ 16, (ScrHeight + 7)/ 16, 1);
+        glDispatchCompute((ScrWidth + 15)/ 16, (ScrHeight + 15)/ 16, 1);
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         
         shader = mainShader;
