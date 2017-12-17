@@ -157,7 +157,7 @@ void main()
     while (!stackEmpty()) {
         Ray ray = stackPop();
         float dist = FARCUT + 0.1;
-        Sphere s;
+        int sid;
         //Triangle t;
         for (int i = 0; i < sphereNum; i++) {
             Sphere st = getSphere(i);
@@ -165,7 +165,7 @@ void main()
             if (hitSphere(st, ray, d)) {
                 if (EPSILON < d && d < dist) {
                     dist = d;
-                    s = st;
+                    sid = i;
                 }
             }
         }
@@ -174,13 +174,29 @@ void main()
         Ray rs[2];
         int rnum;
         if (dist < FARCUT) {
+            Sphere s = getSphere(sid);
             vec3 norm = calcSphere(s, ray, rs, rnum);
             for (int j = 0; j < rnum; j++) {
                 if (!stackFull() && length(rs[j].weight) > 0.02) {
                     stackPush(rs[j]);
                 }
             }
-            vec3 light = ambient + calcDirLight(dirLight, norm, -ray.dir);
+            vec3 light = ambient;
+            float dist2 = FARCUT + 0.1;
+            Ray ray2 = Ray(ray.origin + ray.dir * dist, dirLight.direction, vec3(0.0));
+            for (int i = 0; i < sphereNum; i++) {
+                Sphere st = getSphere(i);
+                float d;
+                if (sid == i)
+                    continue;
+                if (hitSphere(st, ray2, d)) {
+                    dist2 = d;
+                    //light += calcDirLight(dirLight, norm, -ray.dir);
+                    break;
+                }
+            }
+            if (dist2 > FARCUT)
+                light += calcDirLight(dirLight, norm, -ray.dir);
             pixel.rgb += (1 - s.reflect) * s.color * ray.weight * light;
             //pixel.rgb = length(rs[1].weight) > 0.02 ? vec3(rs[1].dir) : vec3(0.0);
         } else {
@@ -213,6 +229,8 @@ bool hitSphere(Sphere s, Ray r, out float d)
     float t0 = tca - thc;
     float t1 = tca + thc;
     d = t0 > EPSILON ? t0 : t1;
+    if (d < EPSILON)
+        return false;
     return true;
 }
 

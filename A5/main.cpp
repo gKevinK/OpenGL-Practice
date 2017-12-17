@@ -81,11 +81,12 @@ int main(int argc, char ** argv)
     unsigned int skyboxCube = loadCubeMap(cubePaths);
 
     std::vector<Sphere> spheres = {
-        { gv3(0.0f, 0.0f, 0.0f), gv3(1.0f, 1.0f, 1.0f), 1.0f, 1.0f, 500.0f, 0.2f, 0.0f, 0.0f },
+        { gv3( 0.0f, 0.0f, 0.0f), gv3(1.0f, 1.0f, 1.0f), 1.0f, 1.0f, 500.0f, 0.2f, 0.0f, 0.0f },
         { gv3(-1.0f,-1.0f, 1.0f), gv3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 0.0f, 0.0f, 0.0f },
-        { gv3(1.5f, 1.0f, 0.0f), gv3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 1.0f, 0.0f, 0.0f },
+        { gv3( 1.5f, 1.0f,-1.0f), gv3(0.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 1.0f, 0.0f, 0.0f },
         { gv3(-1.5f, 1.0f,-1.0f), gv3(1.0f, 1.0f, 0.0f), 0.5f, 1.0f, 500.0f, 1.0f, 0.0f, 0.0f },
-        { gv3(0.5f,-0.2f, 2.5f), gv3(0.1f, 0.1f, 0.1f), 0.5f, 1.0f, 1.5f, 1.0f, 1.5f, 0.0f },
+        { gv3( 0.5f,-0.2f, 2.5f), gv3(0.1f, 0.1f, 0.1f), 0.5f, 1.0f, 1.5f, 1.0f, 1.5f, 0.0f },
+        { gv3( 1.0f,-1.5f, 0.0f), gv3(1.0f, 0.0f, 0.0f), 0.5f, 1.0f, 500.0f, 0.0f, 0.0f, 0.0f },
     };
     glGenBuffers(1, &sphereBuf);
     glBindBuffer(GL_TEXTURE_BUFFER, sphereBuf);
