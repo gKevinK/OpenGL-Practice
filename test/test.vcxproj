@@ -184,8 +184,12 @@ xcopy $(ProjectDir)resource\* $(TargetDir)resource\ /S /E /C /Y</Command>
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="model.frag.glsl" />
-    <None Include="model.vert.glsl" />
+    <Text Include="model.frag.glsl">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="model.vert.glsl">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -60,12 +60,12 @@ int main(int argc, char ** argv)
 
 	const GLubyte* glvendor = glGetString(GL_VENDOR);
 	const GLubyte* glrenderer = glGetString(GL_RENDERER);
-	std::cout << glvendor << ": " << glrenderer << std::endl;
+	std::cout << glvendor << " : " << glrenderer << std::endl;
 
 	// unsigned int shaderProgram = LoadShaderProgram("main.vert.glsl", "main.frag.glsl");
 	unsigned int shader = LoadShaderProgram("model.vert.glsl", "model.frag.glsl");
 
-	Model ourModel = Model(/*GetDirectory() + */"nanosuit\\nanosuit.obj");
+	Model ourModel = Model("nanosuit\\nanosuit.obj");
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = (float)glfwGetTime();
@@ -211,10 +211,10 @@ int main(int argc, char ** argv)
 		setFloat(shaderProgram, "spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 		setFloat(shaderProgram, "spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-		setMatrix4fv(shaderProgram, "view", camera.GetViewMatrix());
+		setMat4(shaderProgram, "view", camera.GetViewMatrix());
 		glm::mat4 pers = glm::perspective(glm::radians(camera.Zoom),
 			(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
-		setMatrix4fv(shaderProgram, "proj", pers);
+		setMat4(shaderProgram, "proj", pers);
 		glBindTexture(GL_TEXTURE_2D, Tex);
 		glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 10; i++)
@@ -223,7 +223,7 @@ int main(int argc, char ** argv)
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			setMatrix4fv(shaderProgram, "model", model);
+			setMat4(shaderProgram, "model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
