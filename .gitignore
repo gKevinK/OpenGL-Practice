@@ -261,7 +261,10 @@ __pycache__/
 *.pyc
 
 # Includes
+include/glad/*
+include/GLFW/*
 include/glm/*
+include/KHR/*
 include/assimp/*
 include/freetype/*
 !**/resource
