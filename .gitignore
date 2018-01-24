@@ -267,4 +267,6 @@ include/glm/*
 include/KHR/*
 include/assimp/*
 include/freetype/*
+include/stb_image.h
+include/ft2build.h
 !**/resource
